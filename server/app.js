@@ -25,7 +25,7 @@ const app = new Koa();
   );
 
   // routes
-  let routes = fs.readdirSync(__dirname + "/routes");
+  let routes = fs.readdirSync(__dirname + "/routers");
   if (routes.includes("index.js")) {
     routes = routes.filter((v) => !v.includes("index.js"));
     routes.push("index.js");
@@ -33,7 +33,7 @@ const app = new Koa();
   // console.log("routes", routes);
   for (let i = 0; i < routes.length; i++) {
     const fileName = routes[i];
-    const route = require(`./routes/${fileName}`);
+    const route = require(`./routers/${fileName}`);
     if (!fileName.includes("index")) {
       app.use(route.routes(), route.allowedMethods());
     } else {
