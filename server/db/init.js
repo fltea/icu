@@ -1,5 +1,5 @@
-const seq = require("./seq");
-require("./models");
+const seq = require('./seq');
+require('./models');
 
 // 强制删除表后重新生成
 seq
@@ -7,7 +7,7 @@ seq
     force: true,
   })
   .then(() => {
-    console.log("seq.sync ok.");
+    console.log('seq.sync ok.');
     process.exit();
   });
 

@@ -1,5 +1,5 @@
-const { ErrorModel } = require("../model/ResModel");
-const { schemaFileInfo } = require("../model/ErrorInfo");
+const { ErrorModel } = require('../model/ResModel');
+const { schemaFileInfo } = require('../model/ErrorInfos');
 /**
  * 生成 json schema 校验
  * @param {function} validateFn 验证函数

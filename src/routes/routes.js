@@ -1,29 +1,29 @@
 const routes = [];
 let notFound;
 
-const pages = import.meta.globEager("/src/pages/**/*.vue");
-const rootDir = "/src/pages";
+const pages = import.meta.globEager('/src/pages/**/*.vue');
+const rootDir = '/src/pages';
 // console.log(pages);
 
 const getItem = (page) => {
-  let pageName = page.replace(rootDir, "");
-  pageName = pageName.replace(".vue", "");
+  let pageName = page.replace(rootDir, '');
+  pageName = pageName.replace('.vue', '');
 
-  let name = pageName.split("/").filter((v) => !!v);
+  let name = pageName.split('/').filter((v) => !!v);
   const nlen = name.length;
-  if (nlen > 1 && name[nlen - 1] === "index") {
+  if (nlen > 1 && name[nlen - 1] === 'index') {
     name.pop();
   }
-  name = name.join("-");
+  name = name.join('-');
 
-  let path = pageName.replace(/\/?index/, "");
-  path = path.replace(/_/g, ":");
+  let path = pageName.replace(/\/?index/, '');
+  path = path.replace(/_/g, ':');
   path = path.toLowerCase();
   if (!path) {
-    path = "/";
+    path = '/';
   }
 
-  let item = {
+  const item = {
     path,
     name,
     component: pages[page].default,
@@ -34,10 +34,10 @@ const getItem = (page) => {
 Object.keys(pages).forEach((page) => {
   // console.log('page', page);
   const { name, item } = getItem(page);
-  if (name === "404") {
+  if (name === '404') {
     notFound = true;
   }
-  if (name === "index") {
+  if (name === 'index') {
     routes.unshift(item);
   } else {
     routes.push(item);
@@ -46,8 +46,8 @@ Object.keys(pages).forEach((page) => {
 
 if (notFound) {
   routes.push({
-    path: "/:pathMatch(.*)*",
-    redirect: "404",
+    path: '/:pathMatch(.*)*',
+    redirect: '404',
   });
 }
 

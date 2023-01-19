@@ -13,24 +13,24 @@ function randInt(n = 1, m = 10) {
  * @param {string} format
  * @returns string
  */
-function formatDate({ date = new Date(), format = "YYYY-mm-dd HH:MM:SS" }) {
+function formatDate({ date = new Date(), format = 'YYYY-mm-dd HH:MM:SS' }) {
   date = new Date(date);
   if (isNaN(+date)) {
     return date;
   }
   const options = {
-    "Y+": date.getFullYear().toString(), // 年
-    "m+": (date.getMonth() + 1).toString(), // 月
-    "d+": date.getDate().toString(), // 日
-    "H+": date.getHours().toString(), // 时
-    "M+": date.getMinutes().toString(), // 分
-    "S+": date.getSeconds().toString(), // 秒
+    'Y+': date.getFullYear().toString(), // 年
+    'm+': (date.getMonth() + 1).toString(), // 月
+    'd+': date.getDate().toString(), // 日
+    'H+': date.getHours().toString(), // 时
+    'M+': date.getMinutes().toString(), // 分
+    'S+': date.getSeconds().toString(), // 秒
   };
   let ret;
-  for (let k in options) {
-    ret = new RegExp("(" + k + ")").exec(format);
+  for (const k in options) {
+    ret = new RegExp(`(${k})`).exec(format);
     if (ret) {
-      format = format.replace(ret[1], ret[1].length == 1 ? options[k] : options[k].padStart(ret[1].length, "0"));
+      format = format.replace(ret[1], ret[1].length === 1 ? options[k] : options[k].padStart(ret[1].length, '0'));
     }
   }
   return format;
@@ -52,9 +52,9 @@ function deepCopy(target) {
   let result = null;
   if (target === undefined || target === null) result = target;
   // 對象
-  if (typeof target === "object") result = JSON.parse(JSON.stringify(target));
+  if (typeof target === 'object') result = JSON.parse(JSON.stringify(target));
   // 其他
-  if (typeof target !== "object") result = target;
+  if (typeof target !== 'object') result = target;
   return result;
 }
 

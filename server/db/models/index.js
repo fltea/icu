@@ -1,5 +1,5 @@
-const fs = require("fs");
-const seq = require("../seq");
+const fs = require('fs');
+const seq = require('../seq');
 
 /**
  * {
@@ -13,15 +13,15 @@ const seq = require("../seq");
  * }
  */
 
-const options = {
-  paranoid: true,
-  createdAt: "createdTime",
-  updatedAt: "updatedTime",
-  deletedAt: "deletedTime",
-};
+// const options = {
+//   paranoid: true,
+//   createdAt: 'createdTime',
+//   updatedAt: 'updatedTime',
+//   deletedAt: 'deletedTime',
+// };
 
 let keys = fs.readdirSync(__dirname);
-keys = keys.map((l) => l.replace(".js", "")).filter((l) => l !== "index");
+keys = keys.map((l) => l.replace('.js', '')).filter((l) => l !== 'index');
 
 const result = {};
 const temp = {};
@@ -34,7 +34,7 @@ keys.forEach((key) => {
 
 keys.forEach((key) => {
   const item = temp[key];
-  const vals = ["hasMany", "hasOne", "belongsTo"];
+  const vals = ['hasMany', 'hasOne', 'belongsTo'];
   vals.forEach((val) => {
     const values = item[val] || {};
     const arrs = Object.keys(values);

@@ -1,42 +1,42 @@
-const { STRING, TEXT, INTEGER } = require("../types");
+const { STRING, TEXT, INTEGER } = require('../types');
 
 const Video = {
   model: {
     title: {
       type: STRING,
-      comment: "标题",
+      comment: '标题',
     },
     text: {
       type: TEXT,
-      comment: "描述内容",
+      comment: '描述内容',
     },
     url: {
       type: STRING,
       allowNull: false,
-      comment: "地址",
+      comment: '地址',
     },
     link: {
       type: STRING,
-      comment: "外部链接",
+      comment: '外部链接',
     },
     creator: {
       type: STRING,
-      comment: "上传者",
+      comment: '上传者',
     },
     blog: {
       type: INTEGER,
-      comment: "关联Blog",
+      comment: '关联Blog',
     },
     remark: {
       type: STRING,
-      comment: "备注",
+      comment: '备注',
     },
   },
   belongsTo: {
-    Blog: "blog",
+    Blog: 'blog',
   },
   hasOne: {
-    Pic: "video",
+    Pic: 'video',
   },
 };
 

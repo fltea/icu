@@ -1,10 +1,8 @@
-import { createRouter as createVueRouter, createMemoryHistory, createWebHistory } from "vue-router";
+import { createRouter as createVueRouter, createMemoryHistory, createWebHistory } from 'vue-router';
 
-import routes from "./routes";
+import routes from './routes';
 
-export const createRouter = (type) => {
-  return createVueRouter({
-    history: type === "client" ? createWebHistory() : createMemoryHistory(),
-    routes,
-  });
-};
+export const createRouter = (type) => createVueRouter({
+  history: type === 'client' ? createWebHistory() : createMemoryHistory(),
+  routes,
+});

@@ -1,6 +1,6 @@
-const validate = require("./_validate");
-const { deepCopy } = require("../utils");
-const types = require("./type");
+const validate = require('./_validate');
+const { deepCopy } = require('../utils');
+const types = require('./type');
 
 function getSchema(model) {
   let result = {};
@@ -14,7 +14,7 @@ function getSchema(model) {
       if (modeler) {
         modeler = modeler.model;
       }
-    } catch (error) {
+    } catch (ee) {
       result.error = `没有找到 model: ${model} SCHEMA 配置`;
     }
   }
@@ -22,7 +22,7 @@ function getSchema(model) {
   if (modeler) {
     const properties = {
       id: {
-        type: "number",
+        type: 'number',
       },
     };
     const required = [];
@@ -31,13 +31,13 @@ function getSchema(model) {
       if (item.allowNull === false) {
         required.push(key);
       }
-      let type = item.type.key || item.type;
+      const type = item.type.key || item.type;
       properties[key] = deepCopy(types[type]);
     });
 
     // 校验规则
     result = {
-      type: "object",
+      type: 'object',
       properties,
       if: {
         properties: { id: { anyOf: [{ const: 0 }, { const: null }] } },
