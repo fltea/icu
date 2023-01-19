@@ -1,0 +1,4 @@
+files/*
+public/*
+package.json
+package-lock.json
