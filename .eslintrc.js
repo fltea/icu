@@ -47,5 +47,13 @@ module.exports = {
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     // 去除console.log警告
     'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
+    // await 不能再循環中
+    'no-await-in-loop': 0,
+    // 不想能修改傳參
+    'no-param-reassign': 0,
+    'no-restricted-globals': 0,
+    'guard-for-in': 0,
+    'no-restricted-syntax': 0,
+    'object-curly-newline': 0,
   },
 };

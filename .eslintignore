@@ -1,4 +1,5 @@
 files/*
 public/*
+test/*
 package.json
 package-lock.json
