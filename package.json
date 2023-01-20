@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server/app",
+    "dev": "nodemon --watch server server/app",
     "db": "node server/db/init",
     "build": "vite build",
     "preview": "vite preview",
@@ -35,10 +35,5 @@
     "less-loader": "^11.1.0",
     "nodemon": "^2.0.20",
     "vite": "^4.0.0"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "**/files/**"
-    ]
   }
 }
