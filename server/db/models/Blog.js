@@ -1,4 +1,4 @@
-const { STRING, INTEGER, TEXT } = require('../types');
+import { STRING, INTEGER, TEXT } from '../types.js';
 
 const Blog = {
   model: {
@@ -35,4 +35,4 @@ const Blog = {
   },
 };
 
-module.exports = Blog;
+export default Blog;

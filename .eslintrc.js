@@ -29,6 +29,8 @@ module.exports = {
   },
   plugins: ['vue'],
   rules: {
+    // don't require .vue extension when importing
+    'import/extensions': ['error', 'always'],
     // 單行最大長度
     'max-len': ['error', { code: 800 }],
     // 关闭组件命名规则

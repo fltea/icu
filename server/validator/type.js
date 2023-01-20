@@ -1,4 +1,4 @@
-module.exports = {
+const types = {
   STRING: {
     type: 'string',
     maxLength: 255,
@@ -37,3 +37,5 @@ module.exports = {
     type: 'boolean',
   },
 };
+
+export { types };

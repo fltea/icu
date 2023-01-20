@@ -1,5 +1,5 @@
-const seq = require('./seq');
-require('./models');
+import seq from './seq.js';
+import './models/index.js';
 
 // 强制删除表后重新生成
 seq

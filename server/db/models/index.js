@@ -1,5 +1,11 @@
-const fs = require('fs');
-const seq = require('../seq');
+/* eslint-disable no-underscore-dangle */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+import seq from '../seq.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * {
@@ -23,14 +29,22 @@ const seq = require('../seq');
 let keys = fs.readdirSync(__dirname);
 keys = keys.map((l) => l.replace('.js', '')).filter((l) => l !== 'index');
 
-const result = {};
+const models = {};
 const temp = {};
 
-keys.forEach((key) => {
-  const item = require(`./${key}`);
+let i = 0;
+const max = keys.length;
+while (i < max) {
+  const key = keys[i];
+  let item = await import(`./${key}.js`);
+  item = item.default;
+  // console.log('item', item);
   temp[key] = item;
-  result[key] = seq.define(key, item.model);
-});
+  models[key] = seq.define(key, item.model);
+  i += 1;
+}
+
+// console.log('models', models);
 
 keys.forEach((key) => {
   const item = temp[key];
@@ -44,9 +58,9 @@ keys.forEach((key) => {
       if (fkey) {
         options.foreignKey = fkey;
       }
-      result[key][val](result[a], options);
+      models[key][val](models[a], options);
     });
   });
 });
 
-module.exports = result;
+export default models;

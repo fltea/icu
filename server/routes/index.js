@@ -1,14 +1,15 @@
-const router = require('koa-router')();
-const koaConnect = require('koa-connect');
-const sendFile = require('koa-send');
-const { resolve } = require('node:path');
-const fs = require('fs');
+import Router from 'koa-router';
+import koaConnect from 'koa-connect';
+import sendFile from 'koa-send';
+import { resolve } from 'node:path';
+import fs from 'node:fs';
 
 /**
  * 页面 、 静态资源、api 404
  * @param {Object} viteServer
  */
 const setRouter = (viteServer) => {
+  const router = new Router();
   router.use('/api(.*)', async (ctx) => {
     ctx.body = 'api not found';
   });
@@ -86,4 +87,4 @@ const setRouter = (viteServer) => {
   return router;
 };
 
-module.exports = setRouter;
+export default setRouter;

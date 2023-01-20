@@ -1,4 +1,4 @@
-const { STRING, TEXT, DATE } = require('../types');
+import { STRING, TEXT, DATE } from '../types.js';
 
 const Source = {
   model: {
@@ -33,4 +33,4 @@ const Source = {
   },
 };
 
-module.exports = Source;
+export default Source;

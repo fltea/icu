@@ -1,4 +1,4 @@
-const Ajv = require('ajv');
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -34,4 +34,4 @@ function validate(schema, data = {}) {
   return null;
 }
 
-module.exports = validate;
+export default validate;

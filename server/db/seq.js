@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const { MYSQL_CONF } = require('../conf/db');
+import Sequelize from 'sequelize';
+import { MYSQL_CONF } from '../conf/db.js';
 
 const { host, user, password, database } = MYSQL_CONF;
 const conf = {
@@ -9,4 +9,4 @@ const conf = {
 };
 const seq = new Sequelize(database, user, password, conf);
 
-module.exports = seq;
+export default seq;

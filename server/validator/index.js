@@ -1,24 +1,28 @@
-const validate = require('./_validate');
-const { deepCopy } = require('../utils');
-const types = require('./type');
+import validate from './_validate.js';
+import { deepCopy } from '../utils/index.js';
+import { types } from './type.js';
 
-function getSchema(model) {
+async function getSchema(model) {
   let result = {};
   let modeler;
   try {
-    modeler = require(`./model/${model}`);
+    console.log('modeler');
+    modeler = await import(`./model/${model}.js`);
   } catch (error) {
+    console.log('modeler error', error.code);
     try {
       // 在数据库模型中
-      modeler = require(`../db/model/${model}`);
+      modeler = await import(`../db/models/${model}.js`);
       if (modeler) {
-        modeler = modeler.model;
+        modeler = modeler.default.model;
       }
     } catch (ee) {
+      console.log('modeler ee', ee.code);
       result.error = `没有找到 model: ${model} SCHEMA 配置`;
     }
   }
 
+  // console.log('modeler', modeler);
   if (modeler) {
     const properties = {
       id: {
@@ -47,15 +51,16 @@ function getSchema(model) {
       },
     };
   }
+  // console.log('modeler result', result);
   return result;
 }
 
-function validator(model, data = {}) {
-  const SCHEMA = getSchema(model);
+async function validator(model, data = {}) {
+  const SCHEMA = await getSchema(model);
   if (SCHEMA.error) {
     return SCHEMA;
   }
   return validate(SCHEMA, data);
 }
 
-module.exports = validator;
+export default validator;

@@ -1,5 +1,5 @@
-const { ErrorModel } = require('../model/ResModel');
-const { schemaFileInfo } = require('../model/ErrorInfos');
+import { ErrorModel } from '../model/ResModel.js';
+import { schemaFileInfo } from '../model/ErrorInfos.js';
 /**
  * 生成 json schema 校验
  * @param {function} validateFn 验证函数
@@ -10,9 +10,10 @@ function genValidator(model, validateFn) {
     // console.log('ctx.request.body ', ctx.request.body);
     // 校验
     const data = ctx.request.body;
-    const error = validateFn(model, data);
+    const error = await validateFn(model, data);
     if (error) {
       // 失败 报错
+      console.log('validator', error);
       ctx.body = new ErrorModel(schemaFileInfo);
       return;
     }
@@ -22,6 +23,4 @@ function genValidator(model, validateFn) {
   return validator;
 }
 
-module.exports = {
-  genValidator,
-};
+export default genValidator;

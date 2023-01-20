@@ -1,4 +1,4 @@
-const { STRING, TEXT, INTEGER } = require('../types');
+import { STRING, TEXT, INTEGER } from '../types.js';
 
 const Video = {
   model: {
@@ -40,4 +40,4 @@ const Video = {
   },
 };
 
-module.exports = Video;
+export default Video;

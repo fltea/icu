@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 class BaseModel {
   constructor({ code, data, message }) {
     this.code = code;
@@ -29,7 +30,7 @@ class ErrorModel extends BaseModel {
   }
 }
 
-module.exports = {
+export {
   SuccessModel,
   ErrorModel,
 };

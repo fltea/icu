@@ -58,7 +58,7 @@ function deepCopy(target) {
   return result;
 }
 
-module.exports = {
+export {
   randInt,
   formatDate,
   sleep,
