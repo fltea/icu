@@ -16,7 +16,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['./server/**/*.js'],
+      files: ['./vite.config.js', './server/**/*.js'],
       rules: {
         'import/no-extraneous-dependencies': 0,
         'import/no-dynamic-require': 0,
