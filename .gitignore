@@ -120,3 +120,4 @@ dist-ssr
 
 # 文件
 files
+* copy.*
