@@ -9,7 +9,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: {
-        map: [['@', './src/client']],
+        map: [['@', './src']],
         extensions: ['.js', '.vue'],
       },
     },
@@ -23,14 +23,19 @@ module.exports = {
         'global-require': 0,
       },
     },
+    {
+      files: ['./server/**/*.js'],
+      rules: {
+        // don't require .vue extension when importing
+        'import/extensions': ['error', 'always'],
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: 'latest',
   },
   plugins: ['vue'],
   rules: {
-    // don't require .vue extension when importing
-    'import/extensions': ['error', 'always'],
     // 單行最大長度
     'max-len': ['error', { code: 800 }],
     // 关闭组件命名规则
