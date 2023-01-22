@@ -1,5 +1,5 @@
 import { createSSRApp } from 'vue';
-import './style.css';
+import './assets/css/common.less';
 import App from './App.vue';
 
 // createApp(App).mount('#app')
