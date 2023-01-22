@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import app from '../server/app';
+import app from '../server/server';
 
- const request = supertest(app.callback());
- 
+const request = supertest(app.callback());
+
 export default request;
