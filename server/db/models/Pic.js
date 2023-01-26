@@ -1,4 +1,4 @@
-import { STRING, INTEGER, TEXT } from '../types.js';
+import { STRING, TEXT } from '../types.js';
 
 const Pic = {
   model: {
@@ -15,26 +15,14 @@ const Pic = {
       type: STRING,
       comment: '上传者',
     },
-    blog: {
-      type: INTEGER,
-      comment: '关联BlogID',
-    },
-    video: {
-      type: INTEGER,
-      comment: '关联VideoID',
-    },
     text: {
       type: TEXT,
       comment: '转文字',
     },
     remark: {
-      type: STRING,
+      type: TEXT,
       comment: '备注',
     },
-  },
-  belongsTo: {
-    Blog: 'blog',
-    Video: 'video',
   },
 };
 
