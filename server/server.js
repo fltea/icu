@@ -4,6 +4,10 @@ import path from 'node:path';
 import fs from 'node:fs';
 import * as vite from 'vite';
 
+import { FILE_DIR } from './conf/constant.js';
+
+const ROOT_DIR = process.cwd();
+
 const app = new Koa();
 const viteServer = await vite.createServer({
   server: { middlewareMode: true },
@@ -14,7 +18,7 @@ app.use(
   koaBody({
     multipart: true,
     formidable: {
-      uploadDir: path.join(process.cwd(), 'files/temp/'), // 设置文件上传目录
+      uploadDir: path.join(ROOT_DIR, FILE_DIR), // 设置文件上传目录
       keepExtensions: true, // 保持文件的后缀
       maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
       // onFileBegin:(name, file) => {
@@ -25,7 +29,7 @@ app.use(
 );
 
 // routes
-let routes = fs.readdirSync(path.join(process.cwd(), 'server/routes'));
+let routes = fs.readdirSync(path.join(ROOT_DIR, 'server/routes'));
 if (routes.includes('index.js')) {
   routes = routes.filter((v) => !v.includes('index.js'));
   routes.push('index.js');

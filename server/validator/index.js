@@ -1,5 +1,5 @@
 import validate from './_validate.js';
-import { deepCopy } from '../utils/index.js';
+import { deepCopy } from '../utils/tools.js';
 import { types } from './type.js';
 
 async function getSchema(model) {
