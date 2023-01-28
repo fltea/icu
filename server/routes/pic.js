@@ -25,9 +25,9 @@ router.get('/', async (ctx) => {
 //   ctx.body = result;
 // });
 
-router.post('/add', async (ctx) => {
-  console.log('ctx.request.files ', ctx.request.files);
-  const result = await createPic(ctx.request.files);
+router.post('/add', genValidator('Pic', validate), async (ctx) => {
+  // console.log('ctx.request.files ', ctx.request.files);
+  const result = await createPic(ctx.request.body);
   ctx.body = result;
 });
 router.post('/modify', genValidator('Pic', validate), async (ctx) => {

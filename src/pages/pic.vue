@@ -1,20 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { upload } from '@/api/common';
 import { list, add, modify, del } from '@/api/pic';
 
 const uploadFile = (file) => {
   const form = new FormData();
   form.append('file', file);
-  return add(form);
-};
-const uploadFiles = (files) => {
-  if (Array.isArray(files) && files.length) {
-    const requests = files.map((v) => uploadFile(v));
-    // console.log(requests)
-    Promise.all(requests).then((reses) => {
-      console.log(reses);
-    });
-  }
+  return upload(form);
 };
 
 const listData = ref([]);
@@ -32,13 +24,16 @@ const delItem = (id) => {
   });
 };
 const changFile = (event) => {
-  console.log(event);
+  // console.log(event);
   const target = event.target || {};
   const files = target.files || [];
-  console.log(files);
+  // console.log(files);
   if (files.length) {
     // console.log(Array.from(list).map(v => v.size))
-    uploadFiles(Array.from(files));
+    uploadFile(files[0]).then((res) => {
+      console.log(res);
+      add(res.data);
+    });
   }
 };
 
