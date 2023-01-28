@@ -1,6 +1,7 @@
 import { addInfo, delInfo, updateInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
+import { FILE_DIR } from '../conf/constant.js';
 
 import {
   picInfo,
@@ -44,10 +45,21 @@ export async function getPics({ creator, remark, page, limit }) {
  * 創建數據
  * { url, link, creator, text, remark }
  */
-export async function createPic({ file }) {
+export async function createPic({ file, url, link, creator, text, remark }) {
   try {
-    const url = file.filepath;
-    const result = await picAdd({ url });
+    if (!(file || url)) {
+      return new ErrorModel(schemaFileInfo);
+    }
+    const pic = { link, creator, text, remark };
+    if (file) {
+      let fpath = file.filepath.split(`${FILE_DIR}`).pop();
+      fpath = fpath.replace(/\\/g, '');
+      fpath = `/${FILE_DIR}/${url}`;
+      pic.url = fpath;
+    } else {
+      pic.url = url;
+    }
+    const result = await picAdd(pic);
     if (result) {
       return new SuccessModel(result);
     }
@@ -77,7 +89,7 @@ export async function createPics(list) {
 export async function modifyPic({ id, link, creator, text, remark }) {
   try {
     if (!id) {
-      return new ErrorModel(notExistInfo);
+      return new ErrorModel(schemaFileInfo);
     }
     const result = await picUpdate({ id, link, creator, text, remark });
     if (result) {
