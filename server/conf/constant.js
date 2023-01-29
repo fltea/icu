@@ -2,7 +2,7 @@
 export const PAGE_SIZE = 20;
 
 // 文件夹路径
-const dpath = 'files/';
+const dpath = 'files';
 
 // 默认文件夹
 export const FILE_DIR = dpath;

@@ -3,7 +3,7 @@
  * @param {number} n 开始值
  * @param {number} m 结束值
  */
-function randInt(n = 1, m = 10) {
+export function randInt(n = 1, m = 10) {
   return Math.floor(Math.random() * (m - n + 1)) + n;
 }
 
@@ -13,7 +13,7 @@ function randInt(n = 1, m = 10) {
  * @param {string} format
  * @returns string
  */
-function formatDate({ date = new Date(), format = 'YYYY-mm-dd HH:MM:SS' }) {
+export function formatDate({ date = new Date(), format = 'YYYY-mm-dd HH:MM:SS' }) {
   date = new Date(date);
   if (isNaN(+date)) {
     return date;
@@ -41,13 +41,13 @@ function formatDate({ date = new Date(), format = 'YYYY-mm-dd HH:MM:SS' }) {
  * @param {number} time  睡眠时间
  * @returns Promise
  */
-function sleep(time) {
+export function sleep(time) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
 
-function deepCopy(target) {
+export function deepCopy(target) {
   // null, undefined
   let result = null;
   if (target === undefined || target === null) result = target;
@@ -57,10 +57,3 @@ function deepCopy(target) {
   if (typeof target !== 'object') result = target;
   return result;
 }
-
-export {
-  randInt,
-  formatDate,
-  sleep,
-  deepCopy,
-};
