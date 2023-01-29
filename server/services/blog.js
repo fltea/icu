@@ -34,7 +34,7 @@ export async function blogList(text, creator, page = 1, limit = PAGE_SIZE) {
     };
   }
   if (creator) {
-    where.title = creator;
+    where.creator = creator;
   }
   if (page) {
     search.limit = limit;

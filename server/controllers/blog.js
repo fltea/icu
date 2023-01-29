@@ -1,4 +1,4 @@
-import { addInfo, delInfo, updateInfo, isExistInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { addInfo, delInfo, updateInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 
@@ -14,10 +14,10 @@ import {
 /**
  * 獲取單個數據
  */
-export async function getBlog({ id, url }) {
+export async function getBlog(id) {
   try {
-    if (id || url) {
-      const result = await blogInfo({ id, url });
+    if (id) {
+      const result = await blogInfo(id);
       if (result) {
         return new SuccessModel(result);
       }
@@ -31,9 +31,9 @@ export async function getBlog({ id, url }) {
 /**
  * 獲取列表
  */
-export async function getBlogs({ url, title, page, limit }) {
+export async function getBlogs({ text, creator, page, limit }) {
   try {
-    const result = await blogList({ url, title, page, limit });
+    const result = await blogList({ text, creator, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -43,13 +43,18 @@ export async function getBlogs({ url, title, page, limit }) {
 /**
  * 創建數據
  */
-export async function createBlog({ url, title, description, icons }) {
+export async function createBlog({ text, creator, link,
+  source, remark }) {
   try {
-    let result = await blogInfo({ url });
-    if (result) {
-      return new ErrorModel(isExistInfo);
+    const blog = { text,
+      creator,
+      link,
+      source,
+      remark };
+    if (!blog.source) {
+      delete blog.source;
     }
-    result = await blogAdd({ url, title, description, icons });
+    const result = await blogAdd(blog);
     if (result) {
       return new SuccessModel(result);
     }
@@ -77,12 +82,18 @@ export async function createBlogs(list) {
 /**
  * 修改數據
  */
-export async function modifyBlog({ id, url, title, description, icons }) {
+export async function modifyBlog({ id, text, creator, link,
+  source, remark }) {
   try {
     if (!id) {
-      return new ErrorModel(notExistInfo);
+      return new ErrorModel(schemaFileInfo);
     }
-    const result = await blogUpdate({ id, url, title, description, icons });
+    const result = await blogUpdate({ id,
+      text,
+      creator,
+      link,
+      source,
+      remark });
     if (result) {
       return new SuccessModel(result);
     }
