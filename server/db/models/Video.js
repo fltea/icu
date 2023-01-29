@@ -25,7 +25,7 @@ const Video = {
     },
     blog: {
       type: INTEGER,
-      comment: '关联Blog',
+      comment: 'BlogID',
     },
     remark: {
       type: STRING,
@@ -35,8 +35,8 @@ const Video = {
   belongsTo: {
     Blog: 'blog',
   },
-  hasOne: {
-    Pic: 'video',
+  hasMany: {
+    PicTie: 'video',
   },
 };
 

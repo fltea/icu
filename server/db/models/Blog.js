@@ -17,7 +17,7 @@ const Blog = {
     },
     source: {
       type: INTEGER,
-      comment: '关联SourceID',
+      comment: 'SourceID',
     },
     remark: {
       type: STRING,
@@ -28,7 +28,7 @@ const Blog = {
     Source: 'source',
   },
   hasMany: {
-    Pic: 'blog',
+    PicTie: 'blog',
   },
   hasOne: {
     Video: 'blog',

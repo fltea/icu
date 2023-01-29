@@ -24,6 +24,9 @@ const Pic = {
       comment: '备注',
     },
   },
+  hasMany: {
+    PicTie: 'pic',
+  },
 };
 
 export default Pic;

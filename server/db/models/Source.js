@@ -31,6 +31,13 @@ const Source = {
       comment: '发表日期',
     },
   },
+  hasOne: {
+    Blog: 'source',
+    Article: 'source',
+  },
+  hasMany: {
+    PicTie: 'source',
+  },
 };
 
 export default Source;
