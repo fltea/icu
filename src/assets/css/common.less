@@ -1,3 +1,20 @@
+
+:root {
+  --color-a: #1e88f6;
+  --color-ahover: #1bb934;
+  --color-aactive: #ff5b05;
+}
+
+a {
+  color: var(--color-a);
+  &:hover {
+    color: var(--color-ahover);
+  }
+  &:active {
+    color: var(--color-aactive);
+  }
+}
+
 .file-button {
   position: relative;
   overflow: hidden;
@@ -10,5 +27,43 @@
     z-index: 2;
     opacity: 0;
     cursor: pointer;
+  }
+}
+
+.dialog {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 100%;
+  border: none;
+  background: transparent;
+  &::before {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background-color: rgba(0, 0, 0, .4);
+  }
+  .dialog-body {
+    max-width: 100%;
+    background-color: #fff;
+  }
+}
+
+.layout-inner {
+  margin: 0 auto;
+  min-width: 500px;
+  width: 90%;
+}
+.layout-control {
+  button {
+    & + button {
+      margin-left: 12px;
+    }
   }
 }
