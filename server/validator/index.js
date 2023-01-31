@@ -6,8 +6,11 @@ async function getSchema(model) {
   let result = {};
   let modeler;
   try {
-    console.log('modeler');
+    // console.log('modeler');
     modeler = await import(`./model/${model}.js`);
+    if (modeler) {
+      modeler = modeler.default;
+    }
   } catch (error) {
     console.log('modeler error', error.code);
     try {
