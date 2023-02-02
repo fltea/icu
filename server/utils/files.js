@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 
-import { LOG_DIR } from '../conf/constant.js';
+import { FILE_DIR, LOG_DIR, UserAgent } from '../conf/constant.js';
 import { formatDate } from './tools.js';
+import request from './request.js';
 
 /**
  *
@@ -36,4 +37,26 @@ export function setLog(name, data) {
     data = JSON.stringify(data);
   }
   appendFile(`${LOG_DIR}/${name}${date}.txt`, `${formatDate({})}\n${data}\n`);
+}
+
+export async function downSource(url, name, referer) {
+  const options = {
+    url,
+    header: {
+      'User-Agent': UserAgent,
+    },
+    method: 'GET',
+    media: true,
+  };
+  if (referer) {
+    options.header.referer = referer;
+  }
+  const source = await request(options);
+  const npath = `${FILE_DIR}/${name}`;
+  appendFile(npath, source, {
+    encoding: 'binary',
+    flag: 'w',
+  });
+  // console.log(npath, url);
+  return npath;
 }
