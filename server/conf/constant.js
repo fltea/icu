@@ -16,13 +16,18 @@ export const UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 export const WEIBO_CONF = {
   home: 'https://m.weibo.cn/feed/friends',
   favorite: 'https://m.weibo.cn/api/container/getIndex?containerid=230259&openApp=0',
+  follow: 'https://m.weibo.cn/api/container/getIndex?containerid=231093_-_selffollowed',
   detail: 'https://m.weibo.cn/detail/{id}',
+  detailE: 'https://m.weibo.cn/statuses/extend?id={id}',
   detailS: 'https://m.weibo.cn/statuses/show?id={id}',
   comment: 'https://m.weibo.cn/comments/hotflow?id={id}&mid={id}&max_id_type=0',
   delFav: 'https://m.weibo.cn/api/statuses/destroyfav',
   user: 'https://m.weibo.cn/profile/info?uid={id}',
-  userList: 'https://m.weibo.cn/api/container/getIndex?type=uid&value={id}&containerid=230413{id}_-_WEIBO_SECOND_PROFILE_WEIBO', // page_type: 03  since_id: 4812900419764247
-  article: 'https://weibo.com/ttarticle/p/show?id={id}&luicode={luicode}',
+  userLink: 'https://m.weibo.cn/profile/{id}',
+  // https://m.weibo.cn/api/container/getIndex?uid=1357064103&luicode=10000011&lfid=231093_-_selffollowed&containerid=1076031357064103&since_id=4864658320132222
+  userList: 'https://m.weibo.cn/api/container/getIndex?type=uid&value={id}&containerid=107603{id}', // page_type: 03  since_id: 4812900419764247
+  article: 'https://weibo.com/ttarticle/p/show?id={id}',
+  articleP: 'https://weibo.com/p/{pid}',
 };
 
 // 豆瓣
