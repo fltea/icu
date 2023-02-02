@@ -22,6 +22,10 @@ const Source = {
       type: STRING,
       comment: '作者',
     },
+    authorId: {
+      type: STRING,
+      comment: '作者Id',
+    },
     authorLink: {
       type: STRING,
       comment: '作者链接',
