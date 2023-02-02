@@ -25,7 +25,7 @@ export default defineConfig({
   server: {
     watch: {
       // 忽略文件变化
-      ignored: ['**/files/**', '**/server/**', '**/test/**'],
+      ignored: ['**/files/**', '**/docs/**', '**/server/**', '**/test/**'],
     },
   },
 });
