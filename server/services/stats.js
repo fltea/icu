@@ -89,8 +89,8 @@ export async function statsBulk(list) {
         const datas = dataes.splice(0, 100);
         let values = await Stats.bulkCreate(datas, { ignoreDuplicates: true });
         console.log('list', values);
-        values = values.map((row) => row.defaultValue);
-        result.push(values);
+        values = values.map((row) => row.dataValues);
+        result.push(...values);
         len = dataes.length;
       }
     }

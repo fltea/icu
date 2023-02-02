@@ -128,8 +128,8 @@ export async function markBulk(list) {
       while (len > 0) {
         const datas = dataes.splice(0, 100);
         let values = await Mark.bulkCreate(datas, { ignoreDuplicates: true });
-        values = values.map((row) => row.defaultValue);
-        result.push(values);
+        values = values.map((row) => row.dataValues);
+        result.push(...values);
         len = dataes.length;
       }
     }
