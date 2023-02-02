@@ -121,3 +121,5 @@ dist-ssr
 # 文件
 files
 * copy.*
+
+vite.config.js.timestamp*.mjs
