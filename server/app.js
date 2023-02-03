@@ -1,3 +1,6 @@
 import app from './server.js';
 
-app.listen(9186);
+const isPro = process.env.NODE_ENV === 'production';
+const Port = isPro ? 9186 : 9099;
+
+app.listen(Port);

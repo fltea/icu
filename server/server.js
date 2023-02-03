@@ -2,17 +2,20 @@ import Koa from 'koa';
 import { koaBody } from 'koa-body';
 import path from 'node:path';
 import fs from 'node:fs';
-import * as vite from 'vite';
 
 import { FILE_DIR } from './conf/constant.js';
+import { setEnv } from './config.js';
 
+setEnv();
 const ROOT_DIR = process.cwd();
+const isPro = process.env.NODE_ENV === 'production';
 
 const app = new Koa();
-const viteServer = await vite.createServer({
-  server: { middlewareMode: true },
-  appType: 'custom',
-});
+let viteServer;
+if (!isPro) {
+  viteServer = await import('./utils/viteServer.js');
+  viteServer = viteServer.default;
+}
 
 app.use(
   koaBody({
@@ -44,12 +47,9 @@ for (let i = 0; i < routes.length; i++) {
   if (!fileName.includes('index')) {
     app.use(router.routes(), router.allowedMethods());
   } else {
-    const index = router(viteServer);
+    const index = await router(viteServer);
     app.use(index.routes(), index.allowedMethods());
   }
 }
 
-// app.listen(9186);
-
-// module.exports = app;
 export default app;
