@@ -3,11 +3,11 @@ import request from '../utils/request.js';
 import { UserAgent, WEIBO_CONF } from '../conf/constant.js';
 
 function getData(data) {
-  if (!data.includes('{"ok"')) {
+  try {
+    return JSON.parse(data);
+  } catch (error) {
     return data;
   }
-
-  return JSON.parse(data) || {};
 }
 
 function getHeader(cookie, referer) {
@@ -32,7 +32,6 @@ export async function homeList(cookie, maxId) {
       header: getHeader(cookie),
       method: 'GET',
     });
-    // console.log(list);
     list = getData(list);
     if (list.ok) {
       result.list = list.data.statuses;

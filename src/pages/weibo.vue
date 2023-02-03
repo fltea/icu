@@ -24,6 +24,7 @@ const showDialog = () => {
 const hideDialog = () => {
   cdialog.value = false;
 };
+let listItems;
 
 const getCookie = () => {
   cookie = localStorage.getItem('wcookie') || '';
@@ -40,9 +41,9 @@ const saveCookie = () => {
   cookie = incookie.value;
   localStorage.setItem('wcookie', cookie);
   hideDialog();
+  listItems();
 };
 
-let listItems;
 const interList = () => {
   if (timer.value) {
     clearTimeout(timer.value);
@@ -139,7 +140,6 @@ listItems = (maxId) => {
       listData.unshift(...nlist);
       listDetails(nlist.map((v) => v.id));
     } else {
-      cookie = '';
       setCookie();
     }
   });
@@ -171,11 +171,10 @@ const getFollows = (page) => {
 };
 
 onMounted(() => {
-  // getCookie();
-  // listItems();
   getCookie();
+  listItems();
   // getUserList(1571033823);
-  getFollows();
+  // getFollows();
 });
 onBeforeUnmount(() => {
   if (timer.value) {
@@ -189,13 +188,13 @@ onBeforeUnmount(() => {
   <button @click="setCookie">設置cookie</button>
   <section class="weibo-list">
     <div v-for="(item, index) in listData" :key="`list-${item.bid}`" class="list-item">
-      <!-- <list-item :weibo="item" @save="saveWeibo(index)" @delete="delWeibo(index)">
+      <list-item :weibo="item" @save="saveWeibo(index)" @delete="delWeibo(index)">
         <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
-      </list-item> -->
-      <div>
+      </list-item>
+      <!-- <div>
         <p>{{ item.screen_name }}</p>
         <p>{{ item.description }}</p>
-      </div>
+      </div> -->
     </div>
   </section>
   <com-dialog :show="cdialog">
