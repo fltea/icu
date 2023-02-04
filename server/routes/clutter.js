@@ -3,20 +3,20 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  // getNoveler,
-  getNovelers,
-  createNoveler,
-  // createNovelers,
-  modifyNoveler,
-  deleteNoveler,
-} from '../controllers/noveler.js';
+  // getClutter,
+  getClutters,
+  createClutter,
+  // createClutters,
+  modifyClutter,
+  deleteClutter,
+} from '../controllers/clutter.js';
 
 const router = new Router();
 
-router.prefix('/api/noveler');
+router.prefix('/api/clutter');
 
 router.get('/', async (ctx) => {
-  const result = await getNovelers({});
+  const result = await getClutters({});
   // console.log(result)
   ctx.body = result;
 });
@@ -26,20 +26,20 @@ router.get('/', async (ctx) => {
 //   ctx.body = result;
 // });
 
-router.post('/add', genValidator('Noveler', validate), async (ctx) => {
+router.post('/add', genValidator('Clutter', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await createNoveler(ctx.request.body);
+  const result = await createClutter(ctx.request.body);
   ctx.body = result;
 });
-router.post('/modify', genValidator('Noveler', validate), async (ctx) => {
+router.post('/modify', genValidator('Clutter', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await modifyNoveler(ctx.request.body);
+  const result = await modifyClutter(ctx.request.body);
   ctx.body = result;
 });
 router.post('/delete', async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
-  const result = await deleteNoveler(id);
+  const result = await deleteClutter(id);
   ctx.body = result;
 });
 

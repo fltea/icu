@@ -1,28 +1,28 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { addInfo, delInfo, updateInfo, schemaFileInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 
 import {
-  novelInfo,
-  novelList,
-  novelAdd,
-  novelUpdate,
-  novelDelete,
-  novelBulk,
-} from '../services/novel.js';
+  clutterInfo,
+  clutterList,
+  clutterAdd,
+  clutterUpdate,
+  clutterDelete,
+  clutterBulk,
+} from '../services/clutter.js';
 
 /**
  * 獲取單個數據
  */
-export async function getNovel(id) {
+export async function getClutter(id) {
   try {
     if (id) {
-      const result = await novelInfo(id);
+      const result = await clutterInfo(id);
       if (result) {
         return new SuccessModel(result);
       }
     }
-    return new ErrorModel(notExistInfo);
+    return new ErrorModel(schemaFileInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -31,9 +31,9 @@ export async function getNovel(id) {
 /**
  * 獲取列表
  */
-export async function getNovels({ title, clutter, page, limit }) {
+export async function getClutters({ type, page, limit }) {
   try {
-    const result = await novelList({ title, clutter, page, limit });
+    const result = await clutterList({ type, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -43,10 +43,10 @@ export async function getNovels({ title, clutter, page, limit }) {
 /**
  * 創建數據
  */
-export async function createNovel({ url, name, title, content, clutter }) {
+export async function createClutter({ type, content, phrase }) {
   try {
-    const novel = { url, name, title, content, clutter };
-    const result = await novelAdd(novel);
+    const clutter = { type, content, phrase };
+    const result = await clutterAdd(clutter);
     if (result) {
       return new SuccessModel(result);
     }
@@ -59,10 +59,10 @@ export async function createNovel({ url, name, title, content, clutter }) {
 /**
  * 創建多個數據
  */
-export async function createNovels(list) {
+export async function createClutters(list) {
   try {
     if (Array.isArray(list)) {
-      const result = await novelBulk(list);
+      const result = await clutterBulk(list);
       return new SuccessModel(result);
     }
     return new ErrorModel(schemaFileInfo);
@@ -74,13 +74,13 @@ export async function createNovels(list) {
 /**
  * 修改數據
  */
-export async function modifyNovel({ id, url, name, title, content, clutter }) {
+export async function modifyClutter({ id, type, content, phrase }) {
   try {
     if (!id) {
       return new ErrorModel(schemaFileInfo);
     }
-    const novel = { id, url, name, title, content, clutter };
-    const result = await novelUpdate(novel);
+    const clutter = { id, type, content, phrase };
+    const result = await clutterUpdate(clutter);
     if (result) {
       return new SuccessModel(result);
     }
@@ -94,9 +94,12 @@ export async function modifyNovel({ id, url, name, title, content, clutter }) {
 /**
  * 刪除數據
  */
-export async function deleteNovel(id) {
+export async function deleteClutter(id) {
   try {
-    const result = await novelDelete(id);
+    if (!id) {
+      return new ErrorModel(schemaFileInfo);
+    }
+    const result = await clutterDelete(id);
     if (result) {
       return new SuccessModel(result);
     }

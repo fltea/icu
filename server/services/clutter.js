@@ -1,45 +1,41 @@
 import models from '../db/models/index.js';
-import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Novel } = models;
+const { Clutter } = models;
 /**
- * 根據ID獲取novel
+ * 根據ID獲取 clutter
  * @param {number} id ID
  */
-export async function novelInfo(id) {
+export async function clutterInfo(id) {
+  let result;
   try {
     const where = {
       id,
     };
 
-    const result = await Novel.findOne({
+    result = await Clutter.findOne({
       where,
     });
 
     if (result) {
-      return result.dataValues;
+      result = result.dataValues;
     }
-
-    return result;
   } catch (error) {
     throw new Error(error);
   }
+  return result;
 }
 
-export async function novelList({ title, clutter, page = 1, limit = PAGE_SIZE }) {
+export async function clutterList({ type, page = 1, limit = PAGE_SIZE }) {
+  let result;
   try {
-  // 查询条件
+    // 查询条件
     const search = {};
-    const where = {};
 
-    if (title) {
-      where.title = {
-        [Op.like]: title,
+    if (type) {
+      search.where = {
+        type,
       };
-    }
-    if (clutter) {
-      where.clutter = clutter;
     }
     if (page) {
       search.limit = limit;
@@ -48,61 +44,72 @@ export async function novelList({ title, clutter, page = 1, limit = PAGE_SIZE })
       }
     }
     // 查询
-    const result = await Novel.findAndCountAll(search);
+    result = await Clutter.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);
 
-    return {
+    result = {
       count: result.count,
       list,
     };
   } catch (error) {
     throw new Error(error);
   }
+  return result;
 }
 
-export async function novelAdd({ url, name, title, content, clutter }) {
+export async function clutterAdd({ type, content, phrase }) {
+  let result;
   try {
-    const result = await Novel.create({ url, name, title, content, clutter });
-    return result.dataValues;
+    result = await Clutter.create({ type, content, phrase });
+
+    if (result) {
+      result = result.dataValues;
+    }
   } catch (error) {
     throw new Error(error);
   }
+  return result;
 }
-export async function novelUpdate({ id, url, name, title, content, clutter }) {
+
+export async function clutterUpdate({ id, type, content, phrase }) {
+  let result;
   try {
     const where = {
       id,
     };
-    const result = await Novel.update({ url, name, title, content, clutter }, {
+    result = await Clutter.update({ type, content, phrase }, {
       where,
     });
-    return result[0] > 0;
+    result = result[0] > 0;
   } catch (error) {
     throw new Error(error);
   }
+  return result;
 }
-export async function novelDelete(id) {
+export async function clutterDelete(id) {
+  let result;
   try {
     const where = {
       id,
     };
 
-    const result = await Novel.destroy({
+    result = await Clutter.destroy({
       where,
     });
 
-    return result > 0;
+    result = result > 0;
   } catch (error) {
     throw new Error(error);
   }
+  return result;
 }
-export async function novelBulk(list) {
+export async function clutterBulk(list) {
+  const result = [];
   try {
-    const result = [];
     const dataes = [];
-    const keys = ['url', 'title', 'content', 'name', 'clutter'];
+    const keys = ['type', 'content', 'phrase'];
     list.forEach((v) => {
-      if (v.url) {
+      if (v.type) {
         const item = {};
         keys.forEach((key) => {
           item[key] = v[key];
@@ -114,16 +121,15 @@ export async function novelBulk(list) {
     if (len) {
       while (len > 0) {
         const datas = dataes.splice(0, 100);
-        let values = await Novel.bulkCreate(datas, { ignoreDuplicates: true });
-        // console.log('list', values);
+        let values = await Clutter.bulkCreate(datas, { ignoreDuplicates: true });
         values = values.map((row) => row.dataValues);
         result.push(...values);
         len = dataes.length;
       }
     }
-
-    return result;
   } catch (error) {
     throw new Error(error);
   }
+
+  return result;
 }
