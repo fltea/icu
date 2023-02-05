@@ -21,8 +21,8 @@ class BaseModel {
 
 class SuccessModel extends BaseModel {
   constructor(result) {
-    const { data, list } = result;
-    if (data || (list && Array.isArray(list))) {
+    const { data, list, message } = result || {};
+    if (data || message || (list && Array.isArray(list))) {
       super({ code: 200, ...result });
     } else {
       super({ code: 200, data: result });
