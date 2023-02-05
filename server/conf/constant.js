@@ -8,6 +8,8 @@ const dpath = 'files';
 export const FILE_DIR = dpath;
 // 默认 log 文件夹
 export const LOG_DIR = `${dpath}/logs`;
+// 默认 backup 文件夹
+export const BACKUP_DIR = `${dpath}/backups`;
 
 // 請求設置
 export const UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36';
