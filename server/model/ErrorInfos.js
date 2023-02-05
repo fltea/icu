@@ -23,14 +23,19 @@ export const schemaFileInfo = {
   message: '格式校验失败',
 };
 export const uploadFileSizeFailInfo = {
-  errno: 10001,
+  code: 10001,
   message: '上传文件尺寸过大',
 };
 export const errorInfo = {
-  errno: 500,
-  message: '數據異常',
+  code: 500,
+  message: '數據異常，请稍候再试',
 };
 export const fetchInfo = {
-  errno: 10011,
+  code: 10011,
   message: '返回數據错误',
+};
+
+export const nodataInfo = {
+  code: 1004,
+  message: '暂无数据',
 };
