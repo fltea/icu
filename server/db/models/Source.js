@@ -30,6 +30,10 @@ const Source = {
       type: STRING,
       comment: '作者链接',
     },
+    authorLocation: {
+      type: STRING,
+      comment: '作者地址',
+    },
     publishTime: {
       type: DATE,
       comment: '发表日期',
@@ -38,6 +42,7 @@ const Source = {
   hasOne: {
     Blog: 'source',
     Article: 'source',
+    Video: 'source',
   },
   hasMany: {
     PicTie: 'source',
