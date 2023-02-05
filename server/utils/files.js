@@ -14,6 +14,16 @@ export function appendFile(path, data, options = {}) {
   fs.appendFileSync(path, data, options);
 }
 
+export function setLog(name, data) {
+  const date = formatDate({
+    format: 'YYYY-mm-dd',
+  });
+  if (typeof data !== 'string') {
+    data = JSON.stringify(data);
+  }
+  appendFile(`${LOG_DIR}/${name}${date}.txt`, `${formatDate({})}\n${data}\n`);
+}
+
 /**
  *
  * @param {string} filePath
@@ -24,7 +34,8 @@ export function reqiureFile(filePath) {
     const result = fs.readFileSync(filePath);
     return result;
   } catch (error) {
-    throw new Error(error);
+    setLog('', error);
+    return null;
   }
 }
 
@@ -35,16 +46,6 @@ export function statDir(dpath) {
     // console.log('error', error);
     fs.mkdirSync(dpath, { recursive: true });
   }
-}
-
-export function setLog(name, data) {
-  const date = formatDate({
-    format: 'YYYY-mm-dd',
-  });
-  if (typeof data !== 'string') {
-    data = JSON.stringify(data);
-  }
-  appendFile(`${LOG_DIR}/${name}${date}.txt`, `${formatDate({})}\n${data}\n`);
 }
 
 export async function downSource(url, name, referer) {
