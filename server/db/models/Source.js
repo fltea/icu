@@ -30,7 +30,7 @@ const Source = {
       type: STRING,
       comment: '作者链接',
     },
-    authorLocation: {
+    authorIp: {
       type: STRING,
       comment: '作者地址',
     },
