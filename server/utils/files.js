@@ -20,13 +20,21 @@ export function appendFile(path, data, options = {}) {
  * @returns
  */
 export function reqiureFile(filePath) {
-  let result;
   try {
-    result = fs.readFileSync(filePath);
+    const result = fs.readFileSync(filePath);
+    return result;
   } catch (error) {
-    console.error(error.message);
+    throw new Error(error);
   }
-  return result;
+}
+
+export function statDir(dpath) {
+  try {
+    fs.statSync(dpath);
+  } catch (error) {
+    // console.log('error', error);
+    fs.mkdirSync(dpath, { recursive: true });
+  }
 }
 
 export function setLog(name, data) {
@@ -40,23 +48,32 @@ export function setLog(name, data) {
 }
 
 export async function downSource(url, name, referer) {
-  const options = {
-    url,
-    header: {
-      'User-Agent': UserAgent,
-    },
-    method: 'GET',
-    media: true,
-  };
-  if (referer) {
-    options.header.referer = referer;
+  try {
+    const options = {
+      url,
+      header: {
+        'User-Agent': UserAgent,
+      },
+      method: 'GET',
+      media: true,
+    };
+    if (referer) {
+      options.header.referer = referer;
+    }
+    const source = await request(options);
+    const npath = `${FILE_DIR}/${name}`;
+    appendFile(npath, source, {
+      encoding: 'binary',
+      flag: 'w',
+    });
+    // console.log(npath, url);
+    return npath;
+  } catch (error) {
+    throw new Error(error);
   }
-  const source = await request(options);
-  const npath = `${FILE_DIR}/${name}`;
-  appendFile(npath, source, {
-    encoding: 'binary',
-    flag: 'w',
-  });
-  // console.log(npath, url);
-  return npath;
+}
+
+export function getFiles(fpath) {
+  const result = fs.readdirSync(fpath);
+  return result;
 }
