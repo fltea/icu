@@ -8,94 +8,114 @@ const { Article } = models;
  * @param {number} id ID
  */
 export async function articleInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Article.findOne({
-    where,
-  });
+    const result = await Article.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function articleList({ title, tag, author, content, translator, platform, publishDate, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (title) {
-    where.title = {
-      [Op.like]: title,
-    };
-  }
-  if (tag) {
-    where.tag = tag;
-  }
-  if (author) {
-    where.author = author;
-  }
-  if (content) {
-    where.content = {
-      [Op.like]: content,
-    };
-  }
-  if (translator) {
-    where.translator = translator;
-  }
-  if (platform) {
-    where.platform = platform;
-  }
-  if (publishDate) {
-    where.publishDate = publishDate;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (title) {
+      where.title = {
+        [Op.like]: title,
+      };
     }
-  }
-  // 查询
-  const result = await Article.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (tag) {
+      where.tag = tag;
+    }
+    if (author) {
+      where.author = author;
+    }
+    if (content) {
+      where.content = {
+        [Op.like]: content,
+      };
+    }
+    if (translator) {
+      where.translator = translator;
+    }
+    if (platform) {
+      where.platform = platform;
+    }
+    if (publishDate) {
+      where.publishDate = publishDate;
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Article.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function articleAdd({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
-  const result = await Article.create({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source });
-  return result.dataValues;
+  try {
+    const result = await Article.create({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function articleUpdate({ id, title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
-  const where = {
-    id,
-  };
-  const result = await Article.update({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Article.update({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function articleDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Article.destroy({
-    where,
-  });
+    const result = await Article.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function articleBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['title', 'tag', 'content', 'author', 'translator', 'link', 'platform', 'links', 'publish', 'price', 'publishDate', 'todo', 'book', 'cover', 'remark', 'source'];
     list.forEach((v) => {
@@ -118,7 +138,9 @@ export async function articleBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

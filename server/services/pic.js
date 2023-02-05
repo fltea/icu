@@ -10,19 +10,23 @@ const { Pic } = models;
  * @returns
  */
 export async function picInfo(url) {
-  const where = {
-    url,
-  };
+  try {
+    const where = {
+      url,
+    };
 
-  const result = await Pic.findOne({
-    where,
-  });
+    const result = await Pic.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 /**
@@ -30,33 +34,37 @@ export async function picInfo(url) {
  * @param {Object} param
  */
 export async function picList({ creator, remark, page, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
-  if (creator) {
-    where.creator = {
-      [Op.like]: creator,
-    };
-  }
-  if (remark) {
-    where.remark = {
-      [Op.like]: remark,
-    };
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    const search = {};
+    const where = {};
+    if (creator) {
+      where.creator = {
+        [Op.like]: creator,
+      };
     }
-  }
-  // 查询
-  const result = await Pic.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (remark) {
+      where.remark = {
+        [Op.like]: remark,
+      };
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Pic.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -64,34 +72,42 @@ export async function picList({ creator, remark, page, limit = PAGE_SIZE }) {
  * @param {Object} pic
  */
 export async function picAdd({ url, link, creator, text, remark }) {
-  const result = await Pic.create({ url, link, creator, text, remark });
-  return result.dataValues;
+  try {
+    const result = await Pic.create({ url, link, creator, text, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
  * 更新
  */
 export async function picUpdate({ id, link, creator, text, remark }) {
-  const where = {
-    id,
-  };
-  const pic = {};
-  if (link) {
-    pic.link = link;
+  try {
+    const where = {
+      id,
+    };
+    const pic = {};
+    if (link) {
+      pic.link = link;
+    }
+    if (text) {
+      pic.text = text;
+    }
+    if (creator) {
+      pic.creator = creator;
+    }
+    if (remark) {
+      pic.remark = remark;
+    }
+    const result = await Pic.update(pic, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
   }
-  if (text) {
-    pic.text = text;
-  }
-  if (creator) {
-    pic.creator = creator;
-  }
-  if (remark) {
-    pic.remark = remark;
-  }
-  const result = await Pic.update(pic, {
-    where,
-  });
-  return result[0] > 0;
 }
 
 /**
@@ -99,13 +115,17 @@ export async function picUpdate({ id, link, creator, text, remark }) {
  * @param {number} id
  */
 export async function picDelete(id) {
-  const whereOpt = {
-    id,
-  };
-  const result = await Pic.destroy({
-    where: whereOpt,
-  });
-  return result > 0;
+  try {
+    const whereOpt = {
+      id,
+    };
+    const result = await Pic.destroy({
+      where: whereOpt,
+    });
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -113,8 +133,8 @@ export async function picDelete(id) {
  * @param {Array} list
  */
 export async function picBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['url', 'link', 'creator', 'text', 'remark'];
     list.forEach((v) => {
@@ -136,6 +156,9 @@ export async function picBulk(list) {
         len = dataes.length;
       }
     }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-  return result;
 }

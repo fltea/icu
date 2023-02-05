@@ -7,71 +7,91 @@ const { Stats } = models;
  * @param {number} id ID
  */
 export async function statsInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Stats.findOne({
-    where,
-  });
+    const result = await Stats.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function statsList({ type, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
-  if (type) {
-    where.type = type;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    const search = {};
+    const where = {};
+    if (type) {
+      where.type = type;
     }
-  }
-  // 查询
-  const result = await Stats.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Stats.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function statsAdd({ type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark }) {
-  const result = await Stats.create({ type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark });
-  return result.dataValues;
+  try {
+    const result = await Stats.create({ type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function statsUpdate({ id, type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark }) {
-  const where = {
-    id,
-  };
-  const result = await Stats.update({ type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Stats.update({ type, name, beginDate, date, income, expense, found, stock, deposit, bank, cash, remark }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function statsDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Stats.destroy({
-    where,
-  });
+    const result = await Stats.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function statsBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['type', 'name', 'beginDate', 'date', 'income', 'expense', 'found', 'stock', 'deposit', 'bank', 'cash', 'remark'];
     list.forEach((v) => {
@@ -94,7 +114,9 @@ export async function statsBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

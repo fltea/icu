@@ -8,84 +8,104 @@ const { Todo } = models;
  * @param {number} id ID
  */
 export async function todoInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Todo.findOne({
-    where,
-  });
+    const result = await Todo.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function todoList({ title, content, completeDate, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (title) {
-    where.title = {
-      [Op.like]: title,
-    };
-  }
-  if (content) {
-    where.content = {
-      [Op.like]: content,
-    };
-  }
-  if (completeDate) {
-    where.beginDate = {
-      [Op.lte]: completeDate,
-    };
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (title) {
+      where.title = {
+        [Op.like]: title,
+      };
     }
-  }
-  // 查询
-  const result = await Todo.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (content) {
+      where.content = {
+        [Op.like]: content,
+      };
+    }
+    if (completeDate) {
+      where.beginDate = {
+        [Op.lte]: completeDate,
+      };
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Todo.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function todoAdd({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
-  const result = await Todo.create({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark });
-  return result.dataValues;
+  try {
+    const result = await Todo.create({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function todoUpdate({ id, title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
-  const where = {
-    id,
-  };
-  const result = await Todo.update({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Todo.update({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function todoDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Todo.destroy({
-    where,
-  });
+    const result = await Todo.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function todoBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['title', 'content', 'beginDate', 'endDate', 'deadline', 'completeDate', 'dropDate', 'remark'];
     list.forEach((v) => {
@@ -108,7 +128,9 @@ export async function todoBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

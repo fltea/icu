@@ -8,80 +8,100 @@ const { Source } = models;
  * @param {number} id ID
  */
 export async function sourceInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Source.findOne({
-    where,
-  });
+    const result = await Source.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function sourceList({ basic, plaform, author, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (basic) {
-    where.basic = {
-      [Op.like]: basic,
-    };
-  }
-  if (plaform) {
-    where.plaform = plaform;
-  }
-  if (author) {
-    where.author = author;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (basic) {
+      where.basic = {
+        [Op.like]: basic,
+      };
     }
-  }
-  // 查询
-  const result = await Source.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (plaform) {
+      where.plaform = plaform;
+    }
+    if (author) {
+      where.author = author;
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Source.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function sourceAdd({ basic, basicId, plaform, link, author, authorLink, publishTime }) {
-  const result = await Source.create({ basic, basicId, plaform, link, author, authorLink, publishTime });
-  return result.dataValues;
+  try {
+    const result = await Source.create({ basic, basicId, plaform, link, author, authorLink, publishTime });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function sourceUpdate({ id, basic, basicId, plaform, link, author, authorLink, publishTime }) {
-  const where = {
-    id,
-  };
-  const result = await Source.update({ basic, basicId, plaform, link, author, authorLink, publishTime }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Source.update({ basic, basicId, plaform, link, author, authorLink, publishTime }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function sourceDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Source.destroy({
-    where,
-  });
+    const result = await Source.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function sourceBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['basic', 'basicId', 'plaform', 'link', 'author', 'authorLink', 'publishTime'];
     list.forEach((v) => {
@@ -104,7 +124,9 @@ export async function sourceBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

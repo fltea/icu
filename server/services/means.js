@@ -8,94 +8,114 @@ const { Means } = models;
  * @param {number} id ID
  */
 export async function meansInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Means.findOne({
-    where,
-  });
+    const result = await Means.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function meansList({ title, tag, author, content, translator, platform, publishDate, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (title) {
-    where.title = {
-      [Op.like]: title,
-    };
-  }
-  if (tag) {
-    where.tag = tag;
-  }
-  if (author) {
-    where.author = author;
-  }
-  if (content) {
-    where.content = {
-      [Op.like]: content,
-    };
-  }
-  if (translator) {
-    where.translator = translator;
-  }
-  if (platform) {
-    where.platform = platform;
-  }
-  if (publishDate) {
-    where.publishDate = publishDate;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (title) {
+      where.title = {
+        [Op.like]: title,
+      };
     }
-  }
-  // 查询
-  const result = await Means.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (tag) {
+      where.tag = tag;
+    }
+    if (author) {
+      where.author = author;
+    }
+    if (content) {
+      where.content = {
+        [Op.like]: content,
+      };
+    }
+    if (translator) {
+      where.translator = translator;
+    }
+    if (platform) {
+      where.platform = platform;
+    }
+    if (publishDate) {
+      where.publishDate = publishDate;
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Means.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function meansAdd({ name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark }) {
-  const result = await Means.create({ name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark });
-  return result.dataValues;
+  try {
+    const result = await Means.create({ name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function meansUpdate({ id, name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark }) {
-  const where = {
-    id,
-  };
-  const result = await Means.update({ name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Means.update({ name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function meansDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Means.destroy({
-    where,
-  });
+    const result = await Means.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function meansBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['name', 'code', 'organization', 'book', 'found', 'stock', 'beginDate', 'endDate', 'scale', 'price', 'inDate', 'outDate', 'rate', 'amount', 'content', 'remark'];
     list.forEach((v) => {
@@ -118,7 +138,9 @@ export async function meansBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

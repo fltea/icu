@@ -8,93 +8,113 @@ const { Blog } = models;
  * @param {number} id ID
  */
 export async function blogInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Blog.findOne({
-    where,
-  });
+    const result = await Blog.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function blogList(text, creator, page = 1, limit = PAGE_SIZE) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (text) {
-    where.url = {
-      [Op.like]: text,
-    };
-  }
-  if (creator) {
-    where.creator = creator;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (text) {
+      where.url = {
+        [Op.like]: text,
+      };
     }
-  }
-  // 查询
-  const result = await Blog.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (creator) {
+      where.creator = creator;
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Blog.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function blogAdd({ text, link, creator, source, remark }) {
-  const result = await Blog.create({ text, link, creator, source, remark });
-  return result.dataValues;
+  try {
+    const result = await Blog.create({ text, link, creator, source, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function blogUpdate({ id, text, link, creator, source, remark }) {
-  const where = {
-    id,
-  };
-  const blog = {};
-  if (text) {
-    blog.text = text;
+  try {
+    const where = {
+      id,
+    };
+    const blog = {};
+    if (text) {
+      blog.text = text;
+    }
+    if (link) {
+      blog.link = link;
+    }
+    if (creator) {
+      blog.creator = creator;
+    }
+    if (source) {
+      blog.source = source;
+    }
+    if (remark) {
+      blog.remark = remark;
+    }
+    const result = await Blog.update(blog, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
   }
-  if (link) {
-    blog.link = link;
-  }
-  if (creator) {
-    blog.creator = creator;
-  }
-  if (source) {
-    blog.source = source;
-  }
-  if (remark) {
-    blog.remark = remark;
-  }
-  const result = await Blog.update(blog, {
-    where,
-  });
-  return result[0] > 0;
 }
 export async function blogDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Blog.destroy({
-    where,
-  });
+    const result = await Blog.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function blogBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['text', 'link', 'creator', 'source', 'remark'];
     list.forEach((v) => {
@@ -117,7 +137,9 @@ export async function blogBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }

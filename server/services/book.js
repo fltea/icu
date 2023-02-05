@@ -8,92 +8,112 @@ const { Book } = models;
  * @param {number} id ID
  */
 export async function bookInfo(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = await Book.findOne({
-    where,
-  });
+    const result = await Book.findOne({
+      where,
+    });
 
-  if (result) {
-    return result.dataValues;
+    if (result) {
+      return result.dataValues;
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function bookList({ title, tag, author, ISBN, translator, series, publishDate, page = 1, limit = PAGE_SIZE }) {
+  try {
   // 查询条件
-  const search = {};
-  const where = {};
+    const search = {};
+    const where = {};
 
-  if (title) {
-    where.title = {
-      [Op.like]: title,
-    };
-  }
-  if (tag) {
-    where.tag = tag;
-  }
-  if (author) {
-    where.author = author;
-  }
-  if (ISBN) {
-    where.ISBN = ISBN;
-  }
-  if (translator) {
-    where.translator = translator;
-  }
-  if (series) {
-    where.series = series;
-  }
-  if (publishDate) {
-    where.publishDate = publishDate;
-  }
-  if (page) {
-    search.limit = limit;
-    if (page > 1) {
-      search.offset = limit * (page - 1);
+    if (title) {
+      where.title = {
+        [Op.like]: title,
+      };
     }
-  }
-  // 查询
-  const result = await Book.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+    if (tag) {
+      where.tag = tag;
+    }
+    if (author) {
+      where.author = author;
+    }
+    if (ISBN) {
+      where.ISBN = ISBN;
+    }
+    if (translator) {
+      where.translator = translator;
+    }
+    if (series) {
+      where.series = series;
+    }
+    if (publishDate) {
+      where.publishDate = publishDate;
+    }
+    if (page) {
+      search.limit = limit;
+      if (page > 1) {
+        search.offset = limit * (page - 1);
+      }
+    }
+    // 查询
+    const result = await Book.findAndCountAll(search);
+    const list = result.rows.map((row) => row.dataValues);
 
-  return {
-    count: result.count,
-    list,
-  };
+    return {
+      count: result.count,
+      list,
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 export async function bookAdd({ title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark }) {
-  const result = await Book.create({ title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark });
-  return result.dataValues;
+  try {
+    const result = await Book.create({ title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function bookUpdate({ id, title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark }) {
-  const where = {
-    id,
-  };
-  const result = await Book.update({ title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark }, {
-    where,
-  });
-  return result[0] > 0;
+  try {
+    const where = {
+      id,
+    };
+    const result = await Book.update({ title, name, abstract, author, translator, ISBN, publish, produced, series, binding, pages, price, publishDate, cover, tag, remark }, {
+      where,
+    });
+    return result[0] > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function bookDelete(id) {
-  const where = {
-    id,
-  };
+  try {
+    const where = {
+      id,
+    };
 
-  const result = Book.destroy({
-    where,
-  });
+    const result = await Book.destroy({
+      where,
+    });
 
-  return result > 0;
+    return result > 0;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 export async function bookBulk(list) {
-  const result = [];
-  if (Array.isArray(list)) {
+  try {
+    const result = [];
     const dataes = [];
     const keys = ['title', 'name', 'abstract', 'author', 'translator', 'ISBN', 'publish', 'produced', 'series', 'binding', 'pages', 'price', 'publishDate', 'cover', 'tag', 'remark'];
     list.forEach((v) => {
@@ -116,7 +136,9 @@ export async function bookBulk(list) {
         len = dataes.length;
       }
     }
-  }
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
