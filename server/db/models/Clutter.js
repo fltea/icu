@@ -1,6 +1,12 @@
 import { TEXT, STRING } from '../types.js';
 
-// doulist Noveler weiboid
+/**
+ * doulist 名称 id
+ * weibo 内容JSON weiboid 微博屏蔽
+ * follow 内容JSON id 地址 微博关注用户
+ * noveler 内容JSON 爬虫配置
+ *
+ */
 const Clutter = {
   model: {
     type: {

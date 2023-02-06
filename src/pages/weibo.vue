@@ -2,12 +2,23 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue';
 import { homelist, follows, userlist, detail, comments } from '@/api/weibo';
 import ListItem from '@/components/weibo/ListItem.vue';
+import UserItem from '@/components/weibo/UserItem.vue';
+import ComList from '@/components/ComList.vue';
 import { deepCopy, sleep } from '@/utils/tools';
 
 const listData = reactive([]);
+const homeList = reactive([]);
 const cdialog = ref(false);
 const incookie = ref('');
 const timer = ref(0);
+const tabs = ['HOME', 'FOLLOWS', 'USERS', 'FAVORITE'];
+const curtab = ref(1);
+const follow = reactive({
+  finished: false,
+  loading: false,
+  list: [],
+  page: 0,
+});
 
 let cookie = '';
 // const delIds = [];
@@ -54,12 +65,13 @@ const interList = () => {
   }, homeTime);
 };
 
+// 請求列表詳情和評論
 const commentDetail = async (id) => {
-  const index = listData.findIndex((v) => v.id === id);
+  const index = homeList.findIndex((v) => v.id === id);
   if (index < 0) {
     return;
   }
-  const item = deepCopy(listData[index]);
+  const item = deepCopy(homeList[index]);
   const { isLongText, comments_count: isComment, retweeted_status: retweeted = {} } = item;
 
   const data = {
@@ -105,7 +117,7 @@ const commentDetail = async (id) => {
   //   id: Aid,
   // });
 
-  listData.splice(index, 1, item);
+  homeList.splice(index, 1, item);
   // console.log('commentDetail item:', item);
 };
 
@@ -137,7 +149,7 @@ listItems = (maxId) => {
     if (res.list) {
       const oids = listData.map((v) => v.id);
       const nlist = deepCopy(res.list).filter((l) => !oids.includes(l.id));
-      listData.unshift(...nlist);
+      homeList.unshift(...nlist);
       listDetails(nlist.map((v) => v.id));
     } else {
       setCookie();
@@ -158,21 +170,47 @@ const getUserList = (uid, sinceId) => {
   });
 };
 
-const getFollows = (page) => {
+const getFollows = () => {
+  follow.laoding = true;
+  const page = follow.page + 1;
   follows({
     cookie,
     page,
   }).then((res) => {
-    console.log(res);
     if (res.list) {
-      listData.unshift(...res.list);
+      const followlist = follow.list;
+      const oids = followlist.map((v) => v.id);
+      const nlist = deepCopy(res.list.filter((rl) => !oids.includes(rl.id)));
+      followlist.push(...nlist);
+      follow.page = page;
+      follow.finished = res.finished;
     }
+  }).finally(() => {
+    follow.laoding = false;
   });
+};
+
+const loadData = () => {
+  listData.length = 0;
+  const curIndex = curtab.value;
+  switch (curIndex) {
+    case 1: getFollows(); break;
+    case 2: getUserList(1571033823); break;
+    // case 3: getFollows(); break;
+    default: listItems();
+  }
+};
+
+const selectItem = (item, index) => {
+  console.log(item, index);
+  // const index = tabs.findIndex((v) => v === item)
+  curtab.value = index;
+  loadData();
 };
 
 onMounted(() => {
   getCookie();
-  listItems();
+  loadData();
   // getUserList(1571033823);
   // getFollows();
 });
@@ -186,7 +224,41 @@ onBeforeUnmount(() => {
 <template>
   <h1>Weibo</h1>
   <button @click="setCookie">設置cookie</button>
-  <section class="weibo-list">
+  <com-tab :tabs="tabs" :defaultIndex="curtab" @select="selectItem"></com-tab>
+  <!-- HOME -->
+  <section class="weibo-list" v-show="!curtab">
+    <div v-for="(item, index) in homeList" :key="`list-${item.bid}`" class="list-item">
+      <list-item :weibo="item" @save="saveWeibo(index)" @delete="delWeibo(index)">
+        <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
+      </list-item>
+      <!-- <div>
+        <p>{{ item.screen_name }}</p>
+        <p>{{ item.description }}</p>
+      </div> -->
+    </div>
+  </section>
+  <!-- FOLLOWS -->
+  <section class="weibo-list" v-if="curtab === 1">
+    <com-list :finished="follow.finished" :laoding="follow.laoding" @load="getFollows">
+      <div v-for="item in follow.list" :key="`list-${item.bid}`" class="list-item list-user">
+        <user-item :user="item"></user-item>
+      </div>
+    </com-list>
+  </section>
+  <!-- USERS -->
+  <section class="weibo-list" v-if="curtab === 2">
+    <div v-for="(item, index) in listData" :key="`list-${item.bid}`" class="list-item">
+      <list-item :weibo="item" @save="saveWeibo(index)" @delete="delWeibo(index)">
+        <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
+      </list-item>
+      <!-- <div>
+        <p>{{ item.screen_name }}</p>
+        <p>{{ item.description }}</p>
+      </div> -->
+    </div>
+  </section>
+  <!-- FAVORITE -->
+  <section class="weibo-list" v-if="curtab === 3">
     <div v-for="(item, index) in listData" :key="`list-${item.bid}`" class="list-item">
       <list-item :weibo="item" @save="saveWeibo(index)" @delete="delWeibo(index)">
         <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
@@ -208,14 +280,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="less">
-.weibo-list {
-  padding-top: 12px;
-}
 .weibo-cookie {
   margin: 12px auto;
   display: block;
   width: 96%;
   height: 150px;
   resize: none;
+}
+.comtab {
+  margin-top: 12px;
+}
+.list-item {
+  margin-top: 12px;
+}
+.list-user {
+  padding: 8px;
+  background: #f6f6f6;
+  border-radius: 3px;
 }
 </style>

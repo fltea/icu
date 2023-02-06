@@ -4,13 +4,13 @@ import { formatTime } from '@/utils/tools';
 import { save } from '@/api/weibo';
 import ComVideo from '@/components/ComVideo.vue';
 import Comments from './Comment.vue';
+import UserItem from './UserItem.vue';
 
 const props = defineProps({
   weibo: Object,
   retweeted: Boolean,
 });
 const item = computed(() => props.weibo);
-const user = computed(() => props.weibo.user);
 // const media = ref(props.weibo.page_info);
 const video = computed(() => {
   let result = null;
@@ -36,20 +36,19 @@ const saveWeibo = () => {
 const delWeibo = () => {
   console.log(item);
 };
-// console.log(item);
 </script>
 
 <template>
 <section class="weibo-item">
-  <section class="weibo-user">
-    <img class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
-    <p>{{user.screen_name}}  <span class="user-desc">{{formatTime(item.created_at)}}</span></p>
-    <p class="user-desc">{{user.description}}</p>
-    <div class="user-act">
+  <user-item :user="item.user">
+    <template v-slot:created_at>
+      <span class="user-desc">{{formatTime(item.created_at)}}</span>
+    </template>
+    <template v-slot:acts>
       <button @click="saveWeibo">保存</button>
       <button @click="delWeibo">刪除</button>
-    </div>
-  </section>
+    </template>
+  </user-item>
   <section class="weibo-inner">
     <div v-html="item.text"></div>
     <div class="weibo-pics" v-if="item.pics">
@@ -68,7 +67,6 @@ const delWeibo = () => {
 
 <style lang="less" scoped>
 .weibo-item {
-  margin-bottom: 10px;
   padding-top: 8px;
   font-size: 16px;
   line-height: 1.4;
@@ -83,41 +81,6 @@ const delWeibo = () => {
     padding-right: 8px;
     padding-bottom: 8px;
   }
-  .weibo-user {
-    margin-bottom: 6px;
-    position: relative;
-    padding-left: 70px;
-    padding-right: 110px;
-    padding-top: 4px;
-    height: 46px;
-    .user-pic {
-      position: absolute;
-      left: 8px;
-      top: 0;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-    }
-    .user-desc {
-      font-size: 14px;
-      color: #939393;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .user-act {
-      position: absolute;
-      top: 0;
-      right: 10px;
-      width: 100px;
-      button {
-        margin-right: 6px;
-        font-size: 12px;
-        cursor: pointer;
-      }
-    }
-  }
-
   .weibo-pics {
     margin-top: 6px;
     display: flex;
