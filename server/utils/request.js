@@ -4,6 +4,17 @@ import { Buffer } from 'node:buffer';
 import zlib from 'node:zlib';
 import iconv from 'iconv-lite';
 
+const getTurn = (text, header, nheader) => {
+  if (nheader) {
+    return {
+      header,
+      data: text,
+    };
+  }
+
+  return text;
+};
+
 /**
  *
  * @param { String } url 请求地址
@@ -23,6 +34,7 @@ const request = ({
   media,
   encode = 'utf8',
   gzip,
+  nheader,
 }) => new Promise((resolve, reject) => {
   let server;
   // 协议
@@ -56,7 +68,6 @@ const request = ({
   };
   const req = server.request(url, options, (res) => {
     const values = [];
-    console.log(url, res.headers);
     if (media) {
       res.setEncoding('binary');
     }
@@ -72,15 +83,15 @@ const request = ({
         const buffer = Buffer.concat(values);
         zlib.gunzip(buffer, (err, decoded) => {
           const text = iconv.decode(decoded, encode);
-          resolve(text);
+          resolve(getTurn(text, res.headers, nheader));
         });
       } else if (encode) {
         const text = iconv.decode(Buffer.concat(values), encode);
-        resolve(text);
+        resolve(getTurn(text, res.headers, nheader));
       } else {
         let text = Buffer.from(values.join(''));
         text = text.toString();
-        resolve(text);
+        resolve(getTurn(text, res.headers, nheader));
       }
     });
   });

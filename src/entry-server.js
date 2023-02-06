@@ -7,7 +7,7 @@ export const render = async (ctx) => {
   const router = createRouter('server');
 
   app.use(router);
-  console.log('path', ctx.path);
+  // console.log('path', ctx.path);
   await router.push(ctx.path);
   await router.isReady();
 
