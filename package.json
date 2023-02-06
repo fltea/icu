@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch server server/app",
+    "devp": "pm2 start dev.config.cjs",
     "start": "node server/app NODE_ENV=production",
     "pm2": "pm2 start pm2.config.cjs",
     "db": "node server/db/init",
