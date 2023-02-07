@@ -2,6 +2,8 @@ import Router from 'koa-router';
 import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
+import { urlParse } from '../utils/tools.js';
+
 import {
   // getClutter,
   getClutters,
@@ -16,7 +18,9 @@ const router = new Router();
 router.prefix('/api/clutter');
 
 router.get('/', async (ctx) => {
-  const result = await getClutters({});
+  const query = ctx.request.url.split('?').pop();
+  // console.log(query, urlParse(query));
+  const result = await getClutters(urlParse(query));
   // console.log(result)
   ctx.body = result;
 });

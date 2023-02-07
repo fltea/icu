@@ -57,3 +57,15 @@ export function deepCopy(target) {
   if (typeof target !== 'object') result = target;
   return result;
 }
+
+export function urlParse(str) {
+  const result = {};
+  if (typeof str === 'string') {
+    const arr = decodeURIComponent(str).split('&');
+    arr.forEach((v) => {
+      const list = v.split('=');
+      result[list.shift()] = JSON.parse(list.pop());
+    });
+  }
+  return result;
+}

@@ -1,4 +1,4 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo } from '../model/ErrorInfos.js';
+import { addInfo, delInfo, isExistInfo, updateInfo, schemaFileInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 
@@ -14,13 +14,11 @@ import {
 /**
  * 獲取單個數據
  */
-export async function getClutter(id) {
+export async function getClutter({ id, type, phrase }) {
   try {
-    if (id) {
-      const result = await clutterInfo(id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+    if (id || (type && phrase)) {
+      const result = await clutterInfo({ id, type, phrase });
+      return new SuccessModel(result);
     }
     return new ErrorModel(schemaFileInfo);
   } catch (error) {
@@ -45,8 +43,13 @@ export async function getClutters({ type, page, limit }) {
  */
 export async function createClutter({ type, content, phrase }) {
   try {
+    let result = await clutterInfo({ type, phrase });
+    if (result) {
+      return new ErrorModel(isExistInfo);
+    }
+
     const clutter = { type, content, phrase };
-    const result = await clutterAdd(clutter);
+    result = await clutterAdd(clutter);
     if (result) {
       return new SuccessModel(result);
     }

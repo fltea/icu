@@ -6,13 +6,16 @@ const { Clutter } = models;
  * 根據ID獲取 clutter
  * @param {number} id ID
  */
-export async function clutterInfo(id) {
+export async function clutterInfo({ id, type, phrase }) {
   let result;
   try {
-    const where = {
-      id,
-    };
-
+    const where = {};
+    if (id) {
+      where.id = id;
+    } else {
+      where.type = type;
+      where.phrase = phrase;
+    }
     result = await Clutter.findOne({
       where,
     });
