@@ -1,6 +1,6 @@
 import request from '../utils/axios';
 
-const url = '/api/noveler';
+const url = '/api/clutter';
 
 export const list = () => request({
   url: `${url}`,

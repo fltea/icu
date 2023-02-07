@@ -8,8 +8,14 @@ export const doulist = (data) => request({
   data,
 });
 
-export const add = (data) => request({
-  url: `${url}/add`,
+export const details = (data) => request({
+  url: `${url}/details`,
+  method: 'post',
+  data,
+});
+
+export const save = (data) => request({
+  url: `${url}/save`,
   method: 'post',
   data,
 });
