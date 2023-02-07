@@ -63,20 +63,20 @@ export async function sourceList({ basic, plaform, author, page = 1, limit = PAG
   }
 }
 
-export async function sourceAdd({ basic, basicId, plaform, link, author, authorLink, publishTime }) {
+export async function sourceAdd({ basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime }) {
   try {
-    const result = await Source.create({ basic, basicId, plaform, link, author, authorLink, publishTime });
+    const result = await Source.create({ basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
-export async function sourceUpdate({ id, basic, basicId, plaform, link, author, authorLink, publishTime }) {
+export async function sourceUpdate({ id, basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime }) {
   try {
     const where = {
       id,
     };
-    const result = await Source.update({ basic, basicId, plaform, link, author, authorLink, publishTime }, {
+    const result = await Source.update({ basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime }, {
       where,
     });
     return result[0] > 0;
@@ -103,7 +103,7 @@ export async function sourceBulk(list) {
   try {
     const result = [];
     const dataes = [];
-    const keys = ['basic', 'basicId', 'plaform', 'link', 'author', 'authorLink', 'publishTime'];
+    const keys = ['basic', 'basicId', 'plaform', 'link', 'author', 'authorLink', 'authorId', 'authorIp', 'publishTime'];
     list.forEach((v) => {
       if (v.url) {
         const item = {};

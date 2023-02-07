@@ -43,9 +43,9 @@ export async function getSources({ basic, plaform, author, page, limit }) {
 /**
  * 創建數據
  */
-export async function createSource({ basic, basicId, plaform, link, author, authorLink, publishTime }) {
+export async function createSource({ basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime }) {
   try {
-    const source = { basic, basicId, plaform, link, author, authorLink, publishTime };
+    const source = { basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime };
     const result = await sourceAdd(source);
     if (result) {
       return new SuccessModel(result);
@@ -74,12 +74,12 @@ export async function createSources(list) {
 /**
  * 修改數據
  */
-export async function modifySource({ id, basic, basicId, plaform, link, author, authorLink, publishTime }) {
+export async function modifySource({ id, basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime }) {
   try {
     if (!id) {
       return new ErrorModel(schemaFileInfo);
     }
-    const source = { id, basic, basicId, plaform, link, author, authorLink, publishTime };
+    const source = { id, basic, basicId, plaform, link, author, authorLink, authorId, authorIp, publishTime };
     const result = await sourceUpdate(source);
     if (result) {
       return new SuccessModel(result);
