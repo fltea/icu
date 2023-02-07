@@ -67,10 +67,10 @@ pre {
   min-width: 500px;
   width: 90%;
 }
-.layout-control {
-  button {
-    & + button {
-      margin-left: 12px;
-    }
+button {
+  font-size: 12px;
+  cursor: pointer;
+  &:nth-last-child(n+2) {
+    margin-right: 8px;
   }
 }

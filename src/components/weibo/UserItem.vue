@@ -1,18 +1,28 @@
 <script setup>
 import { computed } from 'vue';
-import { addClutter } from '@/api/common';
+import { addClutter, modClutter } from '@/api/common';
 
 const props = defineProps({
+  list: Array,
   user: Object,
 });
 const user = computed(() => props.user);
 const saveUser = () => {
   const item = user.value;
-  addClutter({
-    type: 'follow',
-    content: JSON.stringify(item),
-    phrase: item.id,
-  });
+  const follows = props.list;
+  const clutter = follows.find((f) => +f.phrase === item.id);
+  if (clutter) {
+    modClutter({
+      id: clutter.id,
+      content: JSON.stringify(item),
+    });
+  } else {
+    addClutter({
+      type: 'follow',
+      content: JSON.stringify(item),
+      phrase: item.id,
+    });
+  }
 };
 </script>
 
@@ -56,11 +66,6 @@ const saveUser = () => {
     top: 0;
     right: 10px;
     width: 100px;
-    ::v-deep(button) {
-      margin-right: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
   }
 }
 </style>
