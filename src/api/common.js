@@ -1,4 +1,5 @@
 import request from '../utils/axios';
+import { urlStringify } from '../utils/tools';
 
 const url = '/api/common';
 
@@ -28,9 +29,8 @@ export const restore = (data) => request({
 // clutter
 const clutter = '/api/clutter';
 export const clutters = (data) => request({
-  url: `${clutter}`,
+  url: `${clutter}?${urlStringify(data)}`,
   method: 'get',
-  data,
 });
 
 export const addClutter = (data) => request({
