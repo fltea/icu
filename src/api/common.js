@@ -1,6 +1,6 @@
 import request from '../utils/axios';
 
-let url = '/api/common';
+const url = '/api/common';
 
 export const upload = (data) => request({
   url: `${url}/upload`,
@@ -26,25 +26,26 @@ export const restore = (data) => request({
 });
 
 // clutter
-url = '/api/clutter';
-export const clutters = () => request({
-  url: `${url}`,
+const clutter = '/api/clutter';
+export const clutters = (data) => request({
+  url: `${clutter}`,
   method: 'get',
+  data,
 });
 
 export const addClutter = (data) => request({
-  url: `${url}/add`,
+  url: `${clutter}/add`,
   method: 'post',
   data,
 });
 
 export const modClutter = (data) => request({
-  url: `${url}/modify`,
+  url: `${clutter}/modify`,
   method: 'post',
   data,
 });
 export const delClutter = (data) => request({
-  url: `${url}/delete`,
+  url: `${clutter}/delete`,
   method: 'post',
   data,
 });
