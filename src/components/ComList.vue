@@ -26,13 +26,16 @@ const observerHandle = (entries) => {
 let observer;
 
 onMounted(() => {
-  console.log('onMounted');
-  observer = new IntersectionObserver(observerHandle);
-  observer.observe(loadMain.value);
+  // console.log('onMounted', loadMain.value);
+  if (IntersectionObserver) {
+    observer = new IntersectionObserver(observerHandle);
+    observer.observe(loadMain.value);
+  }
 });
 onBeforeUnmount(() => {
+  // console.log('onMounted', loadMain.value);
   if (observer) {
-    observer.unobserve(loading.value);
+    observer.unobserve(loadMain.value);
     observer.disconnect();
   }
 });
