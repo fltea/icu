@@ -1,4 +1,4 @@
-# ERRORS 
+# ERRORS
 
 > Error: Could not fork child process: There are no available terminals (-1).
 
