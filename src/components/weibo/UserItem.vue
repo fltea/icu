@@ -1,38 +1,29 @@
 <script setup>
-import { computed } from 'vue';
-import { addClutter, modClutter } from '@/api/common';
+// import { computed } from 'vue';
+import { addClutter } from '@/api/common';
 
 const props = defineProps({
-  list: Array,
   user: Object,
+  noAct: Boolean,
 });
-const user = computed(() => props.user);
+// const user = computed(() => props.user);
 const saveUser = () => {
-  const item = user.value;
-  const follows = props.list;
-  const clutter = follows.find((f) => +f.phrase === item.id);
-  if (clutter) {
-    modClutter({
-      id: clutter.id,
-      content: JSON.stringify(item),
-    });
-  } else {
-    addClutter({
-      type: 'follow',
-      content: JSON.stringify(item),
-      phrase: item.id,
-    });
-  }
+  const item = props.user;
+  addClutter({
+    type: 'follow',
+    content: JSON.stringify(item),
+    phrase: item.id,
+  });
 };
 </script>
 
 <template>
-  <section class="weibo-user">
+  <section class="weibo-user" :class="{'no-act': noAct}" v-if="user">
     <img class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
     <p>{{user.screen_name}}  <slot name="created_at"></slot></p>
     <p class="user-desc">{{user.description}}</p>
-    <div class="user-act">
-      <button @click="saveUser">存ID</button>
+    <div class="user-act" v-if="!noAct">
+      <button @click="saveUser" v-if="!user.clutterId">存ID</button>
       <slot name="acts"></slot>
     </div>
   </section>
@@ -46,6 +37,9 @@ const saveUser = () => {
   padding-right: 110px;
   padding-top: 4px;
   height: 46px;
+  &.no-act {
+    padding-right: 8px;
+  }
   .user-pic {
     position: absolute;
     left: 8px;
