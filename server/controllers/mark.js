@@ -1,6 +1,7 @@
-import { addInfo, delInfo, updateInfo, isExistInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { addInfo, delInfo, updateInfo, isExistInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
+import { reqiureFile } from '../utils/files.js';
 
 import {
   markInfo,
@@ -62,13 +63,23 @@ export async function createMark({ url, title, description, icons }) {
 /**
  * 創建多個數據
  */
-export async function createMarks(list) {
+export async function createMarks({ file }) {
   try {
-    if (Array.isArray(list)) {
-      const result = await markBulk(list);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(schemaFileInfo);
+    let data = reqiureFile(file.filepath);
+    data = Buffer.from(data).toString();
+    let links = data.match(/<a\s.*?<\/a>/ig);
+    links = links.map((v) => v.split(/"|>/));
+    links = links.map((v) => {
+      const item = {};
+      item.url = v.find((s) => s.includes('http')) || '';
+      item.title = v.find((s) => s.includes('</')) || '';
+      item.title = item.title.split('<').shift();
+      item.icons = v.find((s) => s.includes('base64')) || '';
+      return item;
+    });
+
+    const result = await markBulk(links);
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
