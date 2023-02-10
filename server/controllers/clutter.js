@@ -43,9 +43,12 @@ export async function getClutters({ type, page, limit }) {
  */
 export async function createClutter({ type, content, phrase }) {
   try {
-    let result = await clutterInfo({ type, phrase });
-    if (result) {
-      return new ErrorModel(isExistInfo);
+    let result;
+    if (type && phrase) {
+      result = await clutterInfo({ type, phrase });
+      if (result) {
+        return new ErrorModel(isExistInfo);
+      }
     }
 
     const clutter = { type, content, phrase };

@@ -1,7 +1,7 @@
 import models from '../db/models/index.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Clutter } = models;
+const { Clutter, Novel } = models;
 /**
  * 根據ID獲取 clutter
  * @param {number} id ID
@@ -46,6 +46,11 @@ export async function clutterList({ type, page = 1, limit = PAGE_SIZE }) {
         search.offset = limit * (page - 1);
       }
     }
+
+    if (type === 'noveler') {
+      search.include = Novel;
+    }
+
     // 查询
     result = await Clutter.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);

@@ -23,6 +23,9 @@ const Clutter = {
       comment: '短内容',
     },
   },
+  hasMany: {
+    Novel: 'clutter',
+  },
 };
 
 export default Clutter;
