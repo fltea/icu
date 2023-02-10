@@ -9,6 +9,8 @@ import {
   // createNovels,
   modifyNovel,
   deleteNovel,
+  contentNovel,
+  chapterNovel,
 } from '../controllers/novel.js';
 
 const router = new Router();
@@ -31,15 +33,24 @@ router.post('/add', genValidator('Novel', validate), async (ctx) => {
   const result = await createNovel(ctx.request.body);
   ctx.body = result;
 });
-router.post('/modify', genValidator('Novel', validate), async (ctx) => {
+router.post('/modify', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const result = await modifyNovel(ctx.request.body);
   ctx.body = result;
 });
-router.post('/delete', async (ctx) => {
+router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
   const result = await deleteNovel(id);
+  ctx.body = result;
+});
+
+router.post('/content', async (ctx) => {
+  const result = await contentNovel(ctx.request.body);
+  ctx.body = result;
+});
+router.post('/chapter', async (ctx) => {
+  const result = await chapterNovel(ctx.request.body);
   ctx.body = result;
 });
 
