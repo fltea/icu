@@ -7,6 +7,15 @@ axios.defaults.timeout = 60000;
 // 请求地址，这里是动态赋值的的环境变量，下一篇会细讲，这里跳过
 // @ts-ignore
 // axios.defaults.baseURL = import.meta.env.VITE_API_DOMAIN;
+try {
+  if (process) {
+    // 服务器端
+    const { NODE_PORT } = process.env;
+    axios.defaults.baseURL = `http://127.0.0.1:${NODE_PORT}`;
+  }
+} catch (error) {
+  console.log('is CLIENT');
+}
 
 const service = axios.create();
 // http request 拦截器

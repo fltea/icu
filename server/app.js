@@ -14,5 +14,6 @@ const Port = isPro ? 9186 : 9099;
 // console.log('wsocket', WSS);
 // new WSS(server);
 // server.listen(Port);
+process.env.NODE_PORT = Port;
 const server = app.listen(Port);
 WSS.init(server);

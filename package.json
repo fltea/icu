@@ -27,9 +27,11 @@
     "koa-send": "^5.0.1",
     "mysql2": "^2.3.3",
     "node-html-parser": "^6.1.4",
+    "puppeteer": "^19.6.3",
     "sequelize": "^6.28.0",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "ws": "^8.12.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
