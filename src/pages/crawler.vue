@@ -38,7 +38,7 @@ const getNovelers = () => {
 };
 
 const addNoveler = (item) => {
-  crawler.noveler = item || null;
+  crawler.noveler = item || crawler.noveler;
   novelerShow.value = true;
 };
 const delNoveler = (id) => {

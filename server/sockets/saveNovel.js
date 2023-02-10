@@ -1,7 +1,7 @@
 import { schemaFileInfo, isExistInfo } from '../model/ErrorInfos.js';
 import { reqiureFile } from '../utils/files.js';
 import { TEMP_DIR } from '../conf/constant.js';
-import { sleep } from '../utils/tools.js';
+// import { sleep } from '../utils/tools.js';
 import {
   chapterNovel,
   contentChapter,
@@ -9,7 +9,7 @@ import {
   modifyNovel,
 } from '../controllers/novel.js';
 
-const setChapter = async (ws, options, chapter) => {
+const getContent = async (ws, options, chapter) => {
   const { url, title: name } = chapter;
   // 开始加载
   ws.send(JSON.stringify({
@@ -18,27 +18,33 @@ const setChapter = async (ws, options, chapter) => {
     name,
   }));
   // 加载阻塞 5秒
-  await sleep(5 * 1000);
+  // await sleep(5 * 1000);
 
   // 下载内容
-  const { encode, detail, detailex, dstart, dend, multpage, novel } = options;
-  let iresult = await chapterNovel({ url, encode, name, detail, detailex, dstart, dend, multpage });
-  iresult = {
+  const { encode, detail, detailex, dstart, dend, multpage } = options;
+  const iresult = await chapterNovel({ url, encode, name, detail, detailex, dstart, dend, multpage });
+  // console.log(iresult);
+  ws.send(JSON.stringify({
     code: iresult.code,
     download: iresult.code === 200,
     url,
     name,
-  };
-  ws.send(JSON.stringify(iresult));
+  }));
+  return iresult;
+};
 
+const setChapter = async (ws, options, chapter) => {
+  const { url, title: name } = chapter;
+  const { novel } = options;
+  let resutl = await getContent(ws, options, chapter);
   // 插入数据库
-  iresult = await addChapter({ url, title: name, novel, content: iresult.detail || '', author: '' });
-  iresult = Object.assign(iresult, {
+  resutl = await addChapter({ url, title: name, novel, content: resutl.data.detail || '', author: '' });
+  resutl = Object.assign(resutl, {
     url,
     name,
-    add: iresult.code === 200,
+    add: resutl.code === 200,
   });
-  ws.send(JSON.stringify(iresult));
+  ws.send(JSON.stringify(resutl));
 };
 
 const saveNovel = async (ws, data) => {

@@ -72,6 +72,9 @@ export function formatDate(date = new Date(), format = 'YYYY-mm-dd HH:MM:SS') {
 }
 
 export function urlStringify(data) {
+  if (!data) {
+    return '';
+  }
   const arrs = Object.keys(data).map((key) => `${key}=${JSON.stringify(data[key])}`);
 
   return arrs.join('&');

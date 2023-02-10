@@ -3,7 +3,7 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  // getNovel,
+  getNovel,
   getNovels,
   createNovel,
   // createNovels,
@@ -11,6 +11,7 @@ import {
   deleteNovel,
   contentNovel,
   chapterNovel,
+  contentChapter,
 } from '../controllers/novel.js';
 
 const router = new Router();
@@ -22,11 +23,17 @@ router.get('/', async (ctx) => {
   // console.log(result)
   ctx.body = result;
 });
-// router.get('/:id', async (ctx) => {
-//   const result = await getPics({});
-//   // console.log(result)
-//   ctx.body = result;
-// });
+router.post('/detail', async (ctx) => {
+  const { id } = ctx.request.body;
+  const result = await getNovel(id);
+  // console.log(result)
+  ctx.body = result;
+});
+router.post('/detail/chapter', async (ctx) => {
+  const result = await contentChapter(ctx.request.body);
+  // console.log(result)
+  ctx.body = result;
+});
 
 router.post('/add', genValidator('Novel', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);

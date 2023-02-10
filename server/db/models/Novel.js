@@ -40,6 +40,9 @@ const Novel = {
   belongsTo: {
     Clutter: 'clutter',
   },
+  hasMany: {
+    Chapter: 'novel',
+  },
 };
 
 export default Novel;

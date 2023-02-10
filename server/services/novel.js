@@ -4,7 +4,7 @@ import { Op } from '../db/types.js';
 import { PAGE_SIZE, UserAgent } from '../conf/constant.js';
 import request from '../utils/request.js';
 
-const { Novel } = models;
+const { Novel, Chapter } = models;
 /**
  * 根據ID獲取novel
  * @param {number} id ID
@@ -21,6 +21,7 @@ export async function novelInfo({ id, url }) {
 
     const result = await Novel.findOne({
       where,
+      include: Chapter,
     });
 
     if (result) {
@@ -36,7 +37,9 @@ export async function novelInfo({ id, url }) {
 export async function novelList({ title, author, finish, content, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
+    const search = {
+      include: Chapter,
+    };
     const where = {};
 
     if (title) {
