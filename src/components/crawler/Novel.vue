@@ -1,11 +1,9 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
-import { add, content } from '@/api/novel';
-import WS from '@/utils/ws';
+import { add, modify, content } from '@/api/novel';
 
 const props = defineProps({
   show: Boolean,
-  novel: Object,
   noveler: Object,
 });
 const emit = defineEmits(['update:show', 'success']);
@@ -17,7 +15,7 @@ const dialog = computed({
     return emit('update:show', value);
   },
 });
-const domain = computed(() => (props.noveler ? props.noveler.domain : ''));
+const domain = ref('');
 // https://www.tatajk.net/book/40857/
 const form = reactive({
   id: '',
@@ -26,119 +24,63 @@ const form = reactive({
   author: '',
   content: '',
   origin: '',
-  finish: '',
+  finish: false,
 });
-const novel = ref({});
 
 const setForm = (data) => {
-  const val = data || props.novel || {};
+  const val = data || {};
   const keys = Object.keys(form);
   keys.forEach((key) => {
     form[key] = val[key] || '';
   });
 };
 
-watch(() => props.novel, () => {
-  setForm();
+watch(() => props.noveler, (val) => {
+  domain.value = val.domain;
+  setForm(val.novel);
 }, { immediate: true });
 
 const hide = () => {
   dialog.value = false;
   setForm();
 };
-const getNovel = () => {
+const getContent = () => {
   if (!domain.value || !form.url) {
     return;
   }
-  // console.log(content);
-
   const params = { ...props.noveler };
   params.url = form.url;
+  params.nolist = true;
+  delete params.novel;
   content(params).then((res) => {
-    // console.log(res);
-    // setForm()
-    const resutl = { ...res };
-    resutl.list.forEach((v) => {
-      v.loading = false;
-      v.loaded = false;
-      v.downed = false;
-      v.download = false;
-      v.add = false;
-    });
-    novel.value = resutl;
-  });
-};
-
-let server;
-const setEvent = (ws, datas) => {
-  ws.onopen = () => {
-    server.send(JSON.stringify(datas));
-  };
-  ws.onmessage = (evt) => {
-    let msg = evt.data;
-    msg = JSON.parse(msg);
-    // console.log(new Date(), '数据已接收...', msg);
-    const { loading, download, add: addResult, url, finished } = msg;
-    const nNovel = novel.value;
-    const chapter = nNovel.list.find((v) => v.url === url);
-    // console.log(loading, download, `${download}`, addResult, url);
-    if (chapter) {
-      if (loading) {
-        chapter.loading = !!loading;
-      }
-      if (download !== undefined && `${download}`) {
-        chapter.loaded = true;
-        chapter.download = download;
-      }
-      if (addResult !== undefined && `${addResult}`) {
-        chapter.downed = true;
-        chapter.add = addResult;
-      }
-    } else if (finished) {
-      emit('success');
-      hide();
+    if (res.data) {
+      const data = { ...res.data };
+      data.id = form.id;
+      setForm(data);
     }
-  };
-};
-
-const wsServer = (listId, novelId, loaded) => {
-  // console.log('saveNovel', listId, novelId);
-  server = WS('saveNovel');
-  const datas = {
-    listId,
-    novel: novelId,
-    loaded,
-    ...props.noveler,
-  };
-  setEvent(server, datas);
+  });
 };
 
 const saveNovel = () => {
   if (!domain.value || !form.url || !form.url.includes(domain.value)) {
     return;
   }
-  const nNovel = novel.value;
-  const { listId } = nNovel;
-  console.log(nNovel);
+  let FN = add;
   if (form.id) {
-    const { id, loaded } = form;
-    wsServer(listId, id, loaded);
-  } else {
-    const params = {
-      id: 1,
-      clutter: props.noveler.clutterId,
-    };
-    const keys = ['url', 'title', 'author', 'origin', 'content', 'finish', 'loaded'];
-    keys.forEach((v) => {
-      params[v] = nNovel[v];
-    });
-    add(params).then((res) => {
-      if (res.code === 200) {
-        const { id, loaded } = res.data;
-        wsServer(listId, id, loaded);
-      }
-    });
+    FN = modify;
   }
+  let clutter;
+  if (props.noveler) {
+    clutter = props.noveler.clutter;
+  }
+  form.finish = !!form.finish;
+  const params = { ...form, clutter };
+  FN(params).then((res) => {
+    if (res.code === 200) {
+      emit('success');
+      hide();
+    }
+  });
 };
 
 </script>
@@ -158,31 +100,32 @@ const saveNovel = () => {
           <span class="label-title">url: </span>
           <input type="text" v-model="form.url" />
         </label>
+        <label>
+          <span class="label-title">title: </span>
+          <input type="text" v-model="form.title" />
+        </label>
+        <label>
+          <span class="label-title">author: </span>
+          <input type="text" v-model="form.author" />
+        </label>
+        <label>
+          <span class="label-title">content: </span>
+          <textarea v-model="form.content"></textarea>
+        </label>
+        <label>
+          <span class="label-title">origin: </span>
+          <input type="text" v-model="form.origin" />
+        </label>
+        <label>
+          <span class="label-title">finish: </span>
+          <input type="checkbox" v-model="form.finish">
+        </label>
       </main>
       <footer>
         <button @click="hide">取消</button>
-        <button @click="getNovel">获取数据</button>
-        <button v-if="novel.title" @click="saveNovel">保存</button>
+        <button v-if="form.url" @click="getContent">从url获取数据</button>
+        <button v-if="form.url" @click="saveNovel">保存</button>
       </footer>
-    </section>
-    <section class="novel-container">
-      <h1>{{ novel.title }}</h1>
-      <p>{{ novel.content }}</p>
-      <p>{{ novel.author }}</p>
-      <template v-if="novel.list">
-        <div v-for="item in novel.list" :key="`novel.list-${item.url}`">
-          <span>{{item.name}}</span>
-          <span v-if="item.loading">加载中……</span>
-          <template v-if="item.loaded && !item.downed">
-            <span v-if="item.download">下载成功</span>
-            <span v-else>下载失败</span>
-          </template>
-          <template v-if="item.downed">
-          <span v-if="item.add">新增成功</span>
-          <span v-else>新增失败</span>
-          </template>
-        </div>
-      </template>
     </section>
   </com-dialog>
 </template>
@@ -200,23 +143,18 @@ const saveNovel = () => {
       width: 125px;
       text-align: right;
     }
-    input {
+    input,
+    textarea {
       width: 400px;
     }
   }
   header {
     padding: 6px;
-    text-align: center;
   }
   footer {
     margin-top: 12px;
     padding: 6px;
     text-align: center;
   }
-}
-.novel-container {
-  width: 560px;
-  height: 500px;
-  overflow: auto;
 }
 </style>

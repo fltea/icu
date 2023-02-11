@@ -207,7 +207,10 @@ export async function novelContent({ url, encode, title, author, content, lists,
       const nextpage = root.querySelector(multlist);
       let page = '';
       if (nextpage) {
-        page = `${detailurl}${nextpage.getAttribute('href')}`;
+        page = nextpage.getAttribute('href');
+        if (!page.includes(detailurl)) {
+          page = `${detailurl}${page}`;
+        }
       }
       result.multlist = page;
     }
@@ -263,7 +266,7 @@ export async function novelChapter({ url, encode, name, detail, detailex, arange
     result.detail = details.join('\n');
 
     if (multpage) {
-    // 内容多页
+      // 内容多页
       const nextpage = root.querySelector(multpage);
       result.multpage = nextpage.getAttribute('href');
     }

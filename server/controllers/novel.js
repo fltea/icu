@@ -24,6 +24,22 @@ import {
 } from '../services/chapter.js';
 
 /**
+ * 如果存在list则保存到数据库
+ */
+function url2chapters(id, url) {
+  const listId = hash(url);
+  const listData = reqiureFile(`${TEMP_DIR}/${listId}`);
+  const list = JSON.parse(listData).map((v) => ({
+    url: v.url,
+    title: v.name,
+    content: '',
+    author: '',
+    novel: id,
+  }));
+  chapterBulk(list);
+}
+
+/**
  * 獲取單個數據
  */
 export async function getNovel(id) {
@@ -68,6 +84,7 @@ export async function createNovel({ url, title, content, clutter, author, finish
     const novel = { url, title, content, clutter, author, finish, origin, loaded };
     result = await novelAdd(novel);
     if (result) {
+      url2chapters(result.id, url);
       return new SuccessModel(result);
     }
     return new ErrorModel(addInfo);
@@ -125,7 +142,6 @@ export async function deleteNovel(id) {
 
 function getPage(url, home) {
   const isHome = url === home;
-  console.log(isHome);
   if (!isHome) {
     return url;
   }
@@ -135,7 +151,7 @@ function getPage(url, home) {
 /**
  * 文章目录内容
  */
-export async function contentNovel({ url, encode, title, author, content, lists, detailurl, listSort, multlist }) {
+export async function contentNovel({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist }) {
   try {
     const result = await novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist });
     let nextPage;
@@ -155,9 +171,11 @@ export async function contentNovel({ url, encode, title, author, content, lists,
 
     // 暂存list在服务器
     const tempId = hash(url);
-    console.log('tempId', tempId);
     appendFile(`${TEMP_DIR}/${tempId}`, JSON.stringify(result.list), { flag: 'w' });
-    result.listId = tempId;
+
+    if (nolist) {
+      delete result.list;
+    }
 
     return new SuccessModel(result);
   } catch (error) {
