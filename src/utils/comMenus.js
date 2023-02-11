@@ -1,15 +1,19 @@
 const menus = [
   {
-    name: 'weibo',
-    path: '/weibo',
+    name: 'mark',
+    path: '/mark',
   },
   {
     name: 'crawler',
     path: '/crawler',
   },
   {
-    name: 'novel',
-    path: '/novel',
+    name: 'weibo',
+    path: '/weibo',
+  },
+  {
+    name: 'douban',
+    path: '/douban',
   },
 ];
 
