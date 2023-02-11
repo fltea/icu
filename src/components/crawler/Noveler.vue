@@ -35,57 +35,73 @@ const form = reactive({
   dend: '',
   multpage: '',
 });
+const longstr = ref(false);
 const string = ref('');
 
 // props.noveler
-const setForm = () => {
+const setForm = (data) => {
   // console.log('setForm');
-  const val = props.noveler || {};
+  const val = data || {};
   const keys = Object.keys(form);
   keys.forEach((key) => {
     form[key] = val[key] || '';
   });
 };
 
-watch(() => props.noveler, () => {
-  setForm();
+watch(() => props.noveler, (val) => {
+  setForm(val);
 }, { immediate: true });
+
+const changeHandle = () => {
+  // console.log(longstr.value);
+  if (longstr.value && form.domain) {
+    string.value = JSON.stringify(form);
+  }
+};
 
 const hide = () => {
   dialog.value = false;
   setForm();
 };
 
+const stringToForm = () => {
+  // console.log(string.value);
+  try {
+    const data = JSON.parse(string.value);
+    setForm(data);
+    return true;
+  } catch (error) {
+    console.error('string.value is error');
+    return false;
+  }
+};
+
 const saveNoveler = () => {
-  if ((props.longstr && !string.value) || !form.domain) {
+  if (longstr.value) {
+    const result = stringToForm();
+    if (!result) {
+      return;
+    }
+  }
+  if (!form.domain) {
     return;
   }
+  const content = JSON.stringify(form);
+  console.log(content);
+  const params = {
+    type: 'noveler',
+    content,
+  };
   const val = props.noveler || {};
-  let content;
-  if (props.longstr) {
-    content = string.value;
-  } else {
-    content = JSON.stringify(form);
+  let FN = addClutter;
+  if (val.clutter) {
+    params.id = val.clutter;
+    FN = modClutter;
   }
-  // console.log(content);
-  if (val.clutterId) {
-    modClutter({
-      id: val.clutterId,
-      type: 'noveler',
-      content,
-    }).then(() => {
-      emit('success');
-      hide();
-    });
-  } else {
-    addClutter({
-      type: 'noveler',
-      content,
-    }).then(() => {
-      emit('success');
-      hide();
-    });
-  }
+  FN(params).then(() => {
+    emit('success');
+    hide();
+  });
 };
 
 </script>
@@ -97,6 +113,10 @@ const saveNoveler = () => {
       <p>NOVELER</p>
     </header>
     <main>
+      <label>
+        <span class="label-title">longstr: </span>
+        <input type="checkbox" v-model="longstr" @change="changeHandle">
+      </label>
       <div v-if="longstr">
         <label>
           <span class="label-title">string: </span>
