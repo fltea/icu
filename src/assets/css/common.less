@@ -15,8 +15,31 @@ a {
   }
 }
 
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
 pre {
   white-space: pre-wrap;
+}
+
+button {
+  font-size: 12px;
+  cursor: pointer;
+  &:nth-last-child(n+2) {
+    margin-right: 8px;
+  }
+}
+textarea {
+  min-height: 50px;
+  vertical-align: text-top;
+  resize: none;
 }
 
 // 上传文件按钮
@@ -66,11 +89,4 @@ pre {
   margin: 0 auto;
   min-width: 500px;
   width: 90%;
-}
-button {
-  font-size: 12px;
-  cursor: pointer;
-  &:nth-last-child(n+2) {
-    margin-right: 8px;
-  }
 }
