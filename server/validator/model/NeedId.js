@@ -1,6 +1,6 @@
 export default {
   id: {
     allowNull: false,
-    type: 'NUMBER',
+    type: 'INTEGER',
   },
 };
