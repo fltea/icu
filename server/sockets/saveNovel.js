@@ -59,8 +59,8 @@ const saveNovel = async (ws, data) => {
       ws.send(JSON.stringify(schemaFileInfo));
       return;
     }
-    let list = reqiureFile(`${TEMP_DIR}/${listId}`);
-    list = JSON.parse(list).map((v) => ({
+    const listData = reqiureFile(`${TEMP_DIR}/${listId}`);
+    const list = JSON.parse(listData).map((v) => ({
       url: v.url,
       title: v.name,
       content: '',
