@@ -1,5 +1,4 @@
 import models from '../db/models/index.js';
-import { PAGE_SIZE } from '../conf/constant.js';
 
 const { Chapter } = models;
 /**
@@ -25,33 +24,6 @@ export async function chapterInfo({ id, url }) {
     }
 
     return result;
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
-export async function chapterList({ novel, page = 1, limit = PAGE_SIZE }) {
-  try {
-  // 查询条件
-    const search = {};
-    const where = {};
-    if (novel) {
-      where.novel = novel;
-    }
-    if (page) {
-      search.limit = limit;
-      if (page > 1) {
-        search.offset = limit * (page - 1);
-      }
-    }
-    // 查询
-    const result = await Chapter.findAndCountAll(search);
-    const list = result.rows.map((row) => row.dataValues);
-
-    return {
-      count: result.count,
-      list,
-    };
   } catch (error) {
     throw new Error(error);
   }

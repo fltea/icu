@@ -4,12 +4,13 @@ import { Op } from '../db/types.js';
 import { PAGE_SIZE, UserAgent } from '../conf/constant.js';
 import request from '../utils/request.js';
 
-const { Novel, Chapter } = models;
+const { Novel, Chapter, Clutter } = models;
+
 /**
  * 根據ID獲取novel
  * @param {number} id ID
  */
-export async function novelInfo({ id, url }) {
+export async function novelInfo({ id, url, clutter }) {
   try {
     const where = {};
     if (id) {
@@ -19,13 +20,23 @@ export async function novelInfo({ id, url }) {
       where.url = url;
     }
 
-    const result = await Novel.findOne({
+    const seach = {
       where,
-      include: Chapter,
-    });
+    };
+    if (clutter) {
+      seach.include = Clutter;
+    } else {
+      seach.include = Chapter;
+    }
+
+    const result = await Novel.findOne(seach);
 
     if (result) {
-      return result.dataValues;
+      const data = result.dataValues;
+      if (clutter) {
+        data.Clutter = data.Clutter.dataValues;
+      }
+      return data;
     }
 
     return result;

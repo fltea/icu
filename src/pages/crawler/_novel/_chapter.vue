@@ -1,31 +1,37 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { dChapter } from '@/api/novel';
 
 const router = useRouter();
-const novel = ref({});
+const chapterId = ref('');
+const chapter = ref({});
 
-const getData = (id) => {
+const getData = () => {
   dChapter({
-    id,
+    id: chapterId.value,
   }).then((res) => {
-    console.log(res);
+    // console.log(res);
     if (res.data) {
-      novel.value = res.data;
+      chapter.value = res.data;
     }
   });
 };
 
 watch(() => router, ({ currentRoute }) => {
   const { value } = currentRoute;
-  console.log(value);
-  getData(value.params.chapter);
+  // console.log(value);
+  chapterId.value = value.params.novel;
 }, { immediate: true });
+
+onMounted(getData);
 </script>
 
 <template>
-<section>Chapter</section>
+<h1>{{ chapter.title }}</h1>
+<section>
+  <pre>{{ chapter.content }}</pre>
+</section>
 </template>
 
 <style lang='less' scoped>

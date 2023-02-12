@@ -11,6 +11,7 @@ import {
   deleteNovel,
   contentNovel,
   chapterNovel,
+  listChapter,
   contentChapter,
 } from '../controllers/novel.js';
 
@@ -24,9 +25,12 @@ router.get('/', async (ctx) => {
   ctx.body = result;
 });
 router.post('/detail', async (ctx) => {
-  const { id } = ctx.request.body;
-  const result = await getNovel(id);
+  const result = await getNovel(ctx.request.body);
   // console.log(result)
+  ctx.body = result;
+});
+router.post('/detail/chapters', async (ctx) => {
+  const result = await listChapter(ctx.request.body);
   ctx.body = result;
 });
 router.post('/detail/chapter', async (ctx) => {

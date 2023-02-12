@@ -13,6 +13,11 @@ export const detail = (data) => request({
   method: 'post',
   data,
 });
+export const dChapters = (data) => request({
+  url: `${url}/detail/chapters`,
+  method: 'post',
+  data,
+});
 export const dChapter = (data) => request({
   url: `${url}/detail/chapter`,
   method: 'post',
