@@ -41,8 +41,8 @@ const Source = {
   },
   hasOne: {
     Blog: 'source',
-    Article: 'source',
-    Video: 'source',
+    // Article: 'source',
+    // Video: 'source',
   },
   hasMany: {
     PicTie: 'source',

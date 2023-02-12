@@ -27,9 +27,9 @@ const Video = {
       type: INTEGER,
       comment: 'BlogID',
     },
-    source: {
+    article: {
       type: INTEGER,
-      comment: 'sourceID',
+      comment: 'article ID',
     },
     remark: {
       type: STRING,
@@ -38,7 +38,7 @@ const Video = {
   },
   belongsTo: {
     Blog: 'blog',
-    Source: 'source',
+    Article: 'article',
   },
   hasMany: {
     PicTie: 'video',

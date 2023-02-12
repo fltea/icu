@@ -1,7 +1,7 @@
 import models from '../db/models/index.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Clutter, Novel } = models;
+const { Clutter, Novel, Article } = models;
 /**
  * 根據ID獲取 clutter
  * @param {number} id ID
@@ -16,9 +16,13 @@ export async function clutterInfo({ id, type, phrase }) {
       where.type = type;
       where.phrase = phrase;
     }
-    result = await Clutter.findOne({
+    const search = {
       where,
-    });
+    };
+    if (type === 'doulist') {
+      search.include = Article;
+    }
+    result = await Clutter.findOne(search);
 
     if (result) {
       result = result.dataValues;

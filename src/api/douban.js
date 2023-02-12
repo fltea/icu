@@ -8,6 +8,16 @@ export const doulist = (data) => request({
   data,
 });
 
+export const dDoulist = (id) => request({
+  url: `${url}/doulist/${id}`,
+  method: 'post',
+});
+export const dArticles = (data) => request({
+  url: `${url}/doulist/articles`,
+  method: 'post',
+  data,
+});
+
 export const details = (data) => request({
   url: `${url}/details`,
   method: 'post',
@@ -16,18 +26,6 @@ export const details = (data) => request({
 
 export const save = (data) => request({
   url: `${url}/save`,
-  method: 'post',
-  data,
-});
-
-export const modify = (data) => request({
-  url: `${url}/modify`,
-  method: 'post',
-  data,
-});
-
-export const del = (data) => request({
-  url: `${url}/delete`,
   method: 'post',
   data,
 });

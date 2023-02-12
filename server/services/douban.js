@@ -148,8 +148,10 @@ function getStatus(root) {
 }
 
 export async function doulist(id, page) {
-  const result = {};
   try {
+    const result = {
+      id,
+    };
     let url = DOUBAN_CONF.list.replace(/{id}/g, id);
     if (page > 1) {
       url += `?start=${(page - 1) * 25}&sort=time&playable=0&sub_type=`;
@@ -158,12 +160,30 @@ export async function doulist(id, page) {
       url,
       header: {
         'User-Agent': UserAgent,
-      // cookie: wcookie,
       },
       method: 'GET',
     });
     // console.log(html);
     const root = hparser.parse(html);
+    if (!page || page < 2) {
+      // doulist 信息
+      const title = root.querySelector('#content h1');
+      result.title = title.text.replace(/\r?\n?\s+?/g, '');
+      const aurthor = root.querySelector('#doulist-info .meta a');
+      if (aurthor) {
+        let text = aurthor.text.replace(/\r?\n?\s+?/g, '');
+        text = text.split('(').shift();
+        result.aurthor = text;
+        result.aurthorLink = aurthor.getAttribute('href');
+      }
+      const content = root.querySelector('#doulist-info .doulist-about');
+      if (content) {
+        let dcontent = content.innerHTML;
+        dcontent = dcontent.replace(/&nbsp;/g, '');
+        dcontent = dcontent.replace(/\r?\n?\s+?/g, '');
+        result.content = dcontent;
+      }
+    }
     let pageList = root.querySelectorAll('.doulist-item[id]');
     pageList = pageList.map((p) => {
       let text;
@@ -176,19 +196,17 @@ export async function doulist(id, page) {
       }
       const link = a.getAttribute('href');
       return {
-        id: p.getAttribute('id'),
         title: a.text.replace(/\r?\n?\s+?/g, ''),
         url: link,
         text: text.text.replace(/\r?\n?\s+?/g, ''),
       };
     });
     // console.log(pageList);
-    result.list = pageList;
+    result.pages = pageList;
+    return result;
   } catch (error) {
-    result.error = error;
+    throw new Error(error);
   }
-
-  return result;
 }
 
 export async function details(url) {

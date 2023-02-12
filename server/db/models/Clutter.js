@@ -24,7 +24,10 @@ const Clutter = {
     },
   },
   hasMany: {
+    // 小说
     Novel: 'clutter',
+    // 豆瓣 微博 数据
+    Article: 'clutter',
   },
 };
 

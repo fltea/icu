@@ -64,17 +64,18 @@ const Article = {
       type: TEXT,
       comment: '备注',
     },
-    source: {
+    clutter: {
       type: INTEGER,
-      comment: 'SourceID',
+      comment: 'Clutter Id',
     },
   },
   belongsTo: {
-    Source: 'source',
     Todo: 'todo',
     Book: 'book',
+    Clutter: 'clutter',
   },
   hasMany: {
+    Video: 'article',
     PicTie: 'article',
   },
 };

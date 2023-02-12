@@ -31,9 +31,9 @@ export async function getArticle(id) {
 /**
  * 獲取列表
  */
-export async function getArticles({ name, nickName, platform, phone, email, verify, beginDate, endDate, page, limit }) {
+export async function getArticles({ title, tag, author, content, translator, platform, clutter, publishDate, link, page, limit }) {
   try {
-    const result = await articleList({ name, nickName, platform, phone, email, verify, beginDate, endDate, page, limit });
+    const result = await articleList({ title, tag, author, content, translator, platform, clutter, publishDate, link, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);

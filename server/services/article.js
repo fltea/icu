@@ -27,10 +27,9 @@ export async function articleInfo(id) {
   }
 }
 
-export async function articleList({ title, tag, author, content, translator, platform, publishDate, page = 1, limit = PAGE_SIZE }) {
+export async function articleList({ title, tag, author, content, translator, platform, clutter, publishDate, link, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
     const where = {};
 
     if (title) {
@@ -55,9 +54,18 @@ export async function articleList({ title, tag, author, content, translator, pla
     if (platform) {
       where.platform = platform;
     }
+    if (clutter) {
+      where.clutter = clutter;
+    }
+    if (link) {
+      where.link = link;
+    }
     if (publishDate) {
       where.publishDate = publishDate;
     }
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {
@@ -77,20 +85,20 @@ export async function articleList({ title, tag, author, content, translator, pla
   }
 }
 
-export async function articleAdd({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
+export async function articleAdd({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source, clutter }) {
   try {
-    const result = await Article.create({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source });
+    const result = await Article.create({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source, clutter });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
-export async function articleUpdate({ id, title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
+export async function articleUpdate({ id, title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source, clutter }) {
   try {
     const where = {
       id,
     };
-    const result = await Article.update({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }, {
+    const result = await Article.update({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source, clutter }, {
       where,
     });
     return result[0] > 0;
@@ -117,9 +125,9 @@ export async function articleBulk(list) {
   try {
     const result = [];
     const dataes = [];
-    const keys = ['title', 'tag', 'content', 'author', 'translator', 'link', 'platform', 'links', 'publish', 'price', 'publishDate', 'todo', 'book', 'cover', 'remark', 'source'];
+    const keys = ['title', 'tag', 'content', 'author', 'translator', 'link', 'platform', 'links', 'publish', 'price', 'publishDate', 'todo', 'book', 'cover', 'remark', 'source', 'clutter'];
     list.forEach((v) => {
-      if (v.url) {
+      if (v.title) {
         const item = {};
         keys.forEach((key) => {
           item[key] = v[key];
@@ -132,8 +140,8 @@ export async function articleBulk(list) {
       while (len > 0) {
         const datas = dataes.splice(0, 100);
         let values = await Article.bulkCreate(datas, { ignoreDuplicates: true });
-        console.log('list', values);
-        values = values.map((row) => row.dataValues);
+        // console.log('list', values);
+        values = values.map((row) => row.dataValues).filter((v) => !!v.id);
         result.push(...values);
         len = dataes.length;
       }
