@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import { FILE_DIR, LOG_DIR, BACKUP_DIR, TEMP_DIR } from './conf/constant.js';
 import { setEnv } from './config.js';
 import { statDir } from './utils/files.js';
+import { urlParse } from './utils/tools.js';
 
 setEnv();
 const ROOT_DIR = process.cwd();
@@ -36,6 +37,22 @@ app.use(
     },
   }),
 );
+
+// 處理get數據
+app.use(async (ctx, next) => {
+  const isGet = ctx.request.method === 'GET';
+  const isAPI = ctx.request.url.includes('/api/');
+  if (isAPI && isGet) {
+    let query = {};
+    const hasSearch = ctx.request.url.includes('?');
+    if (hasSearch) {
+      query = ctx.request.url.split('?').pop();
+      query = urlParse(query);
+    }
+    ctx.request.gquery = query;
+  }
+  await next();
+});
 
 // routes
 let routes = fs.readdirSync(path.join(ROOT_DIR, 'server/routes'));
