@@ -64,7 +64,7 @@ export function urlParse(str) {
     const arr = decodeURIComponent(str).split('&');
     arr.forEach((v) => {
       const list = v.split('=');
-      result[list.shift()] = JSON.parse(list.pop());
+      result[list.shift()] = list.pop();
     });
   }
   return result;
