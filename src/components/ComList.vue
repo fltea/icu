@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 
 const props = defineProps({
   finished: Boolean,
@@ -10,8 +10,10 @@ const finished = computed(() => props.finished);
 const loading = computed(() => props.loading);
 
 const loadMain = ref(null);
-const observerHandle = (entries) => {
-  let nextLoad = entries[0].isIntersecting;
+const isInvisible = ref(false);
+const loadData = () => {
+  // console.log('isInvisible', isInvisible.value);
+  let nextLoad = isInvisible.value;
   const Dom = loadMain.value;
   // 判断是否一致
   nextLoad = nextLoad && (Dom.offsetTop !== Dom.parentNode.offsetTop);
@@ -22,6 +24,22 @@ const observerHandle = (entries) => {
   if (nextLoad) {
     emit('load');
   }
+};
+
+watch(loading, (val) => {
+  if (!val) {
+    const Dom = loadMain.value;
+    setTimeout(() => {
+      if (Dom && isInvisible.value) {
+        loadData();
+      }
+    }, 100);
+  }
+});
+
+const observerHandle = (entries) => {
+  isInvisible.value = entries[0].isIntersecting;
+  loadData();
 };
 let observer;
 
