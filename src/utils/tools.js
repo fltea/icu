@@ -75,7 +75,7 @@ export function urlStringify(data) {
   if (!data) {
     return '';
   }
-  const arrs = Object.keys(data).map((key) => `${key}=${JSON.stringify(data[key])}`);
+  const arrs = Object.keys(data).map((key) => `${key}=${data[key]}`);
 
   return arrs.join('&');
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { urlStringify } from './tools';
 // import { showMessage } from './errMsg'; // 引入状态码文件
 
 // 设置接口超时时间
@@ -28,6 +29,10 @@ service.interceptors.request.use(
       // 'token':'80c483d59ca86ad0393cf8a98416e2a1'              // 这里自定义配置，这里传的是token
     };
     // config.data = qs.stringify(config.data);
+    const method = config.method.toUpperCase();
+    if (method === 'GET' && config.data) {
+      config.url = `${config.url}?${urlStringify(config.data)}`;
+    }
     return config;
   },
   (error) => Promise.reject(error),
