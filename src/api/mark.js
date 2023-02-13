@@ -2,9 +2,10 @@ import request from '../utils/axios';
 
 const url = '/api/mark';
 
-export const list = () => request({
+export const list = (data) => request({
   url: `${url}`,
   method: 'get',
+  data,
 });
 
 export const upload = (data) => request({
