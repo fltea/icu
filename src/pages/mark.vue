@@ -104,8 +104,8 @@ onMounted(listData);
           <p>{{item.title}}</p>
           <div class="mark-desc">{{item.description || ''}}</div>
           <div class="mark-control">
-            <button @click="editMark(item)">修改</button>
-            <button @click="deleteMark(item.id)">删除</button>
+            <button @click.stop.prevent="editMark(item)">修改</button>
+            <button @click.stop.prevent="deleteMark(item.id)">删除</button>
           </div>
         </div>
       </a>
