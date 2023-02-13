@@ -42,19 +42,21 @@ export async function markInfo({ id, url }) {
  */
 export async function markList({ url, title, page = 1, limit = PAGE_SIZE }) {
   try {
-  // 查询条件
-    const search = {};
+    // 查询条件
     const where = {};
     if (url) {
       where.url = {
-        [Op.like]: url,
+        [Op.like]: `%${url}%`,
       };
     }
     if (title) {
       where.title = {
-        [Op.like]: title,
+        [Op.like]: `%${title}%`,
       };
     }
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {
@@ -65,10 +67,15 @@ export async function markList({ url, title, page = 1, limit = PAGE_SIZE }) {
     const result = await Mark.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);
 
-    return {
+    const data = {
       count: result.count,
       list,
     };
+    if (page) {
+      data.page = page;
+      data.limit = limit;
+    }
+    return data;
   } catch (error) {
     throw new Error(error);
   }
@@ -133,23 +140,13 @@ export async function markBulk(list) {
   try {
     const result = [];
     if (Array.isArray(list)) {
-      const dataes = [];
-      const keys = ['url', 'title', 'description', 'icons'];
-      list.forEach((v) => {
-        if (v.url) {
-          const item = {};
-          keys.forEach((key) => {
-            item[key] = v[key];
-          });
-          dataes.push(item);
-        }
-      });
+      const dataes = list.filter((v) => !!v.url);
       let len = dataes.length;
       if (len) {
         while (len > 0) {
           const datas = dataes.splice(0, 100);
           let values = await Mark.bulkCreate(datas, { ignoreDuplicates: true });
-          values = values.map((row) => row.dataValues);
+          values = values.map((row) => row.dataValues).filter((v) => !!v.id);
           result.push(...values);
           len = dataes.length;
         }

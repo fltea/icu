@@ -16,14 +16,14 @@ const router = new Router();
 router.prefix('/api/mark');
 
 router.get('/', async (ctx) => {
-  const result = await getMarks({});
+  // console.log('ctx.request.gquery ', ctx.request.gquery);
+  const result = await getMarks(ctx.request.gquery);
   // console.log(result)
   ctx.body = result;
 });
 
 router.post('/upload', async (ctx) => {
   // console.log('ctx.request.files ',ctx.request.files);
-  // console.log('ctx.request.body ', ctx.request.body);
   const result = await createMarks(ctx.request.files);
   ctx.body = result;
 });
