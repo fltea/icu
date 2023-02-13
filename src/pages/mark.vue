@@ -1,17 +1,40 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { list, upload, del } from '@/api/mark';
 import { deepCopy } from '@/utils/tools';
 import newMark from '@/components/mark/newMark.vue';
 
-const marks = ref([]);
+const marks = reactive({
+  list: [],
+  finished: false,
+  loading: false,
+});
 const markData = ref({});
 const dialog = ref(false);
+const search = reactive({
+  title: '',
+  url: '',
+});
+let params = null;
 
 const listData = () => {
-  list().then((res) => {
-    console.log(res);
-    marks.value = deepCopy(res.list) || [];
+  marks.loading = true;
+  if (params && params.page) {
+    params.page += 1;
+  }
+  list(params).then((res) => {
+    const page = +res.page;
+    if (page === 1) {
+      marks.list = [];
+    }
+    marks.list.push(...deepCopy(res.list) || []);
+    if (!params) {
+      params = {};
+    }
+    params.page = page;
+    marks.finished = marks.list.length >= res.count;
+  }).finally(() => {
+    marks.loading = false;
   });
 };
 const uploadFile = (file) => {
@@ -42,32 +65,52 @@ const changFile = (event) => {
   uploadFile(files[0]);
 };
 
+const resetSearch = () => {
+  search.title = '';
+  search.url = '';
+  params = null;
+  listData();
+};
+const searchList = () => {
+  const { title, url } = search;
+  params = {
+    title,
+    url,
+  };
+  listData();
+};
+
 onMounted(listData);
 </script>
 
 <template>
   <h1>MARK</h1>
   <section>
+    <input type="text" v-model="search.title" placeholder="title">
+    <input type="text" v-model="search.url" placeholder="url">
+    <button @click="searchList">查詢</button>
+    <button @click="resetSearch">重設</button>
     <button @click="editMark()">新增</button>
-    <button class="file-button">批量导入<input type="file" name="file" id="myFile" @change="changFile"></button>
-    <form class="down-form" action="/api/mark/exports" method="post" target="actionFrame">
-      <button type="submit">批量导出</button>
-      <iframe class="down-frame" name="actionFrame"></iframe>
-    </form>
+    <com-upload-button  @change="changFile">批量导入</com-upload-button>
+    <com-down-button action="/api/mark/exports">批量导出</com-down-button>
   </section>
-  <section class="mark-list">
-    <div class="mark-item" v-for="(item ,index) in marks" :key="`list-${index}`">
-      <div class="mark-control">
-        <button @click="editMark(item)">修改</button>
-        <button @click="deleteMark(item.id)">删除</button>
-      </div>
-      <div class="mark-icons">
-        <img :src="item.icons" :alt="item.title">
-      </div>
-      <p><a :href="item.url" target="__blank">{{item.title}}</a></p>
-      <div>{{item.description || ''}}</div>
-    </div>
-  </section>
+  <com-list :finished="marks.finished" :loading="marks.loading" @load="listData">
+    <section class="mark-list">
+      <a class="mark-item" v-for="(item ,index) in marks.list" :key="`list-${index}`" :href="item.url" target="__blank">
+        <div class="mark-icons" v-if="item.icons">
+          <img :src="item.icons" :alt="item.title">
+        </div>
+        <div>
+          <p>{{item.title}}</p>
+          <div class="mark-desc">{{item.description || ''}}</div>
+          <div class="mark-control">
+            <button @click="editMark(item)">修改</button>
+            <button @click="deleteMark(item.id)">删除</button>
+          </div>
+        </div>
+      </a>
+    </section>
+  </com-list>
   <new-mark :mark="markData" v-model:show="dialog" @success="listData"></new-mark>
 </template>
 
@@ -80,34 +123,32 @@ onMounted(listData);
 .mark-item {
   margin-top: 12px;
   margin-left: 12px;
-  padding: 8px;
-  width: 300px;
-  position: relative;
-  border: 1px solid;
-  .mark-control {
-    position: absolute;
-    right: 12px;
-  }
+  padding: 6px;
+  width: 220px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  border: 1px solid #eee;
+  border-radius: 4px;
   .mark-icons {
-    margin-bottom: 12px;
-    height: 60px;
+    margin-right: 8px;
+    width: 48px;
+    height: 48px;
     text-align: center;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
     img {
-      width: 60px;
+      width: 100%;
       height: 100%;
-      // border-radius: 50%;
-      border: 1px solid #ccc;
     }
   }
-}
-.down-form {
-  display: inline-block;
-  margin-left: 10px;
-}
-.down-frame {
-  position: absolute;
-  bottom: 0;
-  opacity: 0;
-  pointer-events: none;
+  .mark-desc {
+    max-height: 30px;
+  }
+  .mark-control {
+    margin-top: 3px;
+  }
 }
 </style>
