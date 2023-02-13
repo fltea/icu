@@ -5,7 +5,11 @@
 @REM 创建本文件的快捷方式 放到开机启动文件夹
 @REM 选择快捷方式 右键选择属性 点击高级按钮 在弹窗中选中 用管理员身份运行 确定
 
-cd /d F:/icu
-
+@REM cd /d F:/icu
 @REM pause
-npm run devp
+@REM npm run devp
+
+@REM cd /d F:/icu
+
+@REM start C:\"Program Files"\Git\git-bash.exe -c "cd F:icu && npm run dev --login -i"
+start C:\"Program Files"\Git\git-bash.exe -c "cd F:icu && npm run dev"
