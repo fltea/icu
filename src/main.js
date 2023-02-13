@@ -9,7 +9,7 @@ import App from './App.vue';
 export const createApp = () => {
   const app = createSSRApp(App);
 
-  app.use(inComps(['ComDialog', 'ComTab']));
+  app.use(inComps(['ComDialog', 'ComTab', 'ComList', 'ComDownButton', 'ComUploadButton']));
   // app.component('ComDialog', ComDialog);
   // app.component('ComTab', ComTab);
   return { app };
