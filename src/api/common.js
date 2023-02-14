@@ -14,9 +14,10 @@ export const backups = () => request({
   method: 'get',
 });
 
-export const backup = () => request({
+export const backup = (data) => request({
   url: `${url}/backup`,
   method: 'post',
+  data,
 });
 
 export const restore = (data) => request({

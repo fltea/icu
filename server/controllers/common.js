@@ -5,7 +5,7 @@ import catchError from '../utils/tcatch.js';
 
 import models from '../db/models/index.js';
 import { formatDate } from '../utils/tools.js';
-import { appendFile, getFiles, reqiureFile } from '../utils/files.js';
+import { appendFile, getFiles, reqiureFile, statDir } from '../utils/files.js';
 
 function filepath2url(fpath) {
   let url = fpath.split(`${FILE_DIR}`).pop();
@@ -49,27 +49,57 @@ export function uploadFile(files) {
  * 备份数据
  *
  */
+async function getDatas(type) {
+  const item = models[type];
+  const attris = item.getAttributes();
+  let keys = Object.keys(attris).filter((key) => !!attris[key].references).map((key) => attris[key].references.model);
+  keys = keys.map((key) => key.substr(0, key.length - 1));
+  const search = {};
+  if (keys.length) {
+    const include = [];
+    const includes = [];
+    keys.forEach((key) => {
+      let name = key.substr(0, key.length - 1);
+      let table = models[name];
+      if (!table) {
+        table = models[key];
+        name = key;
+      }
+      if (table) {
+        includes.push(name);
+        include.push(table);
+      }
+    });
+    search.include = include;
+    keys = includes;
+  }
+  const result = await item.findAll(search);
+  const list = result.map((row) => {
+    const value = row.dataValues;
+    keys.forEach((key) => {
+      const val = value[key];
+      value[key] = val.dataValues;
+    });
+    return value;
+  });
+  return list;
+}
 export async function backupDatas() {
   try {
-    const Datas = {};
+    const date = formatDate({ format: 'YYYY-mm-dd' });
+    const lpath = `${BACKUP_DIR}/${date}`;
+    statDir(lpath);
     const keys = Object.keys(models);
     let i = 0;
     const len = keys.length;
     for (; i < len; i++) {
       const key = keys[i];
-      const item = models[key];
-      // console.log('key', key, typeof item);
-      const result = await item.findAll();
-      const list = result.map((row) => {
-        const value = row.dataValues;
-        return value;
-      });
-      if (list.length) {
-        Datas[key] = list;
+      const result = await getDatas(key);
+      if (result.length) {
+        appendFile(`${lpath}/${key}.json`, JSON.stringify(result), { flag: 'w' });
       }
     }
 
-    appendFile(`${BACKUP_DIR}/${formatDate({ format: 'YYYY-mm-dd' })}.json`, JSON.stringify(Datas), { flag: 'w' });
     return new SuccessModel();
   } catch (error) {
     return catchError(error);
