@@ -4,6 +4,10 @@ const menus = [
     path: '/mark',
   },
   {
+    name: 'data',
+    path: '/data',
+  },
+  {
     name: 'crawler',
     path: '/crawler',
   },
