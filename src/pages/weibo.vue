@@ -174,6 +174,9 @@ listItems = (maxId) => {
 const getUserList = () => {
   users.laoding = true;
   const { curuser, data } = users;
+  if (!curuser) {
+    return;
+  }
   const uid = curuser.id;
   let sinceId;
   if (data.length) {
