@@ -1,4 +1,4 @@
-import { notExistInfo, nodataInfo } from '../model/ErrorInfos.js';
+import { notExistInfo } from '../model/ErrorInfos.js';
 import { SuccessModel, ErrorModel } from '../model/ResModel.js';
 import { FILE_DIR, BACKUP_DIR } from '../conf/constant.js';
 import catchError from '../utils/tcatch.js';
@@ -82,7 +82,17 @@ async function getDatas(type) {
     });
     return value;
   });
-  return list;
+
+  if (list.length) {
+    const data = {
+      list,
+    };
+    if (keys.length) {
+      data.belongsTo = keys;
+    }
+    return data;
+  }
+  return null;
 }
 export async function backupDatas() {
   try {
@@ -95,7 +105,7 @@ export async function backupDatas() {
     for (; i < len; i++) {
       const key = keys[i];
       const result = await getDatas(key);
-      if (result.length) {
+      if (result) {
         appendFile(`${lpath}/${key}.json`, JSON.stringify(result), { flag: 'w' });
       }
     }
@@ -109,68 +119,76 @@ export async function backupDatas() {
 /**
  * 备份数据 还原
  */
+async function setDatas(type, date) {
+  const item = models[type];
+  const lpath = `${BACKUP_DIR}/${date}`;
+  let result = reqiureFile(`${lpath}/${type}.json`);
+  if (!result) {
+    return result;
+  }
+  result = JSON.parse(result);
+  if (result.lastTime === date) {
+    return result;
+  }
+  const { belongsTo, list } = result;
+  if (belongsTo) {
+    let i = 0;
+    const max = belongsTo.length;
+    while (i < max) {
+      await setDatas(belongsTo[i], date);
+      i += 1;
+    }
+  }
+  let li = 0;
+  const max = list.length;
+  while (li < max) {
+    // const belongsTo
+    const litem = list[li];
+    const belogs = belongsTo.map((key) => litem[key]);
+    let bi = 0;
+    const lmax = belogs.length;
+    while (bi < lmax) {
+      const bitem = belogs[bi];
+      if (bitem) {
+        const key = belongsTo[bi];
+        let bresult = await models[key].findOne({
+          where: bitem,
+        });
+        bresult = bresult.dataValues;
+        litem[key.toLowerCase()] = bresult.id;
+      }
+      bi += 1;
+    }
+    delete litem.id;
+    delete litem.createdAt;
+    delete litem.updatedAt;
+    await item.create(litem);
+    li += 1;
+  }
+  result.lastTime = date;
+  appendFile(`${lpath}/${type}.json`, JSON.stringify(result), { flag: 'w' });
+  return result;
+}
 export async function restoreDatas({ date }) {
   try {
-    let Datas = reqiureFile(`${BACKUP_DIR}/${date}.json`);
-    if (!Datas) {
-      return new ErrorModel(notExistInfo);
-    }
-    Datas = JSON.parse(Datas);
-    const keys = Object.keys(Datas);
-    if (!keys.length) {
-      return new ErrorModel(nodataInfo);
-    }
-
-    // 根据模型 belongsTo 确定顺序
-    const list = [];
-    const max = keys.length;
-    for (let i = 0; i < max; i++) {
-      const key = keys[i];
-      if (!list.includes(key)) {
-        list.push(key);
-      }
-      let item = await import(`../db/model/${key}.js`);
-      item = item.default;
-      console.log('item', item);
-      const { belongsTo } = item;
-      if (belongsTo) {
-        const index = list.findIndex((v) => v === key);
-        const ins = Object.keys(belongsTo);
-        ins.forEach((v) => {
-          if (list.includes(v)) {
-            const vdex = list.findIndex((vd) => vd === v);
-            if (vdex > index) {
-              list.splice(vdex, 1);
-              list.splice(index, 0, v);
-            }
-          } else {
-            list.splice(index, 0, v);
-          }
-        });
-      }
-    }
-    console.log(list);
-
-    // 多数据插入
+    const keys = Object.keys(models);
     let i = 0;
-    const len = list.length;
+    const len = keys.length;
+    const result = [];
     for (; i < len; i++) {
-      const key = list[i];
-      const item = models[key];
-      const dataes = Datas[key];
-      if (dataes) {
-        let maxLen = dataes.length;
-        while (maxLen > 0) {
-          const datas = dataes.splice(0, 100);
-          await item.bulkCreate(datas, { ignoreDuplicates: true });
-          maxLen = dataes.length;
-        }
-      }
+      const key = keys[i];
+      const iresult = await setDatas(key, date);
+      result.push(iresult);
     }
 
-    return new SuccessModel({
-      message: `数据已还原到${date}`,
-    });
+    const hasData = result.some((v) => !!v);
+    if (hasData) {
+      return new SuccessModel({
+        message: `数据已还原到${date}`,
+      });
+    }
+
+    return new ErrorModel(notExistInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -182,9 +200,12 @@ export async function restoreDatas({ date }) {
 export async function backups() {
   try {
     let list = getFiles(BACKUP_DIR);
+    console.log(list);
     list = list.map((v) => {
       const arrs = v.split('.');
-      arrs.pop();
+      if (arrs.length > 1) {
+        arrs.pop();
+      }
       return arrs.join('.');
     });
 
