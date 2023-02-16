@@ -15,5 +15,6 @@ const changFile = (event) => {
 <style lang='less' scoped>
 .com-upload-button {
   display: inline-block;
+  line-height: 1;
 }
 </style>
