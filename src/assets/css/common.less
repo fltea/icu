@@ -16,7 +16,8 @@ a {
 }
 
 html,
-body {
+body,
+#app {
   height: 100%;
 }
 
@@ -32,7 +33,7 @@ pre {
 button {
   font-size: 12px;
   cursor: pointer;
-  &:nth-last-child(n+2) {
+  + button {
     margin-right: 8px;
   }
 }
@@ -87,6 +88,7 @@ textarea {
 // 页面主体
 .layout-inner {
   margin: 0 auto;
-  min-width: 500px;
   width: 90%;
+  min-width: 500px;
+  min-height: calc(100vh - 116px);
 }
