@@ -1,6 +1,6 @@
 <template>
 <footer class="com-footer">
-  <p>Footer</p>
+  <p>© FLTEA All Rights Reserved.</p>
 </footer>
 </template>
 
@@ -11,5 +11,7 @@
 <style lang='less' scoped>
 .com-footer {
   padding: 10px;
+  text-align: center;
+  color: #ccc;
 }
 </style>
