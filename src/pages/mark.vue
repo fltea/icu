@@ -85,13 +85,13 @@ onMounted(listData);
 
 <template>
   <h1>MARK</h1>
-  <section>
+  <section class="mark-controls">
     <input type="text" v-model="search.title" placeholder="title">
     <input type="text" v-model="search.url" placeholder="url">
     <button @click="searchList">查詢</button>
     <button @click="resetSearch">重設</button>
     <button @click="editMark()">新增</button>
-    <com-upload-button  @change="changFile">批量导入</com-upload-button>
+    <com-upload-button @change="changFile">批量导入</com-upload-button>
     <com-down-button action="/api/mark/exports">批量导出</com-down-button>
   </section>
   <com-list :finished="marks.finished" :loading="marks.loading" @load="listData">
@@ -115,6 +115,14 @@ onMounted(listData);
 </template>
 
 <style scoped lang="less">
+.mark-controls {
+  input,
+  button,
+  .com-upload-button {
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+}
 .mark-list {
   margin-left: -12px;
   display: flex;
