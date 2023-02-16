@@ -13,6 +13,7 @@ const ROOT_DIR = process.cwd();
 const isPro = process.env.NODE_ENV === 'production';
 
 // 先创建文件夹
+statDir(FILE_DIR);
 statDir(LOG_DIR);
 statDir(BACKUP_DIR);
 statDir(TEMP_DIR);
