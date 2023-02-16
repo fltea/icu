@@ -1,6 +1,6 @@
-import { STRING, INTEGER, TEXT } from '../types.js';
+import { STRING, TEXT } from '../types.js';
 
-const Blog = {
+const Mlog = {
   model: {
     text: {
       type: TEXT,
@@ -16,23 +16,14 @@ const Blog = {
       comment: '创建者',
     },
     source: {
-      type: INTEGER,
-      comment: 'SourceID',
+      type: TEXT,
+      comment: 'Source',
     },
     remark: {
       type: STRING,
       comment: '备注',
     },
   },
-  belongsTo: {
-    Source: 'source',
-  },
-  hasMany: {
-    PicTie: 'blog',
-  },
-  hasOne: {
-    Video: 'blog',
-  },
 };
 
-export default Blog;
+export default Mlog;

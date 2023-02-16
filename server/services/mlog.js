@@ -2,18 +2,18 @@ import models from '../db/models/index.js';
 import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Blog } = models;
+const { Mlog } = models;
 /**
- * 根據ID獲取blog
+ * 根據ID獲取 mlog
  * @param {number} id ID
  */
-export async function blogInfo(id) {
+export async function mlogInfo(id) {
   try {
     const where = {
       id,
     };
 
-    const result = await Blog.findOne({
+    const result = await Mlog.findOne({
       where,
     });
 
@@ -27,20 +27,22 @@ export async function blogInfo(id) {
   }
 }
 
-export async function blogList(text, creator, page = 1, limit = PAGE_SIZE) {
+export async function mlogList({ text, creator, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
     const where = {};
-
     if (text) {
-      where.url = {
-        [Op.like]: text,
+      where.text = {
+        [Op.like]: `%${text}%`,
       };
     }
     if (creator) {
       where.creator = creator;
     }
+
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {
@@ -48,48 +50,54 @@ export async function blogList(text, creator, page = 1, limit = PAGE_SIZE) {
       }
     }
     // 查询
-    const result = await Blog.findAndCountAll(search);
+    const result = await Mlog.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);
 
-    return {
+    const data = {
       count: result.count,
       list,
     };
+    if (page) {
+      data.page = page;
+      data.limit = limit;
+    }
+
+    return data;
   } catch (error) {
     throw new Error(error);
   }
 }
 
-export async function blogAdd({ text, link, creator, source, remark }) {
+export async function mlogAdd({ text, link, creator, source, remark }) {
   try {
-    const result = await Blog.create({ text, link, creator, source, remark });
+    const result = await Mlog.create({ text, link, creator, source, remark });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
-export async function blogUpdate({ id, text, link, creator, source, remark }) {
+
+export async function mlogUpdate({ id, text, link, creator, source, remark }) {
   try {
     const where = {
       id,
     };
-    const blog = {};
+    const mlog = {
+      remark,
+    };
     if (text) {
-      blog.text = text;
+      mlog.text = text;
     }
     if (link) {
-      blog.link = link;
-    }
-    if (creator) {
-      blog.creator = creator;
+      mlog.link = link;
     }
     if (source) {
-      blog.source = source;
+      mlog.source = source;
     }
-    if (remark) {
-      blog.remark = remark;
+    if (creator) {
+      mlog.creator = creator;
     }
-    const result = await Blog.update(blog, {
+    const result = await Mlog.update(mlog, {
       where,
     });
     return result[0] > 0;
@@ -97,13 +105,14 @@ export async function blogUpdate({ id, text, link, creator, source, remark }) {
     throw new Error(error);
   }
 }
-export async function blogDelete(id) {
+
+export async function mlogDelete(id) {
   try {
     const where = {
       id,
     };
 
-    const result = await Blog.destroy({
+    const result = await Mlog.destroy({
       where,
     });
 
@@ -112,13 +121,14 @@ export async function blogDelete(id) {
     throw new Error(error);
   }
 }
-export async function blogBulk(list) {
+
+export async function mlogBulk(list) {
   try {
     const result = [];
     const dataes = [];
     const keys = ['text', 'link', 'creator', 'source', 'remark'];
     list.forEach((v) => {
-      if (v.url) {
+      if (v.text) {
         const item = {};
         keys.forEach((key) => {
           item[key] = v[key];
@@ -130,9 +140,10 @@ export async function blogBulk(list) {
     if (len) {
       while (len > 0) {
         const datas = dataes.splice(0, 100);
-        let values = await Blog.bulkCreate(datas, { ignoreDuplicates: true });
-        console.log('list', values);
+        let values = await Mlog.bulkCreate(datas, { ignoreDuplicates: true });
+        // console.log('list', values);
         values = values.map((row) => row.dataValues);
+        values = values.filter((v) => !!v.id);
         result.push(...values);
         len = dataes.length;
       }
