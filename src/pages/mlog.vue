@@ -75,8 +75,8 @@ onMounted(listData);
 </script>
 
 <template>
-  <h1>BLOG</h1>
-  <section>
+  <h1>MLOG</h1>
+  <section class="list-controls">
     <textarea v-model="mlog.item.text"></textarea>
     <button @click="addMlog">提交</button>
   </section>
@@ -86,7 +86,7 @@ onMounted(listData);
     <button @click="searchList">查詢</button>
     <button @click="resetSearch">重設</button>
   </section>
-  <section>
+  <section class="mlog-list">
     <div v-for="(item ,index) in mlog.list" :key="`mlog.list${index}`">
       <p>{{ item.text }}</p>
       <button @click="deleteMlog(item.id)">删除</button>
@@ -95,4 +95,13 @@ onMounted(listData);
 </template>
 
 <style scoped lang='less'>
+.list-controls {
+  margin-top: 10px;
+  input,
+  textarea,
+  button {
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+}
 </style>
