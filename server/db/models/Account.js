@@ -67,7 +67,7 @@ const Account = {
     },
   },
   hasMany: {
-    TieRelation: 'account',
+    Atie: 'account',
   },
 };
 

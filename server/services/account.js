@@ -2,7 +2,7 @@ import models from '../db/models/index.js';
 import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Account } = models;
+const { Account, Atie } = models;
 /**
  * 根據ID獲取account
  * @param {number} id ID
@@ -12,13 +12,22 @@ export async function accountInfo(id) {
     const where = {
       id,
     };
-
-    const result = await Account.findOne({
+    const search = {
       where,
-    });
+      include: Atie,
+    };
+
+    const result = await Account.findOne(search);
 
     if (result) {
-      return result.dataValues;
+      const data = result.dataValues;
+      const list = await Atie.findAll({
+        where: {
+          tied: id,
+        },
+      });
+      data.Ties = list.map((row) => row.dataValues);
+      return data;
     }
 
     return result;
@@ -30,7 +39,6 @@ export async function accountInfo(id) {
 export async function accountList({ name, nickName, platform, phone, email, verify, beginDate, endDate, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
     const where = {};
 
     if (name) {
@@ -44,7 +52,7 @@ export async function accountList({ name, nickName, platform, phone, email, veri
     }
     if (nickName) {
       where.nickName = {
-        [Op.like]: nickName,
+        [Op.like]: `%${nickName}%`,
       };
     }
     if (email) {
@@ -63,6 +71,9 @@ export async function accountList({ name, nickName, platform, phone, email, veri
         [Op.lte]: endDate,
       };
     }
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {
@@ -73,10 +84,15 @@ export async function accountList({ name, nickName, platform, phone, email, veri
     const result = await Account.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);
 
-    return {
+    const data = {
       count: result.count,
       list,
     };
+    if (page) {
+      data.page = page;
+      data.limit = limit;
+    }
+    return data;
   } catch (error) {
     throw new Error(error);
   }
@@ -149,6 +165,39 @@ export async function accountBulk(list) {
     }
 
     return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function accountTie({ tied, account, tieDate, untieDate, remark }) {
+  try {
+    const result = await Atie.create({ tied, account, tieDate, untieDate, remark });
+    return result.dataValues;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function accountTieUpdate({ id, tieDate, untieDate, remark }) {
+  try {
+    const where = {
+      id,
+    };
+    const account = {};
+    if (remark) {
+      account.remark = remark;
+    }
+    if (tieDate) {
+      account.tieDate = tieDate;
+    }
+    if (untieDate) {
+      account.untieDate = untieDate;
+    }
+    const result = await Atie.update(account, {
+      where,
+    });
+    return result[0] > 0;
   } catch (error) {
     throw new Error(error);
   }

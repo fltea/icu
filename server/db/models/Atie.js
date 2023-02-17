@@ -1,6 +1,6 @@
 import { INTEGER, TEXT, DATEONLY } from '../types.js';
 
-const TieRelation = {
+const Atie = {
   model: {
     tied: {
       type: INTEGER,
@@ -30,4 +30,4 @@ const TieRelation = {
   },
 };
 
-export default TieRelation;
+export default Atie;

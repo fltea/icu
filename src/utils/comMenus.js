@@ -2,10 +2,12 @@ const menus = [
   {
     name: 'mark',
     path: '/mark',
-  },
-  {
+  }, {
     name: 'mlog',
     path: '/mlog',
+  }, {
+    name: 'account',
+    path: '/account',
   },
   // {
   //   name: 'crawler',

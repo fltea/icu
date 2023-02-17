@@ -9,6 +9,8 @@ import {
   accountUpdate,
   accountDelete,
   accountBulk,
+  accountTie,
+  accountTieUpdate,
 } from '../services/account.js';
 
 /**
@@ -16,11 +18,9 @@ import {
  */
 export async function getAccount(id) {
   try {
-    if (id) {
-      const result = await accountInfo(id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const result = await accountInfo(id);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(notExistInfo);
   } catch (error) {
@@ -99,6 +99,37 @@ export async function deleteAccount(id) {
       return new SuccessModel(result);
     }
     return new ErrorModel(delInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 新增數據
+ */
+export async function tieAccount({ tied, account, tieDate, untieDate, remark }) {
+  try {
+    const result = await accountTie({ tied, account, tieDate, untieDate, remark });
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(addInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 修改數據
+ */
+export async function modifyTieAccount({ id, tieDate, untieDate, remark }) {
+  try {
+    const result = await accountTieUpdate({ id, tieDate, untieDate, remark });
+    if (result) {
+      return new SuccessModel(result);
+    }
+
+    return new ErrorModel(updateInfo);
   } catch (error) {
     return catchError(error);
   }
