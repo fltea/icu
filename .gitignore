@@ -120,6 +120,6 @@ dist-ssr
 
 # 文件
 files
-* copy.*
+* copy*
 
 vite.config.js.timestamp*.mjs
