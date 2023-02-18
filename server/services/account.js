@@ -172,21 +172,27 @@ export async function accountBulk(list) {
   }
 }
 
-export async function accountTie({ tied, account, tieDate, untieDate, remark }) {
+export async function accountTie({ tied, tiedName, account, accountName, tieDate, untieDate, remark }) {
   try {
-    const result = await Atie.create({ tied, account, tieDate, untieDate, remark });
+    const result = await Atie.create({ tied, tiedName, account, accountName, tieDate, untieDate, remark });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
 
-export async function accountTieUpdate({ id, tieDate, untieDate, remark }) {
+export async function accountTieUpdate({ id, tiedName, accountName, tieDate, untieDate, remark }) {
   try {
     const where = {
       id,
     };
     const account = {};
+    if (tiedName) {
+      account.tiedName = tiedName;
+    }
+    if (accountName) {
+      account.accountName = accountName;
+    }
     if (remark) {
       account.remark = remark;
     }

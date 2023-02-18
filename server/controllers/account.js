@@ -107,9 +107,9 @@ export async function deleteAccount(id) {
 /**
  * 新增數據
  */
-export async function tieAccount({ tied, account, tieDate, untieDate, remark }) {
+export async function tieAccount({ tied, tiedName, account, accountName, tieDate, untieDate, remark }) {
   try {
-    const result = await accountTie({ tied, account, tieDate, untieDate, remark });
+    const result = await accountTie({ tied, tiedName, account, accountName, tieDate, untieDate, remark });
     if (result) {
       return new SuccessModel(result);
     }
@@ -122,9 +122,9 @@ export async function tieAccount({ tied, account, tieDate, untieDate, remark }) 
 /**
  * 修改數據
  */
-export async function modifyTieAccount({ id, tieDate, untieDate, remark }) {
+export async function modifyTieAccount({ id, tiedName, accountName, tieDate, untieDate, remark }) {
   try {
-    const result = await accountTieUpdate({ id, tieDate, untieDate, remark });
+    const result = await accountTieUpdate({ id, tiedName, accountName, tieDate, untieDate, remark });
     if (result) {
       return new SuccessModel(result);
     }
