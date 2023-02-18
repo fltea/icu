@@ -29,20 +29,20 @@ export async function chapterInfo({ id, url }) {
   }
 }
 
-export async function chapterAdd({ url, title, novel, content, author }) {
+export async function chapterAdd({ url, title, novel, content, author, authorId, authorLink, authorIp, platform, platformId, clutter, tag, publishTime }) {
   try {
-    const result = await Chapter.create({ url, title, novel, content, author });
+    const result = await Chapter.create({ url, title, novel, content, author, authorId, authorLink, authorIp, platform, platformId, clutter, tag, publishTime });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
-export async function chapterUpdate({ id, url, title, novel, content, author }) {
+export async function chapterUpdate({ id, title, content, author, tag }) {
   try {
     const where = {
       id,
     };
-    const result = await Chapter.update({ url, title, novel, content, author }, {
+    const result = await Chapter.update({ title, content, author, tag }, {
       where,
     });
     return result[0] > 0;
@@ -69,7 +69,7 @@ export async function chapterBulk(list) {
   try {
     const result = [];
     const dataes = [];
-    const keys = ['url', 'title', 'novel', 'content', 'author'];
+    const keys = ['url', 'title', 'novel', 'content', 'author', 'authorId', 'authorLink', 'authorIp', 'platform', 'platformId', 'clutter', 'tag', 'publishTime'];
     list.forEach((v) => {
       if (v.url) {
         const item = {};

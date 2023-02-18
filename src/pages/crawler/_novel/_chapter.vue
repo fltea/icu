@@ -21,7 +21,7 @@ const getData = () => {
 watch(() => router, ({ currentRoute }) => {
   const { value } = currentRoute;
   // console.log(value);
-  chapterId.value = value.params.novel;
+  chapterId.value = value.params.chapter;
 }, { immediate: true });
 
 onMounted(getData);

@@ -9,10 +9,10 @@ const menus = [
     name: 'account',
     path: '/account',
   },
-  // {
-  //   name: 'crawler',
-  //   path: '/crawler',
-  // },
+  {
+    name: 'crawler',
+    path: '/crawler',
+  },
   // {
   //   name: 'weibo',
   //   path: '/weibo',

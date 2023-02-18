@@ -25,7 +25,7 @@ import {
 /**
  * 如果存在list则保存到数据库
  */
-function url2chapters(id, url) {
+function url2chapters({ id, url, clutter }) {
   const listId = hash(url);
   const listData = reqiureFile(`${TEMP_DIR}/${listId}`);
   const list = JSON.parse(listData).map((v) => ({
@@ -34,6 +34,7 @@ function url2chapters(id, url) {
     content: '',
     author: '',
     novel: id,
+    clutter,
   }));
   chapterBulk(list);
 }
@@ -83,7 +84,7 @@ export async function createNovel({ url, title, content, clutter, author, finish
     const novel = { url, title, content, clutter, author, finish, origin, loaded };
     result = await novelAdd(novel);
     if (result) {
-      url2chapters(result.id, url);
+      url2chapters(result);
       return new SuccessModel(result);
     }
     return new ErrorModel(addInfo);
@@ -234,9 +235,9 @@ export async function chapterNovel({ url, encode, name, detail, detailex, dstart
 /**
  * 批量保存章节
  */
-export async function listChapter({ url, novel }) {
+export async function listChapter({ url, novel, clutter }) {
   try {
-    if (novel && url) {
+    if (novel && url && clutter) {
       const listId = hash(url);
       let list = reqiureFile(`${TEMP_DIR}/${listId}`);
       list = JSON.parse(list).map((v) => ({
@@ -245,6 +246,7 @@ export async function listChapter({ url, novel }) {
         novel,
         content: '',
         author: '',
+        clutter,
       }));
       list = await chapterBulk(list);
       return list;
@@ -258,13 +260,13 @@ export async function listChapter({ url, novel }) {
 /**
  * 新增章节
  */
-export async function addChapter({ url, title, novel, content, author }) {
+export async function addChapter({ url, title, novel, content, author, clutter }) {
   try {
     let result = await chapterInfo({ url });
     if (result) {
       return new ErrorModel(isExistInfo);
     }
-    result = await chapterAdd({ url, title, novel, content, author });
+    result = await chapterAdd({ url, title, novel, content, author, clutter });
     if (result) {
       return new SuccessModel(result);
     }
@@ -277,9 +279,9 @@ export async function addChapter({ url, title, novel, content, author }) {
 /**
  * 修改章节
  */
-export async function modifyChapter({ id, url, title, novel, content, author }) {
+export async function modifyChapter({ id, title, content, author }) {
   try {
-    const result = await chapterUpdate({ id, url, title, novel, content, author });
+    const result = await chapterUpdate({ id, title, content, author });
     if (result) {
       return new SuccessModel(result);
     }
