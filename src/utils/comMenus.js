@@ -13,6 +13,10 @@ const menus = [
     name: 'crawler',
     path: '/crawler',
   },
+  {
+    name: 'todo',
+    path: '/todo',
+  },
   // {
   //   name: 'weibo',
   //   path: '/weibo',
