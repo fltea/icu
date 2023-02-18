@@ -16,7 +16,7 @@ const router = new Router();
 router.prefix('/api/todo');
 
 router.get('/', async (ctx) => {
-  const result = await getTodos({});
+  const result = await getTodos(ctx.request.gquery);
   // console.log(result)
   ctx.body = result;
 });
@@ -36,7 +36,7 @@ router.post('/modify', genValidator('Todo', validate), async (ctx) => {
   const result = await modifyTodo(ctx.request.body);
   ctx.body = result;
 });
-router.post('/delete', async (ctx) => {
+router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
   const result = await deleteTodo(id);

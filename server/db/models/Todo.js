@@ -1,4 +1,4 @@
-import { STRING, TEXT, DATE, DATEONLY } from '../types.js';
+import { STRING, TEXT, DATE, DATEONLY, INTEGER, BOOLEAN } from '../types.js';
 
 const Todo = {
   model: {
@@ -12,34 +12,32 @@ const Todo = {
       allowNull: false,
       comment: '内容',
     },
+    order: {
+      type: INTEGER,
+      defaultValue: 0,
+      comment: '优先级: 0, 1',
+    },
     beginDate: {
       type: DATEONLY,
       comment: '开始时间',
     },
-    endDate: {
-      type: DATEONLY,
-      comment: '结束时间',
-    },
     deadline: {
-      type: DATE,
+      type: DATEONLY,
       comment: '截止日期',
     },
     completeDate: {
       type: DATE,
       comment: '完成时间',
     },
-    dropDate: {
+    discarded: {
+      type: BOOLEAN,
+      defaultValue: false,
+      comment: '废弃',
+    },
+    disuseTime: {
       type: DATE,
       comment: '放弃时间',
     },
-    remark: {
-      type: TEXT,
-      comment: '备注',
-    },
-  },
-  hasMany: {
-    Article: 'todo',
-    PicTie: 'todo',
   },
 };
 

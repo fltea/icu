@@ -27,27 +27,38 @@ export async function todoInfo(id) {
   }
 }
 
-export async function todoList({ title, content, completeDate, page = 1, limit = PAGE_SIZE }) {
+export async function todoList({ title, content, beginDate, deadline, completeDate, discarded, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
     const where = {};
 
     if (title) {
       where.title = {
-        [Op.like]: title,
+        [Op.like]: `%${title}%`,
       };
     }
     if (content) {
       where.content = {
-        [Op.like]: content,
+        [Op.like]: `%${content}%`,
       };
     }
+    if (beginDate) {
+      where.beginDate = beginDate;
+    }
+    if (deadline) {
+      where.deadline = deadline;
+    }
+    if (discarded) {
+      where.discarded = discarded;
+    }
     if (completeDate) {
-      where.beginDate = {
+      where.completeDate = {
         [Op.lte]: completeDate,
       };
     }
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {
@@ -58,29 +69,54 @@ export async function todoList({ title, content, completeDate, page = 1, limit =
     const result = await Todo.findAndCountAll(search);
     const list = result.rows.map((row) => row.dataValues);
 
-    return {
+    const data = {
       count: result.count,
       list,
     };
+    if (page) {
+      data.page = page;
+      data.limit = limit;
+    }
+    return data;
   } catch (error) {
     throw new Error(error);
   }
 }
 
-export async function todoAdd({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
+export async function todoAdd({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
   try {
-    const result = await Todo.create({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark });
+    const result = await Todo.create({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded });
     return result.dataValues;
   } catch (error) {
     throw new Error(error);
   }
 }
-export async function todoUpdate({ id, title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
+export async function todoUpdate({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
   try {
     const where = {
       id,
     };
-    const result = await Todo.update({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }, {
+    const todo = {
+      order,
+      deadline,
+      discarded,
+    };
+    if (content) {
+      todo.content = content;
+    }
+    if (beginDate) {
+      todo.beginDate = beginDate;
+    }
+    if (deadline) {
+      todo.deadline = deadline;
+    }
+    if (completeDate) {
+      todo.completeDate = completeDate;
+    }
+    if (disuseTime) {
+      todo.disuseTime = disuseTime;
+    }
+    const result = await Todo.update(todo, {
       where,
     });
     return result[0] > 0;
@@ -107,7 +143,7 @@ export async function todoBulk(list) {
   try {
     const result = [];
     const dataes = [];
-    const keys = ['title', 'content', 'beginDate', 'endDate', 'deadline', 'completeDate', 'dropDate', 'remark'];
+    const keys = ['title', 'content', 'order', 'beginDate', 'deadline', 'completeDate', 'disuseTime', 'discarded'];
     list.forEach((v) => {
       if (v.url) {
         const item = {};
@@ -122,8 +158,8 @@ export async function todoBulk(list) {
       while (len > 0) {
         const datas = dataes.splice(0, 100);
         let values = await Todo.bulkCreate(datas, { ignoreDuplicates: true });
-        console.log('list', values);
         values = values.map((row) => row.dataValues);
+        values = values.filter((v) => !!v.id);
         result.push(...values);
         len = dataes.length;
       }

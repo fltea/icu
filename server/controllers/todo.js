@@ -16,11 +16,9 @@ import {
  */
 export async function getTodo(id) {
   try {
-    if (id) {
-      const result = await todoInfo(id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const result = await todoInfo(id);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(notExistInfo);
   } catch (error) {
@@ -31,9 +29,9 @@ export async function getTodo(id) {
 /**
  * 獲取列表
  */
-export async function getTodos({ title, content, completeDate, page, limit }) {
+export async function getTodos({ title, content, beginDate, deadline, completeDate, discarded, page, limit }) {
   try {
-    const result = await todoList({ title, content, completeDate, page, limit });
+    const result = await todoList({ title, content, beginDate, deadline, completeDate, discarded, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -43,9 +41,15 @@ export async function getTodos({ title, content, completeDate, page, limit }) {
 /**
  * 創建數據
  */
-export async function createTodo({ title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
+export async function createTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
   try {
-    const todo = { title, content, beginDate, endDate, deadline, completeDate, dropDate, remark };
+    const todo = { title, content, order, beginDate, deadline, completeDate, disuseTime, discarded };
+    Object.keys(todo).forEach((key) => {
+      if (!todo[key]) {
+        // delete todo[key];
+        // todo[key] = null;
+      }
+    });
     const result = await todoAdd(todo);
     if (result) {
       return new SuccessModel(result);
@@ -74,12 +78,9 @@ export async function createTodos(list) {
 /**
  * 修改數據
  */
-export async function modifyTodo({ id, title, content, beginDate, endDate, deadline, completeDate, dropDate, remark }) {
+export async function modifyTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
   try {
-    if (!id) {
-      return new ErrorModel(schemaFileInfo);
-    }
-    const todo = { id, title, content, beginDate, endDate, deadline, completeDate, dropDate, remark };
+    const todo = { id, content, beginDate, order, deadline, completeDate, discarded, disuseTime };
     const result = await todoUpdate(todo);
     if (result) {
       return new SuccessModel(result);
