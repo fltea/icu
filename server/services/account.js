@@ -42,7 +42,9 @@ export async function accountList({ name, nickName, platform, phone, email, veri
     const where = {};
 
     if (name) {
-      where.name = name;
+      where.name = {
+        [Op.like]: `%${name}%`,
+      };
     }
     if (platform) {
       where.platform = platform;

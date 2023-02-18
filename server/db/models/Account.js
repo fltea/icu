@@ -9,7 +9,6 @@ const Account = {
     },
     nickName: {
       type: STRING,
-      allowNull: false,
       comment: '昵称',
     },
     balance: {

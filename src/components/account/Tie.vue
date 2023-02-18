@@ -1,6 +1,6 @@
 <script setup>
-import { reactive, computed, watch } from 'vue';
-import { tied, tiedMod } from '@/api/account';
+import { ref, reactive, computed, watch } from 'vue';
+import { list, tied, tiedMod } from '@/api/account';
 
 const props = defineProps({
   show: Boolean,
@@ -18,11 +18,28 @@ const dialog = computed({
 const form = reactive({
   id: '',
   tied: '',
+  tiedName: '',
   account: '',
+  accountName: '',
   tieDate: '',
   untieDate: '',
   remark: '',
 });
+const accounts = ref([]);
+
+const getAccounts = () => {
+  console.log(form.accountName);
+  list({
+    name: form.accountName,
+  }).then((res) => {
+    console.log(res);
+    accounts.value = res.list;
+  });
+};
+const selectItem = (item) => {
+  form.account = item.id;
+  form.accountName = item.name;
+};
 
 watch(dialog, (val) => {
   if (val) {
@@ -61,18 +78,21 @@ const save = () => {
 
 <template>
 <com-dialog :show="dialog">
-  <section class="noveler-dialog">
+  <section class="tie-dialog">
     <header>
       <p>ATIE</p>
     </header>
     <main>
       <label>
-        <span class="label-title">tied: </span>
-        <input type="text" v-model="form.tied" />
+        <span class="label-title">tiedName: </span>
+        <input type="text" v-model="form.tiedName" />
       </label>
       <label>
-        <span class="label-title">account:  </span>
-        <input type="text" v-model="form.account" />
+        <span class="label-title">accountName:  </span>
+        <input type="text" v-model="form.accountName" @input="getAccounts"/>
+        <div class="input-list">
+          <div class="inputs-item" v-for="(item, index) in accounts" :key="`accounts${index}`" @click="selectItem(item)">{{ item.name }}</div>
+        </div>
       </label>
       <label>
         <span class="label-title">tieDate:  </span>
@@ -96,4 +116,48 @@ const save = () => {
 </template>
 
 <style lang='less' scoped>
+.tie-dialog {
+  margin: 0 auto;
+  padding: 12px;
+  label {
+    position: relative;
+    margin-top: 12px;
+    display: block;
+    .label-title {
+      margin-right: 8px;
+      display: inline-block;
+      width: 125px;
+      text-align: right;
+    }
+    input,
+    textarea {
+      width: 400px;
+    }
+    textarea {
+      height: 50px;
+      resize: none;
+      vertical-align:middle;
+    }
+    .input-list {
+      position: absolute;
+      left: 133px;
+      right: 0;
+      z-index: 2;
+      background: #f8f8f8;
+      .inputs-item {
+        &:hover {
+          background: red;
+        }
+      }
+    }
+  }
+  header {
+    padding: 6px;
+  }
+  footer {
+    margin-top: 12px;
+    padding: 6px;
+    text-align: center;
+  }
+}
 </style>

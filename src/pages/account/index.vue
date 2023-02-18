@@ -51,6 +51,7 @@ const moreData = () => {
 const tieAccount = (item) => {
   atieData.value = {
     tied: item.id,
+    tiedName: item.name,
   };
   dialogTie.value = true;
 };
@@ -102,7 +103,7 @@ onMounted(listData);
         <div>
           <p>{{item.name}}</p>
           <div class="mark-desc">{{item.nickName || ''}}</div>
-          <div class="mark-control">
+          <div class="list-controls">
             <button @click.stop.prevent="tieAccount(item)">绑定</button>
             <button @click.stop.prevent="editAccount(item)">修改</button>
             <button @click.stop.prevent="deleteAccount(item.id)">删除</button>
