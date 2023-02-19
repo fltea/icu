@@ -29,7 +29,6 @@ const Chapter = {
     },
     clutter: {
       type: INTEGER,
-      allowNull: false,
       comment: 'clutter Id',
     },
     author: {
