@@ -17,6 +17,10 @@ const menus = [
     name: 'todo',
     path: '/todo',
   },
+  {
+    name: 'data',
+    path: '/data',
+  },
   // {
   //   name: 'weibo',
   //   path: '/weibo',

@@ -4,7 +4,7 @@ import { FILE_DIR, BACKUP_DIR } from '../conf/constant.js';
 import catchError from '../utils/tcatch.js';
 
 import models from '../db/models/index.js';
-import { formatDate } from '../utils/tools.js';
+import { formatDate, deepCopy } from '../utils/tools.js';
 import { appendFile, getFiles, reqiureFile, statDir } from '../utils/files.js';
 
 function filepath2url(fpath) {
@@ -51,44 +51,77 @@ export function uploadFile(files) {
  */
 async function getDatas(type) {
   const item = models[type];
+  const belong = {};
   const attris = item.getAttributes();
-  let keys = Object.keys(attris).filter((key) => !!attris[key].references).map((key) => attris[key].references.model);
-  keys = keys.map((key) => key.substr(0, key.length - 1));
-  const search = {};
+  const keys = Object.keys(attris).filter((key) => !!attris[key].references);
   if (keys.length) {
-    const include = [];
-    const includes = [];
     keys.forEach((key) => {
-      let name = key.substr(0, key.length - 1);
+      const { model } = attris[key].references;
+      let name = model.substring(0, model.length - 1);
       let table = models[name];
       if (!table) {
-        table = models[key];
-        name = key;
+        table = models[model];
+        name = model;
       }
+
       if (table) {
-        includes.push(name);
-        include.push(table);
+        belong[key] = {
+          name,
+          model: table,
+        };
       }
     });
-    search.include = include;
-    keys = includes;
   }
-  const result = await item.findAll(search);
-  const list = result.map((row) => {
-    const value = row.dataValues;
-    keys.forEach((key) => {
-      const val = value[key];
-      value[key] = val.dataValues;
-    });
-    return value;
-  });
+  const result = await item.findAll();
+  const list = [];
+  let belongItems;
+  let i = 0;
+  const max = result.length;
+  while (i < max) {
+    const value = result[i].dataValues;
+    const belongs = Object.keys(belong);
+    const bmax = belongs.length;
+    if (bmax) {
+      if (!belongItems) {
+        belongItems = {};
+      }
+      let bindex = 0;
+      while (bindex < bmax) {
+        const bname = belongs[bindex];
+        const val = +value[bname];
+        if (val) {
+          const bItem = belong[bname];
+          if (!belongItems[bItem.name]) {
+            belongItems[bItem.name] = {};
+          }
+          let belongItem = await bItem.model.findOne({
+            where: {
+              id: val,
+            },
+          });
+          if (belongItem) {
+            belongItem = belongItem.dataValues;
+            const { id } = belongItem;
+            value[`belong-${bname}-${bItem.name}`] = id;
+            if (!belongItems[bItem.name][id]) {
+              belongItems[bItem.name][id] = belongItem;
+            }
+          }
+        }
+        bindex += 1;
+      }
+    }
+
+    list.push(value);
+    i += 1;
+  }
 
   if (list.length) {
     const data = {
       list,
     };
-    if (keys.length) {
-      data.belongsTo = keys;
+    if (belongItems) {
+      data.belongsTo = belongItems;
     }
     return data;
   }
@@ -121,49 +154,87 @@ export async function backupDatas() {
 /**
  * 备份数据 还原
  */
+function formatItem(item) {
+  const isAt = /At$/;
+  delete item.id;
+  Object.keys(item).forEach((v) => {
+    if (isAt.test(v)) {
+      delete item[v];
+    }
+  });
+}
+function setData(item, belongsTo) {
+  const value = deepCopy(item);
+  const isBelong = /^belong-/;
+  const keys = Object.keys(value);
+  let index = 0;
+  const max = keys.length;
+  formatItem(value);
+  while (index < max) {
+    const key = keys[index];
+    if (isBelong.test(key)) {
+      const oval = value[key];
+      const arrs = key.split('-');
+      const model = arrs.pop();
+      const attr = arrs.pop();
+      const val = belongsTo[model][oval];
+      value[attr] = +val;
+    }
+    index += 1;
+  }
+
+  return value;
+}
+async function getIds(item, datas) {
+  const keys = Object.keys(datas);
+  let i = 0;
+  const max = keys.length;
+  while (i < max) {
+    const key = keys[i];
+    const value = datas[key];
+    formatItem(value);
+    const bresult = await item.findOne({
+      where: value,
+      attributes: ['id'],
+    });
+    if (bresult) {
+      datas[key] = bresult.dataValues.id;
+    }
+    i += 1;
+  }
+}
 async function setDatas(type, date) {
   const item = models[type];
   const lpath = `${BACKUP_DIR}/${date}`;
   let result = reqiureFile(`${lpath}/${type}.json`);
   if (!result) {
-    return result;
+    return null;
   }
   result = JSON.parse(result);
   if (result.lastTime === date) {
     return result;
   }
-  const { belongsTo, list } = result;
+  const belongsTo = deepCopy(result.belongsTo);
   if (belongsTo) {
     let i = 0;
-    const max = belongsTo.length;
+    const keys = Object.keys(belongsTo);
+    const max = keys.length;
     while (i < max) {
-      await setDatas(belongsTo[i], date);
+      const model = keys[i];
+      // 插入旧数据
+      await setDatas(model, date);
+      // 查询新数据 id
+      const oitems = belongsTo[model];
+      await getIds(models[model], oitems);
       i += 1;
     }
   }
   let li = 0;
+  const { list } = result;
   const max = list.length;
   while (li < max) {
     // const belongsTo
-    const litem = list[li];
-    const belogs = belongsTo.map((key) => litem[key]);
-    let bi = 0;
-    const lmax = belogs.length;
-    while (bi < lmax) {
-      const bitem = belogs[bi];
-      if (bitem) {
-        const key = belongsTo[bi];
-        let bresult = await models[key].findOne({
-          where: bitem,
-        });
-        bresult = bresult.dataValues;
-        litem[key.toLowerCase()] = bresult.id;
-      }
-      bi += 1;
-    }
-    delete litem.id;
-    delete litem.createdAt;
-    delete litem.updatedAt;
+    const litem = setData(list[li], belongsTo);
     await item.create(litem);
     li += 1;
   }
@@ -201,15 +272,7 @@ export async function restoreDatas({ date }) {
  */
 export async function backups() {
   try {
-    let list = getFiles(BACKUP_DIR);
-    console.log(list);
-    list = list.map((v) => {
-      const arrs = v.split('.');
-      if (arrs.length > 1) {
-        arrs.pop();
-      }
-      return arrs.join('.');
-    });
+    const list = getFiles(BACKUP_DIR);
 
     return new SuccessModel(list);
   } catch (error) {

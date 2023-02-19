@@ -3,20 +3,23 @@ import { ref, onMounted } from 'vue';
 import { backups, backup, restore } from '@/api/common';
 
 const listData = ref([]);
+const listDatas = () => {
+  backups().then((res) => {
+    // console.log(res);
+    listData.value = res.data;
+  });
+};
 const backupData = () => {
-  backup();
+  backup().then(() => {
+    listDatas();
+  });
 };
 const restoreData = (date) => {
   restore({
     date,
   });
 };
-onMounted(() => {
-  backups().then((res) => {
-    // console.log(res);
-    listData.value.push(...res.data);
-  });
-});
+onMounted(listDatas);
 </script>
 
 <template>
