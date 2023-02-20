@@ -160,7 +160,7 @@ onMounted(listItems);
 .article-content {
   margin-top: 12px;
   padding: 6px;
-  height: 150px;
+  max-height: 150px;
   overflow: auto;
 }
 .article-controls {
