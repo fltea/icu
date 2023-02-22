@@ -9,6 +9,7 @@ import UserItem from './UserItem.vue';
 const props = defineProps({
   weibo: Object,
   retweeted: Boolean,
+  detail: Boolean,
 });
 const item = computed(() => props.weibo);
 // const media = ref(props.weibo.page_info);
@@ -36,6 +37,12 @@ const saveWeibo = () => {
 const delWeibo = () => {
   console.log(item);
 };
+const linkWeibo = () => {
+  if (!props.detail) {
+    console.log(item);
+    window.open(`/weibo/${item.value.id}`);
+  }
+};
 </script>
 
 <template>
@@ -50,7 +57,7 @@ const delWeibo = () => {
     </template>
   </user-item>
   <section class="weibo-inner">
-    <div v-html="item.text"></div>
+    <div v-html="item.text" @click="linkWeibo"></div>
     <div class="weibo-pics" v-if="item.pics">
       <div v-for="(pic, index) in item.pics" :key="`pics-${index}`" class="pics-item">
         <img class="pics-inner" :src="pic.url">
@@ -111,7 +118,7 @@ const delWeibo = () => {
     .url-icon {
       filter: sepia(100%) saturate(3800%) contrast(75%);
       img {
-        vertical-align: -4px;
+        vertical-align: -1px;
       }
     }
   }

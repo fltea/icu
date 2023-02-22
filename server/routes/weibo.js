@@ -3,18 +3,67 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  getWiebo,
   getHomes,
   getFollows,
+  getFavorites,
+  getDetail,
+  getWiebo,
+  getComments,
   getUsers,
   createSource,
-  getComments,
   getArticles,
 } from '../controllers/weibo.js';
 
 const router = new Router();
 
 router.prefix('/api/weibo');
+
+// home 頁
+router.post('/whome', genValidator('Weibo', validate), async (ctx) => {
+  const result = await getHomes(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+// 關注用戶
+router.post('/wfollow', genValidator('Weibo', validate), async (ctx) => {
+  const result = await getFollows(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+// 收藏列表
+router.post('/wfavorite', genValidator('Weibo', validate), async (ctx) => {
+  const result = await getFavorites(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+// 微博詳情
+router.post('/wdetail', async (ctx) => {
+  const result = await getDetail(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+router.post('/winfo', async (ctx) => {
+  const result = await getWiebo(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+// 微博評論
+router.post('/wcomment', async (ctx) => {
+  const result = await getComments(ctx.request.body);
+  // console.log(result);
+  ctx.body = result;
+});
+// 微博文章
+router.post('/warticle', async (ctx) => {
+  const result = 'await getWiebo(ctx.request.body)';
+  // console.log(result);
+  ctx.body = result;
+});
+
+// 用戶操作
+// 微博操作
+// 文章操作
+
 router.post('/', genValidator('Weibo', validate), async (ctx) => {
   const result = await getHomes(ctx.request.body);
   // console.log(result);

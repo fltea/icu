@@ -24,7 +24,10 @@ function getHeader(cookie, referer) {
   return header;
 }
 
-export async function homeList(cookie, maxId) {
+/**
+ * 獲取home列表
+ */
+export async function homes(cookie, maxId) {
   const result = {};
   try {
     let list = await request({
@@ -46,6 +49,9 @@ export async function homeList(cookie, maxId) {
   return result;
 }
 
+/**
+ * 獲取follow列表
+ */
 export async function follows(cookie, page) {
   const result = {};
   try {
@@ -88,6 +94,108 @@ export async function follows(cookie, page) {
   return result;
 }
 
+/**
+ * 獲取favorite列表
+ */
+export async function favorites(cookie, page) {
+  const result = {};
+  try {
+    let url = WEIBO_CONF.favorite;
+    if (page > 1) {
+      url += `&page=${page}`;
+    }
+    let data = await request({
+      url,
+      header: getHeader(cookie),
+      method: 'GET',
+    });
+    data = getData(data);
+    if (data.ok) {
+      data = data.data || {};
+      const { cards = [] } = data;
+      const list = cards.filter((v) => v.card_type === 9).map((v) => v.mblog);
+      result.list = list;
+    } else {
+      result.error = data;
+    }
+  } catch (error) {
+    result.error = error;
+  }
+  return result;
+}
+
+/**
+ * 獲取詳情數據
+ */
+export async function weiboDetail(cookie, id) {
+  const result = {};
+  try {
+    let data = await request({
+      url: WEIBO_CONF.detailS.replace(/\{id}/g, id),
+      header: getHeader(cookie),
+      method: 'GET',
+    });
+    data = getData(data);
+    if (data.ok) {
+      data = data.data || {};
+      // console.log(data);
+      result.data = data;
+    } else {
+      result.error = data;
+    }
+  } catch (error) {
+    result.error = error;
+  }
+  return result;
+}
+export async function weiboInfo(cookie, id) {
+  const result = {};
+  try {
+    let data = await request({
+      url: WEIBO_CONF.detailE.replace(/\{id}/g, id),
+      header: getHeader(cookie),
+      method: 'GET',
+    });
+    data = getData(data);
+    if (data.ok) {
+      data = data.data || {};
+      // console.log(data);
+      result.detail = data.longTextContent;
+      result.comments_count = data.comments_count;
+    } else {
+      result.error = data;
+    }
+  } catch (error) {
+    result.error = error;
+  }
+  return result;
+}
+
+/**
+ * 獲取評論列表
+ */
+export async function weiboComment(cookie, id) {
+  const result = {};
+  try {
+    let data = await request({
+      url: WEIBO_CONF.comment.replace(/\{id}/g, id),
+      header: getHeader(cookie, WEIBO_CONF.detail.replace(/\{id}/g, id)),
+      method: 'GET',
+    });
+    // console.log(data);
+    data = getData(data);
+    if (data.ok) {
+      data = data.data || {};
+      result.list = data.data || [];
+    } else {
+      result.error = data;
+    }
+  } catch (error) {
+    result.error = error;
+  }
+  return result;
+}
+
 export async function userList(uid, sinceId) {
   // console.log('userList', uid, sinceId);
   const result = {};
@@ -121,51 +229,6 @@ export async function userList(uid, sinceId) {
       }
 
       result.list = list;
-    } else {
-      result.error = data;
-    }
-  } catch (error) {
-    result.error = error;
-  }
-  return result;
-}
-
-export async function weiboInfo(cookie, id) {
-  const result = {};
-  try {
-    let data = await request({
-      url: WEIBO_CONF.detailE.replace(/\{id}/g, id),
-      header: getHeader(cookie),
-      method: 'GET',
-    });
-    // console.log(data);
-    data = getData(data);
-    if (data.ok) {
-      data = data.data || {};
-      result.detail = data.longTextContent;
-      result.comments_count = data.comments_count;
-    } else {
-      result.error = data;
-    }
-  } catch (error) {
-    result.error = error;
-  }
-  return result;
-}
-
-export async function weiboComment(cookie, id) {
-  const result = {};
-  try {
-    let data = await request({
-      url: WEIBO_CONF.comment.replace(/\{id}/g, id),
-      header: getHeader(cookie, WEIBO_CONF.detail.replace(/\{id}/g, id)),
-      method: 'GET',
-    });
-    // console.log(data);
-    data = getData(data);
-    if (data.ok) {
-      data = data.data || {};
-      result.list = data.data || [];
     } else {
       result.error = data;
     }

@@ -21,10 +21,10 @@ const menus = [
     name: 'data',
     path: '/data',
   },
-  // {
-  //   name: 'weibo',
-  //   path: '/weibo',
-  // },
+  {
+    name: 'weibo',
+    path: '/weibo',
+  },
   // {
   //   name: 'douban',
   //   path: '/douban',

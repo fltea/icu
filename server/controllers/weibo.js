@@ -6,11 +6,13 @@ import { formatDate, sleep } from '../utils/tools.js';
 import { downSource } from '../utils/files.js';
 
 import {
-  homeList,
+  homes,
   follows,
-  userList,
+  favorites,
+  weiboDetail,
   weiboInfo,
   weiboComment,
+  userList,
   weiboArticle,
   weiboArticleP,
 } from '../services/weibo.js';
@@ -28,8 +30,57 @@ import {
 } from '../services/video.js';
 
 /**
- * 獲取單個數據
+ * 獲取home列表
  */
+export async function getHomes({ maxId, cookie }) {
+  try {
+    const result = await homes(cookie, maxId);
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 獲取follow列表
+ */
+export async function getFollows({ page, cookie }) {
+  try {
+    const result = await follows(cookie, page);
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 獲取favorite列表
+ */
+export async function getFavorites({ page, cookie }) {
+  try {
+    const result = await favorites(cookie, page);
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 獲取詳情數據
+ */
+export async function getDetail({ id, cookie }) {
+  try {
+    if (id) {
+      const result = await weiboDetail(cookie, id);
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+    return new ErrorModel(errorInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
 export async function getWiebo({ id, cookie }) {
   try {
     if (id) {
@@ -45,23 +96,17 @@ export async function getWiebo({ id, cookie }) {
 }
 
 /**
- * 獲取列表
+ * 獲取評論列表
  */
-export async function getFollows({ page, cookie }) {
+export async function getComments({ id, cookie }) {
   try {
-    const result = await follows(cookie, page);
-    return new SuccessModel(result);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-/**
- * 獲取列表
- */
-export async function getUsers({ uid, sinceId }) {
-  try {
-    const result = await userList(uid, sinceId);
-    return new SuccessModel(result);
+    if (id) {
+      const result = await weiboComment(cookie, id);
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+    return new ErrorModel(errorInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -70,9 +115,9 @@ export async function getUsers({ uid, sinceId }) {
 /**
  * 獲取列表
  */
-export async function getHomes({ maxId, cookie }) {
+export async function getUsers({ uid, sinceId }) {
   try {
-    const result = await homeList(cookie, maxId);
+    const result = await userList(uid, sinceId);
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -142,23 +187,6 @@ export async function createSource(weibo) {
       return new SuccessModel(result);
     }
     return new ErrorModel(addInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-
-/**
- * 獲取評論列表
- */
-export async function getComments({ id, cookie }) {
-  try {
-    if (id) {
-      const result = await weiboComment(cookie, id);
-      if (result) {
-        return new SuccessModel(result);
-      }
-    }
-    return new ErrorModel(errorInfo);
   } catch (error) {
     return catchError(error);
   }
