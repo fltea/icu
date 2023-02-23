@@ -8,8 +8,8 @@ import {
   getFavorites,
   getDetail,
   getWiebo,
-  getComments,
-  getUsers,
+  getComment,
+  getUser,
   createSource,
   getArticles,
 } from '../controllers/weibo.js';
@@ -49,13 +49,20 @@ router.post('/winfo', async (ctx) => {
 });
 // 微博評論
 router.post('/wcomment', async (ctx) => {
-  const result = await getComments(ctx.request.body);
+  const result = await getComment(ctx.request.body);
   // console.log(result);
   ctx.body = result;
 });
 // 微博文章
 router.post('/warticle', async (ctx) => {
   const result = 'await getWiebo(ctx.request.body)';
+  // console.log(result);
+  ctx.body = result;
+});
+
+// 微博用戶
+router.post('/wuser', async (ctx) => {
+  const result = await getUser(ctx.request.body);
   // console.log(result);
   ctx.body = result;
 });
@@ -76,7 +83,7 @@ router.post('/follows', genValidator('Weibo', validate), async (ctx) => {
 });
 
 router.post('/userlist', async (ctx) => {
-  const result = await getUsers(ctx.request.body);
+  const result = await getUser(ctx.request.body);
   // console.log(result);
   ctx.body = result;
 });
@@ -94,7 +101,7 @@ router.post('/detail', async (ctx) => {
 });
 
 router.post('/comments', async (ctx) => {
-  const result = await getComments(ctx.request.body);
+  const result = await getComment(ctx.request.body);
   // console.log(result);
   ctx.body = result;
 });

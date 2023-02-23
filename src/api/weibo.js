@@ -26,8 +26,19 @@ export const wdetail = (data) => request({
   method: 'post',
   data,
 });
+export const winfo = (data) => request({
+  url: `${url}/winfo`,
+  method: 'post',
+  data,
+});
 export const wcomment = (data) => request({
   url: `${url}/wcomment`,
+  method: 'post',
+  data,
+});
+
+export const wuser = (data) => request({
+  url: `${url}/wuser`,
   method: 'post',
   data,
 });

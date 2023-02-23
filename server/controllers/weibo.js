@@ -98,7 +98,7 @@ export async function getWiebo({ id, cookie }) {
 /**
  * 獲取評論列表
  */
-export async function getComments({ id, cookie }) {
+export async function getComment({ id, cookie }) {
   try {
     if (id) {
       const result = await weiboComment(cookie, id);
@@ -115,9 +115,9 @@ export async function getComments({ id, cookie }) {
 /**
  * 獲取列表
  */
-export async function getUsers({ uid, sinceId }) {
+export async function getUser({ id, sinceId, cookie }) {
   try {
-    const result = await userList(uid, sinceId);
+    const result = await userList({ id, sinceId, cookie });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);

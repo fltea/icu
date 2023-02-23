@@ -5,6 +5,7 @@ import { addClutter } from '@/api/common';
 const props = defineProps({
   user: Object,
   noAct: Boolean,
+  detail: Boolean,
 });
 // const user = computed(() => props.user);
 const saveUser = () => {
@@ -15,10 +16,18 @@ const saveUser = () => {
     phrase: item.id,
   });
 };
+
+const linkUser = () => {
+  if (!props.detail) {
+    const item = props.user;
+    console.log(item);
+    window.open(`/weibo/user/${item.id}`);
+  }
+};
 </script>
 
 <template>
-  <section class="weibo-user" :class="{'no-act': noAct}" v-if="user">
+  <section class="weibo-user" :class="{'no-act': noAct}" v-if="user" @click="linkUser">
     <img class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
     <p>{{user.screen_name}}  <slot name="created_at"></slot></p>
     <p class="user-desc">{{user.description}}</p>

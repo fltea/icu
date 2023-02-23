@@ -196,24 +196,29 @@ export async function weiboComment(cookie, id) {
   return result;
 }
 
-export async function userList(uid, sinceId) {
+/**
+ * 用戶微博列表
+ * @param {*} uid
+ * @param {*} sinceId
+ */
+export async function userList({ id, sinceId, cookie }) {
   // console.log('userList', uid, sinceId);
   const result = {};
   try {
-    let url = WEIBO_CONF.userList.replace(/\{id}/g, uid);
+    let url = WEIBO_CONF.userList.replace(/\{id}/g, id);
     if (sinceId) {
       url += `&since_id=${sinceId}`;
     }
     let data = await request({
       url,
-      header: getHeader(),
+      header: getHeader(cookie),
       method: 'GET',
     });
     data = getData(data);
     // console.log('userList data', data);
     if (data.ok) {
       data = data.data || {};
-      const { cards = [] } = data;
+      const { cards = [], cardlistInfo = {} } = data;
       const list = [];
       if (Array.isArray(cards)) {
         cards.forEach((card) => {
@@ -229,6 +234,7 @@ export async function userList(uid, sinceId) {
       }
 
       result.list = list;
+      result.sinceId = cardlistInfo.since_id || '';
     } else {
       result.error = data;
     }
