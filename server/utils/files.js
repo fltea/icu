@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 
-import { FILE_DIR, LOG_DIR, UserAgent } from '../conf/constant.js';
+import { FILE_DIR, LOG_DIR, TEMP_DIR, UserAgent } from '../conf/constant.js';
 import { formatDate } from './tools.js';
+import hash from './crypto.js';
 import request from './request.js';
 
 /**
@@ -77,4 +78,20 @@ export async function downSource(url, name, referer) {
 export function getFiles(fpath) {
   const result = fs.readdirSync(fpath);
   return result;
+}
+
+// 暂存list在服务器
+export function setHashList(name, list) {
+  const listId = hash(name);
+  if (!Array.isArray(list)) {
+    list = [list];
+  }
+  appendFile(`${TEMP_DIR}/${listId}`, JSON.stringify(list), { flag: 'w' });
+}
+
+// 从服务器获取list
+export function getHashList(name) {
+  const listId = hash(name);
+  const list = reqiureFile(`${TEMP_DIR}/${listId}`);
+  return JSON.parse(list);
 }
