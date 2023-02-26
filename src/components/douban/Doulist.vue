@@ -21,6 +21,7 @@ const form = reactive({
   id: '',
   title: '',
   aurthor: '',
+  aurthorIp: '',
   aurthorLink: '',
   content: '',
 });
@@ -101,6 +102,10 @@ watch(() => props.doulist, (val) => {
       <label>
         <span class="label-title">aurthorLink: </span>
         <input type="text" v-model="form.aurthorLink" />
+      </label>
+      <label>
+        <span class="label-title">aurthorIp: </span>
+        <input type="text" v-model="form.aurthorIp" />
       </label>
       <label>
         <span class="label-title">content: </span>

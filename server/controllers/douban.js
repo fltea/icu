@@ -2,11 +2,12 @@ import { schemaFileInfo, addInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 import { formatDate, sleep } from '../utils/tools.js';
-import { downSource, appendFile, reqiureFile } from '../utils/files.js';
-import { TEMP_DIR } from '../conf/constant.js';
-import hash from '../utils/crypto.js';
+import { downSource, setHashList, getHashList } from '../utils/files.js';
+import { durlist, durl, dDetail } from '../crawler/douban.js';
 
 import {
+  // durl,
+  // durlist,
   doulist,
   details,
 } from '../services/douban.js';
@@ -26,6 +27,71 @@ import {
 } from '../services/article.js';
 
 /**
+ * 根据url获取豆列
+ */
+export async function getDurl({ cookie, url }) {
+  try {
+    const isDoulist = url.includes('doulist');
+    if (isDoulist) {
+      const isList = url.includes('doulists');
+      let result;
+      if (isList) {
+        if (cookie) {
+          result = await durlist(url, cookie);
+          let { nextPage } = result;
+          while (nextPage) {
+            await sleep(3000);
+            const nresult = await durlist(nextPage, cookie);
+            nextPage = nresult.nextPage;
+            if (nresult.list) {
+              result.list.push(...nresult.list);
+            }
+            if (nextPage === url) {
+              nextPage = '';
+            }
+          }
+        }
+      } else {
+        result = await durl(url, cookie);
+        let { nextPage } = result;
+        while (nextPage) {
+          await sleep(3000);
+          const nresult = await durl(nextPage);
+          nextPage = nresult.nextPage;
+          if (nresult.list) {
+            result.list.push(...nresult.list);
+          }
+          if (nextPage === url) {
+            nextPage = '';
+          }
+        }
+        if (result.list) {
+          setHashList(url, result.list);
+        }
+      }
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+    return new ErrorModel(schemaFileInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 根据 url 获取详情
+ */
+export async function getDetail({ url, cookie }) {
+  try {
+    const result = await dDetail(url, cookie);
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
  * 獲取 doulist
  */
 export async function getDoulist({ id, page, nolist }) {
@@ -34,8 +100,7 @@ export async function getDoulist({ id, page, nolist }) {
       const result = await doulist(id, page);
       if (result) {
         // 暂存list在服务器
-        const tempId = hash(`doulist${id}`);
-        appendFile(`${TEMP_DIR}/${tempId}`, JSON.stringify(result.pages), { flag: 'w' });
+        setHashList(`doulist${id}`, result.pages);
 
         if (nolist) {
           delete result.pages;
@@ -56,9 +121,8 @@ export async function getDoulist({ id, page, nolist }) {
 export async function saveDoulistList({ id, clutter }) {
   try {
     if (id) {
-      const listId = hash(`doulist${id}`);
-      let list = reqiureFile(`${TEMP_DIR}/${listId}`);
-      list = JSON.parse(list).map((v) => ({
+      let list = getHashList(`doulist${id}`);
+      list = list.map((v) => ({
         link: v.url,
         title: v.title,
         clutter: +clutter,

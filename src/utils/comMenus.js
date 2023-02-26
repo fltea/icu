@@ -25,10 +25,10 @@ const menus = [
     name: 'weibo',
     path: '/weibo',
   },
-  // {
-  //   name: 'douban',
-  //   path: '/douban',
-  // },
+  {
+    name: 'douban',
+    path: '/douban',
+  },
 ];
 
 export default menus;
