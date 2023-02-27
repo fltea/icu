@@ -14,22 +14,33 @@ const router = new Router();
 
 router.prefix('/api/douban');
 
+// 爬虫数据
 // 根据url获取豆列
 router.post('/durl', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
+  const result = await getDurl(ctx.request.body);
+  ctx.body = result;
+});
+// 根据url获取豆列详情
+router.post('/durl/list', async (ctx) => {
   const result = await getDurl(ctx.request.body);
   ctx.body = result;
 });
 // 获取详情
-router.post('/detail', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
+router.post('/durl/detail', async (ctx) => {
   const result = await getDetail(ctx.request.body);
   ctx.body = result;
 });
+
+// 数据库操作
 // 获取豆列
 router.get('/doulist', async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   // const result = await getDetail(ctx.request.body);
+  ctx.body = 'result';
+});
+// 获取豆列详情
+router.get('/doulist/:id', async (ctx) => {
+  // const result = await saveDoulistList(ctx.request.body);
   ctx.body = 'result';
 });
 // 新增豆列
@@ -39,11 +50,6 @@ router.post('/doulist/add', async (ctx) => {
 });
 // 修改豆列
 router.post('/doulist/modify', async (ctx) => {
-  // const result = await saveDoulistList(ctx.request.body);
-  ctx.body = 'result';
-});
-// 获取豆列的文章
-router.post('/doulist/list', async (ctx) => {
   // const result = await saveDoulistList(ctx.request.body);
   ctx.body = 'result';
 });

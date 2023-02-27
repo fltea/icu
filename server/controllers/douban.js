@@ -27,6 +27,48 @@ import {
 } from '../services/article.js';
 
 /**
+ * 根据url获取页面所有豆列
+ */
+async function durlList(url, cookie) {
+  const result = await durlist(url, cookie);
+  let { nextPage } = result;
+  while (nextPage) {
+    await sleep(3000);
+    const nresult = await durlist(nextPage, cookie);
+    nextPage = nresult.nextPage;
+    if (nresult.list) {
+      result.list.push(...nresult.list);
+    }
+    if (nextPage === url) {
+      nextPage = '';
+    }
+  }
+  return result;
+}
+
+/**
+ * 根据url获取豆列详情
+ */
+async function durlDetail(url, cookie) {
+  const result = await durl(url, cookie);
+  let { nextPage } = result;
+  while (nextPage) {
+    await sleep(3000);
+    const nresult = await durl(nextPage);
+    nextPage = nresult.nextPage;
+    if (nresult.list) {
+      result.list.push(...nresult.list);
+    }
+    if (nextPage === url) {
+      nextPage = '';
+    }
+  }
+  if (result.list) {
+    setHashList(url, result.list);
+  }
+  return result;
+}
+/**
  * 根据url获取豆列
  */
 export async function getDurl({ cookie, url }) {
@@ -37,41 +79,12 @@ export async function getDurl({ cookie, url }) {
       let result;
       if (isList) {
         if (cookie) {
-          result = await durlist(url, cookie);
-          let { nextPage } = result;
-          while (nextPage) {
-            await sleep(3000);
-            const nresult = await durlist(nextPage, cookie);
-            nextPage = nresult.nextPage;
-            if (nresult.list) {
-              result.list.push(...nresult.list);
-            }
-            if (nextPage === url) {
-              nextPage = '';
-            }
-          }
+          result = await durlList(url, cookie);
         }
       } else {
-        result = await durl(url, cookie);
-        let { nextPage } = result;
-        while (nextPage) {
-          await sleep(3000);
-          const nresult = await durl(nextPage);
-          nextPage = nresult.nextPage;
-          if (nresult.list) {
-            result.list.push(...nresult.list);
-          }
-          if (nextPage === url) {
-            nextPage = '';
-          }
-        }
-        if (result.list) {
-          setHashList(url, result.list);
-        }
+        result = await durlDetail(url, cookie);
       }
-      if (result) {
-        return new SuccessModel(result);
-      }
+      return new SuccessModel(result);
     }
     return new ErrorModel(schemaFileInfo);
   } catch (error) {
@@ -80,7 +93,7 @@ export async function getDurl({ cookie, url }) {
 }
 
 /**
- * 根据 url 获取详情
+ * 根据 url 获取页面详情
  */
 export async function getDetail({ url, cookie }) {
   try {

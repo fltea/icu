@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { durl, detail } from '@/api/douban';
+import { durl, durlList } from '@/api/douban';
 
 import InputDialog from '@/components/InputDialog.vue';
 import Doulist from '@/components/douban/Doulist.vue';
@@ -37,7 +37,7 @@ const newItems = (url) => {
   });
 };
 const newItem = () => {
-  detail({
+  durlList({
     cookie,
     url: 'https://movie.douban.com/subject/26213252/',
   }).then((res) => {

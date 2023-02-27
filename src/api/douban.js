@@ -7,8 +7,13 @@ export const durl = (data) => request({
   method: 'post',
   data,
 });
-export const detail = (data) => request({
-  url: `${url}/detail`,
+export const durlList = (data) => request({
+  url: `${url}/durl/list`,
+  method: 'post',
+  data,
+});
+export const durlDetail = (data) => request({
+  url: `${url}/durl/detail`,
   method: 'post',
   data,
 });
