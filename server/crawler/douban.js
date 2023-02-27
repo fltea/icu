@@ -2,8 +2,8 @@ import hparser from 'node-html-parser';
 import request from '../utils/request.js';
 import { getHeader, getAttrs, getText, getList } from '../utils/crawler.js';
 
-function getWrapper(root) {
-  const wrapper = root.querySelector('#wrapper ul');
+function getWrapper(root, selector = '#wrapper ul') {
+  const wrapper = root.querySelector(selector);
   return getText(wrapper);
 }
 
@@ -374,6 +374,11 @@ export async function durlist(url, cookie) {
 
   const result = {};
   const root = hparser.parse(html);
+  const listCom = root.querySelector('.doulist-list');
+  if (!listCom) {
+    result.content = getWrapper(root, '.out');
+    return result;
+  }
   const list = root.querySelectorAll('.doulist-list h3 a');
   result.list = list.map((v) => ({
     name: v.text,
@@ -411,6 +416,10 @@ export async function durl(url, cookie) {
   const result = {};
   const root = hparser.parse(html);
   const content = root.querySelector('#content');
+  if (!content) {
+    result.content = getWrapper(root);
+    return result;
+  }
   // 标题
   let dom = content.querySelector('h1');
   if (dom) {
@@ -487,6 +496,108 @@ export async function durl(url, cookie) {
   if (nextPage) {
     result.nextPage = nextPage.getAttribute('href');
   }
+  return result;
+}
+
+/**
+ * 根据 url 获取所有小组
+ */
+export async function gurlist(url, cookie) {
+  const html = await request({
+    url,
+    header: getHeader(cookie),
+    method: 'GET',
+  });
+  // console.log(html);
+  const result = {};
+
+  const root = hparser.parse(html);
+  const listCom = root.querySelector('.group-list');
+  if (!listCom) {
+    result.content = getWrapper(root);
+    return result;
+  }
+  const dom = root.querySelectorAll('.group-cards .title a');
+  if (dom) {
+    result.list = getList(dom);
+  }
+
+  return result;
+}
+
+/**
+ * 获取小组详情
+ */
+export async function gurl(url, cookie) {
+  const html = await request({
+    url,
+    header: getHeader(cookie),
+    method: 'GET',
+  });
+  const result = {};
+  const root = hparser.parse(html);
+  const listCom = root.querySelector('#group-topics');
+  if (!listCom) {
+    result.content = getWrapper(root);
+    return result;
+  }
+  // 小组信息
+  // 组名
+  let dom = root.querySelector('#group-info h1');
+  if (dom) {
+    result.name = getText(dom);
+  }
+  // 小组信息
+  dom = root.querySelector('.group-info-item.group-loc');
+  if (dom) {
+    result.info = getText(dom, 'innerHTML');
+  }
+  dom = root.querySelector('.group-info-item.group-intro');
+  if (dom) {
+    result.content = getText(dom, 'innerHTML');
+  }
+  // 发言规则
+  dom = root.querySelector('.group-info-item.group-rules');
+  if (dom) {
+    result.rules = getText(dom, 'innerHTML');
+  }
+  // 标签
+  dom = root.querySelectorAll('.group-tags a');
+  if (dom) {
+    result.tags = getList(dom);
+  }
+
+  // 讨论
+  dom = root.querySelectorAll('.topic-tab a');
+  if (dom) {
+    result.tabs = getList(dom);
+  }
+
+  dom = root.querySelectorAll('#group-topics tr');
+  if (dom) {
+    result.topics = dom.map((tr) => {
+      const item = {};
+      const tds = tr.querySelectorAll('td');
+      let idom = tds.shift();
+      item.title = getText(idom);
+      idom = idom.querySelector('a');
+      if (idom) {
+        item.url = idom.getAttribute('href');
+      }
+      idom = tds.shift();
+      idom = idom.querySelector('a');
+      item.author = getText(idom);
+      if (idom) {
+        item.authorLink = idom.getAttribute('href');
+      }
+      idom = tds.shift();
+      item.count = +getText(idom);
+      idom = tds.shift();
+      item.updateTime = getText(idom);
+      return item;
+    });
+  }
+
   return result;
 }
 

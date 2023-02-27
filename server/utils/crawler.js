@@ -81,6 +81,7 @@ export function getList(doms, preurl, listSort) {
     return {
       name,
       url: `${preurl || ''}${url}`,
+      className: a.classList.value.join(' '),
     };
   });
   if (listSort) {

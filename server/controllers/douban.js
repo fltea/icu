@@ -3,7 +3,7 @@ import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 import { formatDate, sleep } from '../utils/tools.js';
 import { downSource, setHashList, getHashList } from '../utils/files.js';
-import { durlist, durl, dDetail } from '../crawler/douban.js';
+import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
 
 import {
   // durl,
@@ -73,16 +73,28 @@ async function durlDetail(url, cookie) {
  */
 export async function getDurl({ cookie, url }) {
   try {
-    const isDoulist = url.includes('doulist');
-    if (isDoulist) {
-      const isList = url.includes('doulists');
-      let result;
-      if (isList) {
-        if (cookie) {
-          result = await durlList(url, cookie);
-        }
+    let result = null;
+    if (url.includes('doulist')) {
+      if (url.includes('doulists')) {
+        result = await durlList(url, cookie);
       } else {
         result = await durlDetail(url, cookie);
+      }
+      return new SuccessModel(result);
+    }
+    if (url.includes('/group/')) {
+      if (url.includes('group/topic/')) {
+        result = await durlDetail(url, cookie);
+      } else {
+        const urls = url.split('/');
+        const index = urls.findIndex((v) => v === 'group') + 1;
+        if (urls[index] === 'people' && urls.includes('joins')) {
+          // 豆瓣小组列表页面
+          result = await gurlist(url, cookie);
+        } else if (typeof +urls[index] === 'number') {
+          // 小组首页
+          result = await gurl(url, cookie);
+        }
       }
       return new SuccessModel(result);
     }

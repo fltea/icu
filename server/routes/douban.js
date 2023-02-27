@@ -3,7 +3,6 @@ import Router from 'koa-router';
 import {
   getDurl,
   getDetail,
-  // getDoulist,
   getDetails,
   createSource,
 // getDoulistList,
@@ -15,12 +14,12 @@ const router = new Router();
 router.prefix('/api/douban');
 
 // 爬虫数据
-// 根据url获取豆列
+// 根据url获取豆列/小组/豆列/小组详情
 router.post('/durl', async (ctx) => {
   const result = await getDurl(ctx.request.body);
   ctx.body = result;
 });
-// 根据url获取豆列详情
+// 根据url获取豆列/小组详情
 router.post('/durl/list', async (ctx) => {
   const result = await getDurl(ctx.request.body);
   ctx.body = result;
@@ -54,18 +53,6 @@ router.post('/doulist/modify', async (ctx) => {
   ctx.body = 'result';
 });
 
-// 根据url获取所有的小组
-router.post('/gurl', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  // const result = await getDoulist(ctx.request.body);
-  ctx.body = 'result';
-});
-// 获取小组
-router.get('/group', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  // const result = await getDoulist(ctx.request.body);
-  ctx.body = 'result';
-});
 // 新增小组
 router.post('/group/add', async (ctx) => {
   // const result = await saveDoulistList(ctx.request.body);
@@ -76,13 +63,6 @@ router.post('/group/modify', async (ctx) => {
   // const result = await saveDoulistList(ctx.request.body);
   ctx.body = 'result';
 });
-// 小组的文章
-router.post('/group/list', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  // const result = await getDoulist(ctx.request.body);
-  ctx.body = 'result';
-});
-
 // 操作
 
 // 广播 日记 小组讨论 详情
