@@ -2,7 +2,7 @@ import { errorInfo, isExistInfo, schemaFileInfo } from '../model/ErrorInfos.js';
 import { sleep, randInt } from '../utils/tools.js';
 
 import {
-  getDetails,
+  getDetail,
 } from '../controllers/douban.js';
 
 import {
@@ -40,7 +40,7 @@ async function doulistArticles(ws, data) {
             const scale = randInt(5, 10);
             await sleep(scale * 1000);
           }
-          result = await getDetails({
+          result = await getDetail({
             url: link,
           });
           ws.send(JSON.stringify({

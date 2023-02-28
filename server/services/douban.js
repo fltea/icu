@@ -1,253 +1,186 @@
-import hparser from 'node-html-parser';
-import { UserAgent, DOUBAN_CONF } from '../conf/constant.js';
-import request from '../utils/request.js';
+import models from '../db/models/index.js';
+import { Op } from '../db/types.js';
+import { PAGE_SIZE } from '../conf/constant.js';
 
-function getComment(element) {
-  const item = {};
-  let info = element.querySelector('a');
-  item.userName = info.text;
-  item.userLink = info.getAttribute('href');
-  info = element.querySelector('.pubtime');
-  info = info.text.split(' ');
-  item.origin = info.pop();
-  item.time = info.join(' ');
-  // reply-quote
-  info = element.querySelector('.reply-quote');
-  if (info) {
-    item.reply = info.innerHTML;
+const { Clutter } = models;
+
+/**
+ * 获取豆列
+ */
+export async function doulistList({ title, aurthor, page = 1, limit = PAGE_SIZE }) {
+  const where = {};
+  const ors = [];
+  if (title) {
+    ors.push({
+      [Op.like]: `title:'%${title}%`,
+    });
   }
-  // comment-photos
-  info = element.querySelector('.comment-photos img');
-  if (info) {
-    item.img = info.getAttribute('src');
+  if (aurthor) {
+    ors.push({
+      [Op.like]: `aurthor:'%${aurthor}%`,
+    });
   }
-  info = element.querySelector('.reply-content');
-  item.content = info.innerHTML;
-  return item;
-}
-
-function getGroupTopic(root) {
-  const result = {};
-  try {
-    // 标题
-    let info = root.querySelector('h1') || {};
-    result.title = info.text || '';
-    // 作者
-    info = root.querySelector('.topic-doc a') || {};
-    result.author = info.text || '';
-    // 作者连接
-    result.authorLink = info.getAttribute('href') || '';
-    // 时间
-    info = root.querySelector('.topic-doc .create-time') || {};
-    result.time = info.text || '';
-    // 地址
-    info = root.querySelector('.topic-doc .create-ip') || {};
-    result.origin = info.text || '';
-
-    const article = root.querySelector('#content .article') || {};
-    // 内容
-    const content = article.querySelector('.topic-richtext') || {};
-    result.content = content.innerHTML || '';
-
-    const imgs = content.querySelectorAll('img');
-    if (imgs) {
-      result.imgs = imgs.map((img) => img.getAttribute('src'));
-    }
-    // 最赞回应
-    let pcomments = article.querySelector('#popular-comments .reply-doc');
-    if (pcomments) {
-      pcomments = pcomments.map(getComment);
-      result.pcomments = pcomments;
-    }
-    // 评论
-    let comments = article.querySelectorAll('#comments .reply-doc') || [];
-    comments = comments.map(getComment);
-    result.comments = comments;
-  } catch (error) {
-    result.error = error;
-  }
-  return result;
-}
-
-function getNote(root) {
-  const result = {};
-  try {
-    // 标题
-    let info = root.querySelector('h1') || {};
-    result.title = info.text || '';
-    // 作者
-    info = root.querySelector('.note-header .note-author') || {};
-    result.author = info.text || '';
-    // 作者连接
-    result.authorLink = info.getAttribute('href') || '';
-    // 时间
-    info = root.querySelector('.note-header .pub-date') || {};
-    result.time = info.text || '';
-
-    const article = root.querySelector('#link-report') || {};
-    // tags
-    info = article.querySelectorAll('.mod-tags a');
-    if (info) {
-      result.tags = info.map((v) => v.text);
-    }
-    // 内容
-    const content = article.querySelector('.note') || {};
-    result.content = content.innerHTML || '';
-
-    const imgs = content.querySelectorAll('img');
-    if (imgs) {
-      result.imgs = imgs.map((img) => img.getAttribute('src'));
-    }
-    // 评论
-    let html = root.toString();
-    html = html.match(/comments.:\s(\[{.+}\]),\s+.+total/);
-    // console.log(html && html[1]);
-    if (html && html[1]) {
-      const comments = JSON.parse(html[1]) || [];
-      // console.log(comments);
-      result.comments = comments;
-    }
-  } catch (error) {
-    result.error = error;
-  }
-  return result;
-}
-function getStatus(root) {
-  const result = {};
-  try {
-    // 标题
-    let info = root.querySelector('h1') || {};
-    result.title = info.text || '';
-    // 作者
-    info = root.querySelector('.note-header .note-author') || {};
-    result.author = info.text || '';
-    // 作者连接
-    result.authorLink = info.getAttribute('href') || '';
-    // 时间
-    info = root.querySelector('.note-header .pubtime') || {};
-    result.time = info.text || '';
-
-    const article = root.querySelector('#content .article') || {};
-    // 内容
-    const content = article.querySelector('.topic-richtext') || {};
-    result.content = content.innerHTML || '';
-    // 最赞回应
-    let pcomments = article.querySelector('#popular-comments .reply-doc');
-    if (pcomments) {
-      pcomments = pcomments.map(getComment);
-      result.pcomments = pcomments;
-    }
-    // 评论
-    let comments = article.querySelectorAll('#comments .reply-doc') || [];
-    comments = comments.map(getComment);
-    result.comments = comments;
-  } catch (error) {
-    result.error = error;
-  }
-  return result;
-}
-
-export async function doulist(id, page) {
-  try {
-    const result = {
-      id,
+  if (ors.length) {
+    where.content = {
+      [Op.or]: ors,
     };
-    let url = DOUBAN_CONF.list.replace(/{id}/g, id);
-    if (page > 1) {
-      url += `?start=${(page - 1) * 25}&sort=time&playable=0&sub_type=`;
-    }
-    const html = await request({
-      url,
-      header: {
-        'User-Agent': UserAgent,
-      },
-      method: 'GET',
-    });
-    // console.log(html);
-    const root = hparser.parse(html);
-    if (!page || page < 2) {
-      // doulist 信息
-      const title = root.querySelector('#content h1');
-      result.title = title.text.replace(/\r?\n?\s+?/g, '');
-      const aurthor = root.querySelector('#doulist-info .meta a');
-      if (aurthor) {
-        let text = aurthor.text.replace(/\r?\n?\s+?/g, '');
-        text = text.split('(').shift();
-        result.aurthor = text;
-        result.aurthorLink = aurthor.getAttribute('href');
-      }
-      const content = root.querySelector('#doulist-info .doulist-about');
-      if (content) {
-        let dcontent = content.innerHTML;
-        dcontent = dcontent.replace(/&nbsp;/g, '');
-        dcontent = dcontent.replace(/\r?\n?\s+?/g, '');
-        result.content = dcontent;
-      }
-    }
-    let pageList = root.querySelectorAll('.doulist-item[id]');
-    pageList = pageList.map((p) => {
-      let text;
-      let a = p.querySelector('.title a');
-      if (a) {
-        text = p.querySelector('.abstract');
-      } else {
-        text = p.querySelector('.status-content');
-        a = text.querySelector('a');
-      }
-      const link = a.getAttribute('href');
-      return {
-        title: a.text.replace(/\r?\n?\s+?/g, ''),
-        url: link,
-        text: text.text.replace(/\r?\n?\s+?/g, ''),
-      };
-    });
-    // console.log(pageList);
-    result.pages = pageList;
-    return result;
-  } catch (error) {
-    throw new Error(error);
   }
+  const search = {
+    where,
+  };
+  if (page) {
+    search.limit = limit;
+    if (page > 1) {
+      search.offset = limit * (page - 1);
+    }
+  }
+  const result = await Clutter.findAndCountAll(search);
+  const list = result.rows.map((row) => row.dataValues);
+
+  const data = {
+    count: result.count,
+    list,
+  };
+  if (page) {
+    data.page = page;
+    data.limit = limit;
+  }
+  return data;
 }
 
-export async function details(url) {
-  let result = {};
-  try {
-    const html = await request({
-      url,
-      header: {
-        'User-Agent': UserAgent,
-      },
-      method: 'GET',
-      // console.log(html);
-    });
-    const root = hparser.parse(html);
-    // 区分 小组讨论 日记 书影音 广播
-    // const types = {
-    //   '/group/topic': '.topic-richtext',
-    //   '/note/': '.note-container',
-    //   '/status/': '.status-item',
-    // };
-    // .subjectwrap
-    // const isMedia = url.includes('.douban.com');
-    const isGroup = url.includes('/group/topic');
-    const isNote = url.includes('/note/');
-    const isStatus = url.includes('/status/');
-    if (isGroup) {
-      const topic = getGroupTopic(root);
-      result = Object.assign(result, topic);
-    }
-
-    if (isNote) {
-      const note = getNote(root);
-      result = Object.assign(result, note);
-    }
-    if (isStatus) {
-      const status = getStatus(root);
-      result = Object.assign(result, status);
-    }
-  } catch (error) {
-    result.error = error;
+/**
+ * 获取豆列详情
+ */
+export async function doulistInfo(id) {
+  const where = {
+    type: 'doulist',
+    phrase: id,
+  };
+  let result = await Clutter.findOne({
+    where,
+  });
+  if (result) {
+    result = result.dataValues;
   }
-
   return result;
+}
+
+/**
+ * 新增豆列
+ */
+export async function createDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
+  const doulist = { title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content };
+  const clutter = {
+    type: 'doulist',
+    phrase: id,
+    content: JSON.stringify(doulist),
+  };
+  let result = await Clutter.create(clutter);
+  if (result) {
+    result = result.dataValues;
+  }
+  return result;
+}
+
+/**
+ * 修改豆列
+ */
+export async function updateDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
+  const doulist = { title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content };
+  const where = {
+    type: 'doulist',
+    phrase: id,
+  };
+  const result = await Clutter.update({
+    content: JSON.stringify(doulist),
+  }, {
+    where,
+  });
+
+  return result[0] > 0;
+}
+
+/**
+ * 获取小组
+ */
+export async function groupList({ name, page = 1, limit = PAGE_SIZE }) {
+  const where = {};
+  if (name) {
+    where.content = {
+      [Op.like]: `name:'%${name}%`,
+    };
+  }
+  const search = {
+    where,
+  };
+  if (page) {
+    search.limit = limit;
+    if (page > 1) {
+      search.offset = limit * (page - 1);
+    }
+  }
+  const result = await Clutter.findAndCountAll(search);
+  const list = result.rows.map((row) => row.dataValues);
+
+  const data = {
+    count: result.count,
+    list,
+  };
+  if (page) {
+    data.page = page;
+    data.limit = limit;
+  }
+  return data;
+}
+
+/**
+ * 获取小组详情
+ */
+export async function groupInfo(id) {
+  const where = {
+    type: 'dgroup',
+    phrase: id,
+  };
+  let result = await Clutter.findOne({
+    where,
+  });
+  if (result) {
+    result = result.dataValues;
+  }
+  return result;
+}
+
+/**
+ * 新增小组
+ */
+export async function createGroup({ id, name, info, content, tags }) {
+  const group = { name, info, content, tags };
+  const clutter = {
+    type: 'dgroup',
+    phrase: id,
+    content: JSON.stringify(group),
+  };
+  let result = await Clutter.create(clutter);
+  if (result) {
+    result = result.dataValues;
+  }
+  return result;
+}
+
+/**
+ * 修改小组
+ */
+export async function updateGroup({ id, name, info, content, tags }) {
+  const group = { name, info, content, tags };
+  const where = {
+    type: 'dgroup',
+    phrase: id,
+  };
+  const result = await Clutter.update({
+    content: JSON.stringify(group),
+  }, {
+    where,
+  });
+
+  return result[0] > 0;
 }
