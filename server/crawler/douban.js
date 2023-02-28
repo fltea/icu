@@ -2,11 +2,13 @@ import hparser from 'node-html-parser';
 import request from '../utils/request.js';
 import { getHeader, getAttrs, getText, getList } from '../utils/crawler.js';
 
+// 无权限
 function getWrapper(root, selector = '#wrapper ul') {
   const wrapper = root.querySelector(selector);
   return getText(wrapper);
 }
 
+// 书影音
 // 短评
 function getEnComments(root) {
   const item = {};
