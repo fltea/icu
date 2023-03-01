@@ -7,71 +7,48 @@ export const durl = (data) => request({
   method: 'post',
   data,
 });
-export const durlList = (data) => request({
-  url: `${url}/durl/list`,
-  method: 'post',
-  data,
-});
 export const durlDetail = (data) => request({
   url: `${url}/durl/detail`,
   method: 'post',
   data,
 });
+
 export const doulist = (data) => request({
   url: `${url}/doulist`,
   method: 'get',
   data,
 });
-export const dAdd = (data) => request({
+export const doulistId = (id) => request({
+  url: `${url}/doulist/${id}`,
+  method: 'get',
+});
+export const doulistAdd = (data) => request({
   url: `${url}/doulist/add`,
   method: 'post',
   data,
 });
-export const dMod = (data) => request({
+export const doulistMod = (data) => request({
   url: `${url}/doulist/modify`,
   method: 'post',
   data,
 });
-export const dList = (data) => request({
-  url: `${url}/doulist/list`,
-  method: 'post',
-  data,
-});
 
-export const gurl = (data) => request({
-  url: `${url}/gurl`,
-  method: 'post',
-  data,
-});
 export const group = (data) => request({
   url: `${url}/group`,
   method: 'get',
   data,
 });
-export const gAdd = (data) => request({
+export const groupId = (id) => request({
+  url: `${url}/group/${id}`,
+  method: 'get',
+});
+export const groupAdd = (data) => request({
   url: `${url}/group/add`,
   method: 'post',
   data,
 });
-export const gMod = (data) => request({
+export const groupMod = (data) => request({
   url: `${url}/group/modify`,
-  method: 'post',
-  data,
-});
-export const gList = (data) => request({
-  url: `${url}/group/list`,
-  method: 'post',
-  data,
-});
-
-export const details = (data) => request({
-  url: `${url}/details`,
-  method: 'post',
-  data,
-});
-
-export const save = (data) => request({
-  url: `${url}/save`,
   method: 'post',
   data,
 });

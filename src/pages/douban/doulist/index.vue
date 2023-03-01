@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { durl, durlList } from '@/api/douban';
+import { durl } from '@/api/douban';
 
 import InputDialog from '@/components/InputDialog.vue';
 import Doulist from '@/components/douban/Doulist.vue';
@@ -12,7 +12,7 @@ const curData = reactive({
   detail: null,
 });
 // eslint-disable-next-line max-len
-const cookie = 'push_doumail_num=0; __utmv=30149280.13127; douban-fav-remind=1; gr_user_id=24a9c2e5-a767-4e2b-9901-e8a5f83da0ed; Hm_lvt_19fc7b106453f97b6a84d64302f21a04=1663477434; _ga=GA1.1.1540038648.1643368021; push_noty_num=0; _ga_RXNMP372GL=GS1.1.1673765686.4.1.1673765747.60.0.0; bid=KJ9_esXKCRQ; __yadk_uid=oBu2WVliLYXCqj6SdSR6gUln4gXwy06V; ct=y; __utmz=30149280.1676183765.450.17.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; ll="118282"; dbcl2="131278996:nVCDmpLC6xI"; __gads=ID=c3d35a1e5b88a1cf-227756a803da00de:T=1677068513:RT=1677068513:S=ALNI_MY893Op78ab2d3uY7rbS5uvWVTfzA; ck=CKHW; __utmc=30149280; __gpi=UID=00000484bdd2b501:T=1649163901:RT=1677326056:S=ALNI_MZM5ovW_sVJQUr8tnYTWFe56RmW6Q; _pk_ref.100001.8cb4=["","",1677330439,"https://cn.bing.com/"]; _pk_ses.100001.8cb4=*; __utma=30149280.1540038648.1643368021.1677327921.1677330439.468; frodotk_db="829422762cad886487bc67628608992c"; ap_v=0,6.0; _pk_id.100001.8cb4=39d4ceef2c12c115.1643368019.514.1677334307.1677327921.; __utmb=30149280.70.8.1677334311162';
+const cookie = 'push_doumail_num=0; __utmv=30149280.13127; douban-fav-remind=1; gr_user_id=24a9c2e5-a767-4e2b-9901-e8a5f83da0ed; Hm_lvt_19fc7b106453f97b6a84d64302f21a04=1663477434; push_noty_num=0; _ga_RXNMP372GL=GS1.1.1673765686.4.1.1673765747.60.0.0; bid=KJ9_esXKCRQ; __yadk_uid=oBu2WVliLYXCqj6SdSR6gUln4gXwy06V; ct=y; ll="118282"; dbcl2="131278996:nVCDmpLC6xI"; __gads=ID=c3d35a1e5b88a1cf-227756a803da00de:T=1677068513:RT=1677068513:S=ALNI_MY893Op78ab2d3uY7rbS5uvWVTfzA; _ga=GA1.2.1540038648.1643368021; __utmz=30149280.1677409688.472.19.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; ck=CKHW; ap_v=0,6.0; __gpi=UID=00000484bdd2b501:T=1649163901:RT=1677498145:S=ALNI_MZM5ovW_sVJQUr8tnYTWFe56RmW6Q; __utmc=30149280; frodotk_db="28eb547668d9b4877ac1fd633a8d1d95"; _pk_ref.100001.8cb4=["","",1677503839,"https://cn.bing.com/"]; _pk_ses.100001.8cb4=*; __utma=30149280.1540038648.1643368021.1677498148.1677503839.475; _pk_id.100001.8cb4=39d4ceef2c12c115.1643368019.521.1677504132.1677500752.; __utmb=30149280.10.10.1677503839';
 
 const linkItems = () => {
   idialog.value = true;
@@ -37,12 +37,12 @@ const newItems = (url) => {
   });
 };
 const newItem = () => {
-  durlList({
-    cookie,
-    url: 'https://movie.douban.com/subject/26213252/',
-  }).then((res) => {
-    console.log(res);
-  });
+  // durlList({
+  //   cookie,
+  //   url: 'https://movie.douban.com/subject/26213252/',
+  // }).then((res) => {
+  //   console.log(res);
+  // });
 };
 
 const listData = () => {
