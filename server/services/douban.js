@@ -1,4 +1,5 @@
 import models from '../db/models/index.js';
+import { rollBack } from '../db/seq.js';
 import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
@@ -153,7 +154,7 @@ export async function groupInfo(id) {
 /**
  * 新增小组
  */
-export async function createGroup({ id, name, info, content, tags }) {
+async function addGroup({ id, name, info, content, tags }) {
   const group = { name, info, content, tags };
   const clutter = {
     type: 'dgroup',
@@ -164,6 +165,10 @@ export async function createGroup({ id, name, info, content, tags }) {
   if (result) {
     result = result.dataValues;
   }
+  return result;
+}
+export async function createGroup({ id, name, info, content, tags }) {
+  const result = await rollBack(addGroup, { id, name, info, content, tags });
   return result;
 }
 

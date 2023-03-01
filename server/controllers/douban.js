@@ -1,9 +1,10 @@
-import { schemaFileInfo } from '../model/ErrorInfos.js';
+import { schemaFileInfo, addInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 import { sleep } from '../utils/tools.js';
 import { setHashList } from '../utils/files.js';
 import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
+import { createGroup } from '../services/douban.js';
 
 /**
  * 所有豆列
@@ -178,10 +179,16 @@ export async function getGroupById(id) {
 /**
  * 新增小组
  */
-export async function setGroup() {
+export async function setGroup({ id, name, info, content, tags }) {
   try {
-    const result = {};
-    return new SuccessModel(result);
+    let result = {};
+    if (id) {
+      result = await createGroup({ id, name, info, content, tags });
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+    return new ErrorModel(addInfo);
   } catch (error) {
     return catchError(error);
   }

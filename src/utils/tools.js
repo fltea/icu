@@ -79,3 +79,12 @@ export function urlStringify(data) {
 
   return arrs.join('&');
 }
+
+export function getComName(name) {
+  let strs = name.split('-');
+  strs = strs.map((v) => {
+    const IndexC = v.charAt(0);
+    return IndexC.toUpperCase() + v.replace(IndexC, '');
+  });
+  return strs.join('');
+}

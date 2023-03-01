@@ -7,6 +7,16 @@ function getWrapper(root, selector = '#wrapper ul') {
   const wrapper = root.querySelector(selector);
   return getText(wrapper);
 }
+// 获取ID
+function getId(url) {
+  const regx = /\/(\d+)\//;
+  const murl = url.split('?').shift();
+  const result = murl.match(regx);
+  if (result && result.length > 1) {
+    return result.pop();
+  }
+  return '';
+}
 
 // 书影音
 // 短评
@@ -374,7 +384,9 @@ export async function durlist(url, cookie) {
     method: 'GET',
   });
 
-  const result = {};
+  const result = {
+    url,
+  };
   const root = hparser.parse(html);
   const listCom = root.querySelector('.doulist-list');
   if (!listCom) {
@@ -402,6 +414,8 @@ export async function durlist(url, cookie) {
       result.nextPage = `${urls.join('/')}/${nextPage}`;
     }
   }
+  result.type = 'doulist';
+  result.url = url;
   return result;
 }
 
@@ -415,7 +429,9 @@ export async function durl(url, cookie) {
     method: 'GET',
   });
   // console.log(html);
-  const result = {};
+  const result = {
+    url,
+  };
   const root = hparser.parse(html);
   const content = root.querySelector('#content');
   if (!content) {
@@ -498,6 +514,9 @@ export async function durl(url, cookie) {
   if (nextPage) {
     result.nextPage = nextPage.getAttribute('href');
   }
+  result.type = 'doulist-detail';
+  result.url = url;
+  result.id = getId(url);
   return result;
 }
 
@@ -511,7 +530,9 @@ export async function gurlist(url, cookie) {
     method: 'GET',
   });
   // console.log(html);
-  const result = {};
+  const result = {
+    url,
+  };
 
   const root = hparser.parse(html);
   const listCom = root.querySelector('.group-list');
@@ -524,6 +545,8 @@ export async function gurlist(url, cookie) {
     result.list = getList(dom);
   }
 
+  result.type = 'group';
+  result.url = url;
   return result;
 }
 
@@ -536,7 +559,9 @@ export async function gurl(url, cookie) {
     header: getHeader(cookie),
     method: 'GET',
   });
-  const result = {};
+  const result = {
+    url,
+  };
   const root = hparser.parse(html);
   const listCom = root.querySelector('#group-topics');
   if (!listCom) {
@@ -547,7 +572,7 @@ export async function gurl(url, cookie) {
   // 组名
   let dom = root.querySelector('#group-info h1');
   if (dom) {
-    result.name = getText(dom);
+    result.title = getText(dom);
   }
   // 小组信息
   dom = root.querySelector('.group-info-item.group-loc');
@@ -600,6 +625,9 @@ export async function gurl(url, cookie) {
     });
   }
 
+  result.type = 'group-detail';
+  result.url = url;
+  result.id = getId(url);
   return result;
 }
 
@@ -616,19 +644,24 @@ export async function dDetail(url, cookie) {
   let result = {};
 
   if (url.includes('/group/topic')) {
-  // 小组讨论
+    // 小组讨论
     result = getGroupTopic(root);
+    result.type = 'group-topic';
   } else if (url.includes('/note/')) {
     // 日记
     result = getNote(root);
+    result.type = 'note';
   } else if (url.includes('/status/')) {
     // 广播
     result = getStatus(root);
-  } else {
+    result.type = 'status';
+  } else if (!url.includes('www.douban.com')) {
   // 书影音
     result = getEntertainment(root);
+    result.type = 'entertainment';
   }
 
   result.url = url;
+  result.id = getId(url);
   return result;
 }
