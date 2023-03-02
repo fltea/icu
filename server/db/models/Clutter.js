@@ -21,6 +21,7 @@ const Clutter = {
     phrase: {
       type: STRING,
       comment: '短内容',
+      unique: 'type',
     },
   },
   hasMany: {
