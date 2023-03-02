@@ -108,7 +108,7 @@ export async function groupList({ name, page = 1, limit = PAGE_SIZE }) {
   const where = {};
   if (name) {
     where.content = {
-      [Op.like]: `name:'%${name}%`,
+      [Op.like]: `%${name}%`,
     };
   }
   const search = {
@@ -121,7 +121,13 @@ export async function groupList({ name, page = 1, limit = PAGE_SIZE }) {
     }
   }
   const result = await Clutter.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+  const list = result.rows.map((row) => {
+    const value = row.dataValues;
+    const item = JSON.parse(value.content);
+    item.clutter = value.id;
+    item.id = value.phrase;
+    return item;
+  });
 
   const data = {
     count: result.count,

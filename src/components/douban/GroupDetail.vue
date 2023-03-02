@@ -9,11 +9,11 @@ const props = defineProps({
 const item = computed(() => props.detail);
 
 const addItems = () => {
-  const { id, title, info, content, tags } = item.value;
-  console.log(id, title, info, content, tags);
+  const { id, name, info, content, tags } = item.value;
+  // console.log(id, name, info, content, tags);
   groupAdd({
     id,
-    name: title,
+    name,
     info,
     content,
     tags: tags.map((v) => v.name).join(),
@@ -25,7 +25,7 @@ const addItems = () => {
 
 <template>
 <section>
-  <h1>{{ item.title }}</h1>
+  <h1>{{ item.name }}</h1>
   <div>
     <button @click="addItems">收藏小组</button>
   </div>

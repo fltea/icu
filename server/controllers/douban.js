@@ -4,7 +4,7 @@ import catchError from '../utils/tcatch.js';
 import { sleep } from '../utils/tools.js';
 import { setHashList } from '../utils/files.js';
 import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
-import { createGroup } from '../services/douban.js';
+import { createGroup, groupList } from '../services/douban.js';
 
 /**
  * 所有豆列
@@ -155,9 +155,9 @@ export async function modDoulist() {
 /**
  * 获取小组
  */
-export async function getGroup() {
+export async function getGroup({ name, page, limit }) {
   try {
-    const result = {};
+    const result = await groupList({ name, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -181,9 +181,8 @@ export async function getGroupById(id) {
  */
 export async function setGroup({ id, name, info, content, tags }) {
   try {
-    let result = {};
     if (id) {
-      result = await createGroup({ id, name, info, content, tags });
+      const result = await createGroup({ id, name, info, content, tags });
       if (result) {
         return new SuccessModel(result);
       }

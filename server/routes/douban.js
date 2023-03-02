@@ -54,8 +54,8 @@ router.post('/doulist/modify', async (ctx) => {
 
 // 获取小组
 router.get('/group', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  const result = await getGroup(ctx.request.body);
+  // console.log('ctx.request.gquery ', ctx.request.gquery);
+  const result = await getGroup(ctx.request.gquery);
   ctx.body = result;
 });
 // 获取小组详情
