@@ -9,9 +9,8 @@ function getWrapper(root, selector = '#wrapper ul') {
 }
 // 获取ID
 function getId(url) {
-  const regx = /\/(\d+)\//;
   const murl = url.split('?').shift();
-  const result = murl.match(regx);
+  const result = murl.split('/').filter((v) => !!v);
   if (result && result.length > 1) {
     return result.pop();
   }
@@ -572,7 +571,7 @@ export async function gurl(url, cookie) {
   // 组名
   let dom = root.querySelector('#group-info h1');
   if (dom) {
-    result.title = getText(dom);
+    result.name = getText(dom);
   }
   // 小组信息
   dom = root.querySelector('.group-info-item.group-loc');
