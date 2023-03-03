@@ -181,11 +181,12 @@ export async function createGroup({ id, name, info, content, tags }) {
 /**
  * 修改小组
  */
-export async function updateGroup({ id, name, info, content, tags }) {
+export async function updateGroup({ clutter, id, name, info, content, tags }) {
   const group = { name, info, content, tags };
   const where = {
     type: 'dgroup',
     phrase: id,
+    id: clutter,
   };
   const result = await Clutter.update({
     content: JSON.stringify(group),
@@ -194,4 +195,22 @@ export async function updateGroup({ id, name, info, content, tags }) {
   });
 
   return result[0] > 0;
+}
+
+/**
+ * 删除 豆瓣 豆列、小组
+ */
+async function delDouban({ clutter }) {
+  const where = {
+    id: clutter,
+  };
+  const result = await Clutter.destroy({
+    where,
+  });
+
+  return result > 0;
+}
+export async function doubanDelete({ clutter }) {
+  const result = await rollBack(delDouban, { clutter });
+  return result;
 }
