@@ -11,6 +11,7 @@ import {
   getGroupById,
   setGroup,
   modGroup,
+  delDouban,
 } from '../controllers/douban.js';
 
 const router = new Router();
@@ -73,4 +74,11 @@ router.post('/group/modify', async (ctx) => {
   const result = await modGroup(ctx.request.body);
   ctx.body = result;
 });
+
+// 删除
+router.post('/del', async (ctx) => {
+  const result = await delDouban(ctx.request.body);
+  ctx.body = result;
+});
+
 export default router;

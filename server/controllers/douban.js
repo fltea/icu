@@ -1,10 +1,10 @@
-import { schemaFileInfo, addInfo } from '../model/ErrorInfos.js';
+import { schemaFileInfo, addInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 import { sleep } from '../utils/tools.js';
 import { setHashList } from '../utils/files.js';
 import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
-import { createGroup, groupList } from '../services/douban.js';
+import { createGroup, updateGroup, groupList, doubanDelete } from '../services/douban.js';
 
 /**
  * 所有豆列
@@ -196,10 +196,25 @@ export async function setGroup({ id, name, info, content, tags }) {
 /**
  * 修改小组
  */
-export async function modGroup() {
+export async function modGroup({ clutter, id, name, info, content, tags }) {
   try {
-    const result = {};
+    const result = await updateGroup({ clutter, id, name, info, content, tags });
     return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 删除豆列/小组
+ */
+export async function delDouban({ clutter }) {
+  try {
+    if (clutter) {
+      const result = await doubanDelete({ clutter });
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(notExistInfo);
   } catch (error) {
     return catchError(error);
   }

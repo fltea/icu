@@ -52,3 +52,8 @@ export const groupMod = (data) => request({
   method: 'post',
   data,
 });
+export const doubanDel = (data) => request({
+  url: `${url}/del`,
+  method: 'post',
+  data,
+});
