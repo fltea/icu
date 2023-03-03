@@ -27,7 +27,9 @@ const addItems = () => {
 <section>
   <h1>{{ item.name }}</h1>
   <div>
-    <button @click="addItems">收藏小组</button>
+    <slot name="controls">
+      <button @click="addItems">收藏小组</button>
+    </slot>
   </div>
   <div v-html="item.info"></div>
   <div v-html="item.content"></div>
