@@ -475,7 +475,7 @@ export async function durl(url, cookie) {
   }
   // 列表
   const list = content.querySelectorAll('.doulist-item');
-  result.list = list.map((v) => {
+  result.topics = list.map((v) => {
     let item;
     let text;
     let a = v.querySelector('.title a');
