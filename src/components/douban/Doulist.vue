@@ -1,7 +1,6 @@
 <script setup>
 import { computed, reactive, watch } from 'vue';
-import { addClutter, modClutter } from '@/api/common';
-import { doulist as getDoulist } from '@/api/douban';
+import { durlDetail, doulistAdd, doulistMod } from '@/api/douban';
 
 const props = defineProps({
   show: Boolean,
@@ -19,10 +18,14 @@ const dialog = computed({
 });
 const form = reactive({
   id: '',
+  clutter: '',
   title: '',
   aurthor: '',
   aurthorIp: '',
   aurthorLink: '',
+  count: '',
+  createTime: '',
+  updateTime: '',
   content: '',
 });
 
@@ -36,7 +39,7 @@ const setForm = (data) => {
 };
 
 const getContent = () => {
-  getDoulist({
+  durlDetail({
     id: form.id,
     nolist: true,
   }).then((res) => {
@@ -52,24 +55,12 @@ const hide = () => {
   setForm();
 };
 const saveDoulist = () => {
-  if (!form.id) {
+  if (!(form.id && form.title)) {
     return;
   }
-  const content = JSON.stringify(form);
-  // console.log(content);
-  const params = {
-    type: 'doulist',
-    phrase: form.id,
-    content,
-  };
-
-  const val = props.doulist || {};
-  let FN = addClutter;
-  if (val.clutter) {
-    params.id = val.clutter;
-    FN = modClutter;
-  }
-  FN(params).then(() => {
+  const FN = form.clutter ? doulistMod : doulistAdd;
+  FN(form).then((res) => {
+    console.log(res);
     emit('success');
     hide();
   });
@@ -106,6 +97,18 @@ watch(() => props.doulist, (val) => {
       <label>
         <span class="label-title">aurthorIp: </span>
         <input type="text" v-model="form.aurthorIp" />
+      </label>
+      <label>
+        <span class="label-title">count: </span>
+        <input type="text" v-model="form.count" />
+      </label>
+      <label>
+        <span class="label-title">createTime: </span>
+        <input type="text" v-model="form.createTime" />
+      </label>
+      <label>
+        <span class="label-title">updateTime: </span>
+        <input type="text" v-model="form.updateTime" />
       </label>
       <label>
         <span class="label-title">content: </span>
