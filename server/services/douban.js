@@ -5,20 +5,30 @@ import { PAGE_SIZE } from '../conf/constant.js';
 
 const { Clutter } = models;
 
+function clu2item(row) {
+  const value = row.dataValues;
+  const item = JSON.parse(value.content);
+  item.clutter = value.id;
+  item.id = value.phrase;
+  return item;
+}
+
 /**
  * 获取豆列
  */
 export async function doulistList({ title, aurthor, page = 1, limit = PAGE_SIZE }) {
-  const where = {};
+  const where = {
+    type: 'doulist',
+  };
   const ors = [];
   if (title) {
     ors.push({
-      [Op.like]: `title:'%${title}%`,
+      [Op.like]: `%${title}%`,
     });
   }
   if (aurthor) {
     ors.push({
-      [Op.like]: `aurthor:'%${aurthor}%`,
+      [Op.like]: `${aurthor}%`,
     });
   }
   if (ors.length) {
@@ -36,7 +46,7 @@ export async function doulistList({ title, aurthor, page = 1, limit = PAGE_SIZE 
     }
   }
   const result = await Clutter.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
+  const list = result.rows.map(clu2item);
 
   const data = {
     count: result.count,
@@ -61,7 +71,7 @@ export async function doulistInfo(id) {
     where,
   });
   if (result) {
-    result = result.dataValues;
+    result = clu2item(result);
   }
   return result;
 }
@@ -78,7 +88,7 @@ export async function createDoulist({ id, title, aurthor, aurthorIp, aurthorLink
   };
   let result = await Clutter.create(clutter);
   if (result) {
-    result = result.dataValues;
+    result = clu2item(result);
   }
   return result;
 }
@@ -86,11 +96,12 @@ export async function createDoulist({ id, title, aurthor, aurthorIp, aurthorLink
 /**
  * 修改豆列
  */
-export async function updateDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
+export async function updateDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
   const doulist = { title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content };
   const where = {
     type: 'doulist',
     phrase: id,
+    id: clutter,
   };
   const result = await Clutter.update({
     content: JSON.stringify(doulist),
@@ -105,7 +116,9 @@ export async function updateDoulist({ id, title, aurthor, aurthorIp, aurthorLink
  * 获取小组
  */
 export async function groupList({ name, page = 1, limit = PAGE_SIZE }) {
-  const where = {};
+  const where = {
+    type: 'dgroup',
+  };
   if (name) {
     where.content = {
       [Op.like]: `%${name}%`,
@@ -121,13 +134,7 @@ export async function groupList({ name, page = 1, limit = PAGE_SIZE }) {
     }
   }
   const result = await Clutter.findAndCountAll(search);
-  const list = result.rows.map((row) => {
-    const value = row.dataValues;
-    const item = JSON.parse(value.content);
-    item.clutter = value.id;
-    item.id = value.phrase;
-    return item;
-  });
+  const list = result.rows.map(clu2item);
 
   const data = {
     count: result.count,
@@ -152,7 +159,7 @@ export async function groupInfo(id) {
     where,
   });
   if (result) {
-    result = result.dataValues;
+    result = clu2item(result);
   }
   return result;
 }
@@ -169,7 +176,7 @@ async function addGroup({ id, name, info, content, tags }) {
   };
   let result = await Clutter.create(clutter);
   if (result) {
-    result = result.dataValues;
+    result = clu2item(result);
   }
   return result;
 }

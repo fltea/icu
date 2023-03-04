@@ -33,7 +33,7 @@ router.post('/durl/detail', async (ctx) => {
 // 数据库操作
 // 获取豆列
 router.get('/doulist', async (ctx) => {
-  const result = await getDoulist(ctx.request.body);
+  const result = await getDoulist(ctx.request.gquery);
   ctx.body = result;
 });
 // 获取豆列详情

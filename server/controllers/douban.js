@@ -4,7 +4,7 @@ import catchError from '../utils/tcatch.js';
 import { sleep } from '../utils/tools.js';
 import { setHashList } from '../utils/files.js';
 import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
-import { createGroup, updateGroup, groupList, doubanDelete } from '../services/douban.js';
+import { doulistList, createDoulist, updateDoulist, createGroup, updateGroup, groupList, doubanDelete } from '../services/douban.js';
 
 /**
  * 所有豆列
@@ -107,9 +107,9 @@ export async function getDetail({ url, cookie }) {
 /**
  * 获取豆列
  */
-export async function getDoulist() {
+export async function getDoulist({ title, aurthor, page, limit }) {
   try {
-    const result = {};
+    const result = await doulistList({ title, aurthor, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -131,10 +131,15 @@ export async function getDoulistById(id) {
 /**
  * 新增豆列
  */
-export async function setDoulist() {
+export async function setDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
   try {
-    const result = {};
-    return new SuccessModel(result);
+    if (id) {
+      const result = await createDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content });
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+    return new ErrorModel(addInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -143,9 +148,9 @@ export async function setDoulist() {
 /**
  * 修改豆列
  */
-export async function modDoulist() {
+export async function modDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
   try {
-    const result = {};
+    const result = await updateDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
