@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { FILE_DIR, LOG_DIR, TEMP_DIR, UserAgent } from '../conf/constant.js';
+import { FILE_DIR, LOG_DIR, TEMP_DIR, COOKIES_DIR, UserAgent } from '../conf/constant.js';
 import { formatDate } from './tools.js';
 import hash from './crypto.js';
 import request from './request.js';
@@ -94,4 +94,31 @@ export function getHashList(name) {
   const listId = hash(name);
   const list = reqiureFile(`${TEMP_DIR}/${listId}`);
   return JSON.parse(list);
+}
+
+export function toogleCookies(name, cookies) {
+  // 确保文件夹存在
+  statDir(COOKIES_DIR);
+  if (!name) {
+    throw new Error('name is not define');
+  }
+
+  let result = '';
+  const path = `${COOKIES_DIR}/${name}`;
+
+  if (cookies) {
+    result = cookies;
+    if (typeof cookies !== 'object') {
+      result = {
+        cookies,
+      };
+    }
+    appendFile(path, JSON.stringify(result), { flag: 'w' });
+  } else {
+    result = reqiureFile(path);
+    if (result) {
+      result = JSON.parse(result);
+    }
+  }
+  return result;
 }
