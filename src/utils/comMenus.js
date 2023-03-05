@@ -1,37 +1,59 @@
 const menus = [
   {
-    name: 'mark',
-    path: '/mark',
-  }, {
-    name: 'mlog',
-    path: '/mlog',
-  }, {
-    name: 'account',
-    path: '/account',
-  },
-  {
-    name: 'crawler',
-    path: '/crawler',
-  },
-  {
-    name: 'todo',
+    name: 'Todo',
     path: '/todo',
   },
   {
-    name: 'means',
-    path: '/means',
+    name: 'Mlog',
+    path: '/mlog',
   },
   {
-    name: 'data',
-    path: '/data',
+    name: 'Article',
+    path: '/article',
+  },
+  {
+    name: 'Account',
+    path: '/account',
+  },
+  {
+    name: 'Flow',
+    path: '/flow',
+  },
+  {
+    name: 'Mark',
+    path: '/mark',
+  },
+  {
+    name: 'Media',
+    path: '/media',
+  },
+  {
+    name: 'Property',
+    path: '/property',
+  },
+  {
+    name: 'Clutter',
+    path: '/clutter',
+  },
+  {
+    name: 'Chapter',
+    path: '/chapter',
+  },
+  {
+    name: 'Stats',
+    path: '/stats',
+  },
+  {
+    name: 'douban',
+    path: '/douban',
   },
   {
     name: 'weibo',
     path: '/weibo',
   },
   {
-    name: 'douban',
-    path: '/douban',
+    name: 'novel',
+    path: '/novel',
   },
 ];
 
