@@ -1,8 +1,8 @@
 import { addInfo, errorInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
-import { WEIBO_CONF } from '../conf/constant.js';
+// import { WEIBO_CONF } from '../conf/constant.js';
 import catchError from '../utils/tcatch.js';
-import { formatDate, sleep } from '../utils/tools.js';
+// import { formatDate, sleep } from '../utils/tools.js';
 import { downSource } from '../utils/files.js';
 
 import {
@@ -17,9 +17,6 @@ import {
   weiboArticleP,
 } from '../services/weibo.js';
 
-import {
-  sourceAdd,
-} from '../services/source.js';
 import {
   picAdd,
   // picBulk,
@@ -130,19 +127,19 @@ export async function getUser({ id, sinceId, cookie }) {
 export async function createSource(weibo) {
   try {
     // console.log(weibo);
-    const basic = JSON.stringify(weibo);
-    const basicId = weibo.id;
-    const { pics, page_info: pageInfo, user } = weibo;
-    const link = WEIBO_CONF.detail.replace('{id}', basicId);
-    const author = user.screen_name;
-    const authorId = user.id;
-    const authorLink = WEIBO_CONF.userLink.replace('{id}', authorId);
-    const publishTime = formatDate({
-      date: weibo.created_at,
-    });
-    const source = { basic, basicId, plaform: 'weibo', link, author, authorId, authorLink, publishTime };
+    // const basic = JSON.stringify(weibo);
+    // const basicId = weibo.id;
+    const { pics, page_info: pageInfo } = weibo;
+    // const link = WEIBO_CONF.detail.replace('{id}', basicId);
+    // const author = user.screen_name;
+    // const authorId = user.id;
+    // const authorLink = WEIBO_CONF.userLink.replace('{id}', authorId);
+    // const publishTime = formatDate({
+    //   date: weibo.created_at,
+    // });
+    // const source = { basic, basicId, plaform: 'weibo', link, author, authorId, authorLink, publishTime };
     // console.log(source);
-    const result = await sourceAdd(source);
+    const result = {};
     // 圖片
     if (pics) {
       console.log('pics', pics);
