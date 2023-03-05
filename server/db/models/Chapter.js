@@ -18,11 +18,6 @@ const Chapter = {
       allowNull: false,
       comment: '标题',
     },
-    novel: {
-      type: INTEGER,
-      allowNull: false,
-      comment: 'Novel Id',
-    },
     content: {
       type: TEXT,
       comment: '内容',
@@ -65,7 +60,6 @@ const Chapter = {
     },
   },
   belongsTo: {
-    Novel: 'novel',
     Clutter: 'clutter',
   },
 };
