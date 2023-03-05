@@ -31,9 +31,9 @@ export async function getMeans(id) {
 /**
  * 獲取列表
  */
-export async function getMeanss({ title, tag, author, content, translator, platform, publishDate, page, limit }) {
+export async function getMeansList({ name, page, limit }) {
   try {
-    const result = await meansList({ title, tag, author, content, translator, platform, publishDate, page, limit });
+    const result = await meansList({ name, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);

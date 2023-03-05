@@ -27,37 +27,19 @@ export async function meansInfo(id) {
   }
 }
 
-export async function meansList({ title, tag, author, content, translator, platform, publishDate, page = 1, limit = PAGE_SIZE }) {
+export async function meansList({ name, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
-    const search = {};
     const where = {};
 
-    if (title) {
-      where.title = {
-        [Op.like]: title,
+    if (name) {
+      where.name = {
+        [Op.like]: `%${name}%`,
       };
     }
-    if (tag) {
-      where.tag = tag;
-    }
-    if (author) {
-      where.author = author;
-    }
-    if (content) {
-      where.content = {
-        [Op.like]: content,
-      };
-    }
-    if (translator) {
-      where.translator = translator;
-    }
-    if (platform) {
-      where.platform = platform;
-    }
-    if (publishDate) {
-      where.publishDate = publishDate;
-    }
+    const search = {
+      where,
+    };
     if (page) {
       search.limit = limit;
       if (page > 1) {

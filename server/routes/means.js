@@ -4,7 +4,7 @@ import genValidator from '../middlewares/validator.js';
 
 import {
   // getMeans,
-  getMeanss,
+  getMeansList,
   createMeans,
   // createMeanss,
   modifyMeans,
@@ -16,7 +16,7 @@ const router = new Router();
 router.prefix('/api/means');
 
 router.get('/', async (ctx) => {
-  const result = await getMeanss({});
+  const result = await getMeansList(ctx.request.gquery);
   // console.log(result)
   ctx.body = result;
 });

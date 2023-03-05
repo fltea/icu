@@ -18,6 +18,10 @@ const menus = [
     path: '/todo',
   },
   {
+    name: 'means',
+    path: '/means',
+  },
+  {
     name: 'data',
     path: '/data',
   },
