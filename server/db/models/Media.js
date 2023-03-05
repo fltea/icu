@@ -1,6 +1,7 @@
-import { STRING, INTEGER, TEXT, DATEONLY, FLOAT } from '../types.js';
+import { STRING, INTEGER, TEXT, DATEONLY, FLOAT, BOOLEAN } from '../types.js';
 
-const Entertainment = {
+// 大众传播媒介
+const Media = {
   model: {
     title: {
       type: STRING,
@@ -11,9 +12,13 @@ const Entertainment = {
       type: TEXT,
       comment: '内容简介',
     },
-    link: {
+    url: {
       type: STRING,
       comment: '链接',
+    },
+    type: {
+      type: STRING,
+      comment: '类型 书 小说 影片 电视剧 图片',
     },
     creator: {
       type: STRING,
@@ -23,13 +28,25 @@ const Entertainment = {
       type: TEXT,
       comment: '工作人员',
     },
+    ISBN: {
+      type: STRING,
+      comment: 'ISBN',
+    },
+    loaded: {
+      type: INTEGER,
+      comment: '已下载数量',
+    },
+    finish: {
+      type: BOOLEAN,
+      comment: '已下载完',
+    },
     price: {
       type: FLOAT,
       comment: '定价',
     },
-    platform: {
+    channel: {
       type: STRING,
-      comment: '獲悉渠道',
+      comment: '渠道',
     },
     tag: {
       type: STRING,
@@ -37,7 +54,7 @@ const Entertainment = {
     },
     publishDate: {
       type: DATEONLY,
-      comment: '發表日期',
+      comment: '日期',
     },
     clutter: {
       type: INTEGER,
@@ -53,4 +70,4 @@ const Entertainment = {
   },
 };
 
-export default Entertainment;
+export default Media;

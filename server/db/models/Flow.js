@@ -70,7 +70,6 @@ const Flow = {
       type: TEXT,
       comment: '备注',
     },
-
   },
 };
 

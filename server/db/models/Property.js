@@ -1,31 +1,29 @@
 import { STRING, TEXT, DATE, FLOAT } from '../types.js';
 
-const Means = {
+// property 属性；财产；财产权；【戏】道具
+// 所有物；财产；财物a thing or things that are owned by sb; a possession or possessions
+const Property = {
   model: {
     name: {
       type: STRING,
       allowNull: false,
       comment: '名称',
     },
+    type: {
+      type: STRING,
+      comment: '类型',
+    },
     code: {
       type: STRING,
       comment: '编号',
     },
-    organization: {
+    channel: {
       type: STRING,
-      comment: '单位',
+      comment: '渠道',
     },
-    book: {
+    company: {
       type: STRING,
-      comment: '书籍',
-    },
-    found: {
-      type: STRING,
-      comment: '基金',
-    },
-    stock: {
-      type: STRING,
-      comment: '股票',
+      comment: '公司',
     },
     beginDate: {
       type: DATE,
@@ -35,21 +33,17 @@ const Means = {
       type: DATE,
       comment: '结束日期',
     },
-    scale: {
-      type: FLOAT,
-      comment: '本金',
-    },
     price: {
       type: FLOAT,
       comment: '买入价格',
     },
     inDate: {
       type: DATE,
-      comment: '买入日期',
+      comment: '入手日期',
     },
     outDate: {
       type: DATE,
-      comment: '卖出日期',
+      comment: '出手日期',
     },
     rate: {
       type: FLOAT,
@@ -57,7 +51,7 @@ const Means = {
     },
     amount: {
       type: FLOAT,
-      comment: '本息',
+      comment: '卖出价格',
     },
     content: {
       type: STRING,
@@ -70,4 +64,4 @@ const Means = {
   },
 };
 
-export default Means;
+export default Property;

@@ -28,9 +28,9 @@ const Article = {
       type: STRING,
       comment: '原文链接',
     },
-    platform: {
+    channel: {
       type: STRING,
-      comment: '原文平台',
+      comment: '渠道',
     },
     links: {
       type: STRING,
@@ -70,13 +70,7 @@ const Article = {
     },
   },
   belongsTo: {
-    Todo: 'todo',
-    Book: 'book',
     Clutter: 'clutter',
-  },
-  hasMany: {
-    Video: 'article',
-    PicTie: 'article',
   },
 };
 
