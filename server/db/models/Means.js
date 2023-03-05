@@ -68,9 +68,6 @@ const Means = {
       comment: '备注',
     },
   },
-  hasMany: {
-    PicTie: 'means',
-  },
 };
 
 export default Means;
