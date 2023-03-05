@@ -316,7 +316,7 @@ const enArg = {
   title: 'h1 span',
   year: 'h1 .year',
 };
-function getEntertainment(root) {
+function getMedia(root) {
   const result = {};
   const article = root.querySelector('#content');
   if (!article) {
@@ -656,8 +656,8 @@ export async function dDetail(url, cookie) {
     result.type = 'status';
   } else if (!url.includes('www.douban.com')) {
   // 书影音
-    result = getEntertainment(root);
-    result.type = 'entertainment';
+    result = getMedia(root);
+    result.type = 'Media';
   }
 
   result.url = url;
