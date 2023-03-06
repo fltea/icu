@@ -16,8 +16,7 @@ a {
 }
 
 html,
-body,
-#app {
+body {
   height: 100%;
 }
 
@@ -85,10 +84,19 @@ textarea {
   }
 }
 
-// 页面主体
+// 页面佈局
+#app {
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 50px;
+  .com-footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+  }
+}
 .layout-inner {
   margin: 0 auto;
   width: 90%;
   min-width: 500px;
-  min-height: calc(100vh - 116px);
 }
