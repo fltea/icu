@@ -8,7 +8,7 @@
       <a class="header-nav" v-for="(item, index) in menus" :key="`menus-${index}-${item.path}`" :href="item.path">{{item.name}}</a>
     </div>
   </div>
-  <div class="header-subnav">
+  <div class="header-subnav" v-if="subNavs.length">
     <a class="sub-nav" v-for="(item, index) in subNavs" :key="`menus-${index}-${item.path}`" :href="item.path">{{item.name}}</a>
   </div>
 </header>
