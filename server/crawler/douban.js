@@ -596,7 +596,7 @@ export async function gurl(url, cookie) {
   // 讨论
   dom = root.querySelectorAll('.topic-tab a');
   if (dom) {
-    result.tabs = getList(dom);
+    result.tabs = getList(dom, '', true);
   }
 
   dom = root.querySelectorAll('#group-topics tr');
