@@ -1,11 +1,23 @@
 import request from '../utils/axios';
-import { urlStringify } from '../utils/tools';
 
 const url = '/api/novel';
 
+export const nurl = (data) => request({
+  url: `${url}/nurl`,
+  method: 'post',
+  data,
+});
+
+export const nurlchapter = (data) => request({
+  url: `${url}/nurl/chapter`,
+  method: 'post',
+  data,
+});
+
 export const list = (data) => request({
-  url: `${url}?${urlStringify(data)}`,
+  url,
   method: 'get',
+  data,
 });
 
 export const detail = (data) => request({
@@ -13,43 +25,39 @@ export const detail = (data) => request({
   method: 'post',
   data,
 });
-export const dChapters = (data) => request({
-  url: `${url}/detail/chapters`,
-  method: 'post',
-  data,
-});
-export const dChapter = (data) => request({
-  url: `${url}/detail/chapter`,
-  method: 'post',
-  data,
-});
 
-export const add = (data) => request({
+export const novelAdd = (data) => request({
   url: `${url}/add`,
   method: 'post',
   data,
 });
 
-export const modify = (data) => request({
+export const novelMod = (data) => request({
   url: `${url}/modify`,
   method: 'post',
   data,
 });
 
-export const del = (data) => request({
-  url: `${url}/delete`,
+export const novelDel = (data) => request({
+  url: `${url}/del`,
   method: 'post',
   data,
 });
 
-export const content = (data) => request({
-  url: `${url}/content`,
+export const noveler = (data) => request({
+  url: `${url}/noveler`,
   method: 'post',
   data,
 });
 
 export const chapter = (data) => request({
   url: `${url}/chapter`,
+  method: 'post',
+  data,
+});
+
+export const chapterAdd = (data) => request({
+  url: `${url}/chapter/add`,
   method: 'post',
   data,
 });
