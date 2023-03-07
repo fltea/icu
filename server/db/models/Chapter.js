@@ -26,19 +26,27 @@ const Chapter = {
       type: INTEGER,
       comment: 'clutter Id',
     },
-    author: {
+    type: {
+      type: STRING,
+      comment: 'type',
+    },
+    typeId: {
+      type: INTEGER,
+      comment: 'typeId',
+    },
+    aurthor: {
       type: STRING,
       comment: '作者',
     },
-    authorId: {
+    aurthorId: {
       type: STRING,
       comment: '作者Id',
     },
-    authorLink: {
+    aurthorLink: {
       type: STRING,
       comment: '作者链接',
     },
-    authorIp: {
+    aurthorIp: {
       type: STRING,
       comment: '作者地址',
     },
