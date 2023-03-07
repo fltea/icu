@@ -1,306 +1,146 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo, isExistInfo, notExistInfo } from '../model/ErrorInfos.js';
-import { ErrorModel, SuccessModel } from '../model/ResModel.js';
+// import { addInfo, delInfo, updateInfo, schemaFileInfo, isExistInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
-import { appendFile, reqiureFile } from '../utils/files.js';
-import hash from '../utils/crypto.js';
-import { TEMP_DIR } from '../conf/constant.js';
+import { setHashList } from '../utils/files.js';
+import { getRange, formatPage, getPage } from '../utils/crawler.js';
+import { novelContent, novelChapter } from '../crawler/novel.js';
+import { novelList, chapterInfo, chapterAdd, chapterMod, chapterDel, novelerAdd, novelerMod, novelerInfo } from '../services/novel.js';
 
-import {
-  novelInfo,
-  novelList,
-  novelAdd,
-  novelUpdate,
-  novelDelete,
-  novelBulk,
-  novelContent,
-  novelChapter,
-} from '../services/novel.js';
-import {
-  chapterBulk,
-  chapterInfo,
-  chapterAdd,
-  chapterUpdate,
-} from '../services/chapter.js';
-
-/**
- * 如果存在list则保存到数据库
- */
-function url2chapters({ id, url, clutter }) {
-  const listId = hash(url);
-  const listData = reqiureFile(`${TEMP_DIR}/${listId}`);
-  const list = JSON.parse(listData).map((v) => ({
-    url: v.url,
-    title: v.name,
-    content: '',
-    author: '',
-    novel: id,
-    clutter,
-  }));
-  chapterBulk(list);
-}
-
-/**
- * 獲取單個數據
- */
-export async function getNovel({ id, url, clutter }) {
+// 根据url获取详情
+export async function getNurl({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist }) {
   try {
-    if (id) {
-      const result = await novelInfo({ id, url, clutter });
-      if (result) {
-        return new SuccessModel(result);
+    const result = await novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist });
+    console.log(nolist);
+    let nextPage;
+    if (result.multlist) {
+      nextPage = formatPage(result.multlist, detailurl);
+      nextPage = getPage(nextPage, url);
+    }
+    while (nextPage) {
+      const nextResult = await novelContent({ url: nextPage, encode, title, author, content, lists, detailurl, listSort, multlist });
+      if (nextResult.multlist) {
+        nextPage = formatPage(nextResult.multlist, detailurl);
+        nextPage = getPage(nextPage, url);
+      }
+      const nlist = nextResult.list;
+      if (Array.isArray(nlist) && nlist.length) {
+        result.list.push(...nlist);
       }
     }
-    return new ErrorModel(notExistInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
+    setHashList(url, result.list);
 
-/**
- * 獲取列表
- */
-export async function getNovels({ title, author, finish, content, page, limit }) {
-  try {
-    const novel = { title, author, finish, content, page, limit };
-    if (`${novel.finish}`) {
-      novel.finish = !!novel.finish;
+    if (nolist) {
+      delete result.list;
     }
-    const result = await novelList({ title, author, finish, content, page, limit });
+
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
 
-/**
- * 創建數據
- */
-export async function createNovel({ url, title, content, clutter, author, finish, origin, loaded }) {
+// 获取章節
+export async function getNurlChapter({ url, encode, name, detail, detailex, dstart, dend, multpage }) {
   try {
-    let result = await novelInfo({ url });
-    if (result) {
-      return new ErrorModel(isExistInfo);
-    }
-    const novel = { url, title, content, clutter, author, finish, origin, loaded };
-    result = await novelAdd(novel);
-    if (result) {
-      url2chapters(result);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(addInfo);
+    const arange = getRange(dstart, dend);
+    const result = await novelChapter({ url, encode, name, detail, detailex, arange, multpage });
+
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
 
-/**
- * 創建多個數據
- */
-export async function createNovels(list) {
+// 獲取列表
+export async function getNovel({ title, aurthor, page, limit }) {
   try {
-    if (Array.isArray(list)) {
-      const result = await novelBulk(list);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(schemaFileInfo);
+    const result = await novelList({ title, aurthor, page, limit });
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 修改數據
- */
-export async function modifyNovel({ id, url, title, content, clutter, author, finish, origin, loaded }) {
+// 獲取詳情
+export async function getNovelById({ id }) {
   try {
-    const novel = { id, url, title, content, clutter, author, finish, origin, loaded };
-    const result = await novelUpdate(novel);
-    if (result) {
-      return new SuccessModel(result);
-    }
-
-    return new ErrorModel(updateInfo);
+    const result = await chapterInfo(id, true);
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 刪除數據
- */
-export async function deleteNovel(id) {
-  try {
-    const result = await novelDelete(id);
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(delInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-
-function getPage(url, home) {
-  const isHome = url === home;
-  if (!isHome) {
-    return url;
-  }
-  return null;
-}
-
-/**
- * 获取文章目录内容
- */
-async function getNovelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist }) {
-  const result = await novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist });
-  let nextPage;
-  if (result.multlist) {
-    nextPage = getPage(result.multlist, url);
-  }
-  while (nextPage) {
-    const nextResult = await novelContent({ url: nextPage, encode, title, author, content, lists, detailurl, listSort, multlist });
-    if (nextResult.multlist) {
-      nextPage = getPage(nextResult.multlist, url);
-    }
-    const nlist = nextResult.list;
-    if (Array.isArray(nlist) && nlist.length) {
-      result.list.push(...nlist);
-    }
-  }
-
-  // 暂存list在服务器
-  const tempId = hash(url);
-  appendFile(`${TEMP_DIR}/${tempId}`, JSON.stringify(result.list), { flag: 'w' });
-
-  if (nolist) {
-    delete result.list;
-  }
-  return result;
-}
-
-export async function contentNovel({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist, novel }) {
+// 新增
+export async function setNovel({ url, title, author, content, clutter, platform, tag }) {
   try {
     let result;
-    if (novel) {
-      const novelValue = await novelInfo({ id: novel, clutter: true });
-      const dataValue = JSON.parse(novelValue.Clutter.content);
-      // console.log(dataValue);
-      result = await getNovelContent({ url: novelValue.url, ...dataValue });
-    } else {
-      result = await getNovelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist });
+    const novel = { type: 'novel', url, title, author, content, clutter, platform, tag };
+    if (clutter && isNaN(clutter)) {
+      const clutterInfo = JSON.parse(clutter);
+      const { domain, id } = clutterInfo;
+      if (id) {
+        delete clutterInfo.id;
+        result = await novelerMod({
+          id,
+          content: JSON.stringify(clutterInfo),
+        });
+        novel.clutter = id;
+      } else if (domain) {
+        // 新增clutter
+        delete clutterInfo.id;
+        result = await novelerAdd({
+          domain,
+          content: JSON.stringify(clutterInfo),
+        });
+        novel.clutter = result.id;
+      }
     }
-
+    result = await chapterAdd(novel);
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 文章章节
- */
-async function getNovelChapter({ url, encode, name, detail, detailex, arange, multpage }) {
-  const result = await novelChapter({ url, encode, name, detail, detailex, arange, multpage });
-  return result;
-}
-
-function getRange(dstart, dend) {
-  let arange;
-  if (dstart || dend) {
-    arange = [+dstart, +dend];
-  }
-  return arange;
-}
-
-export async function chapterNovel({ url, encode, name, detail, detailex, dstart, dend, multpage, novel }) {
+// 修改
+export async function modNovel({ id, url, title, author, content, domain, clutter, platform, tag }) {
   try {
-    let arange;
-    let result;
-    if (novel) {
-      const novelValue = await novelInfo({ id: novel, clutter: true });
-      const dataValue = JSON.parse(novelValue.Clutter.content);
-      // console.log(dataValue);
-      arange = getRange(dataValue.dstart, dataValue.dend);
-      result = await getNovelChapter({ url, arange, ...dataValue });
-    } else {
-      arange = getRange(dstart, dend);
-      result = await getNovelChapter({ url, encode, name, detail, detailex, arange, multpage });
-    }
+    const result = await chapterMod({ id, url, title, author, content, domain, clutter, platform, tag });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 批量保存章节
- */
-export async function listChapter({ url, novel, clutter }) {
+// 刪除
+export async function delNovel({ id }) {
   try {
-    if (novel && url && clutter) {
-      const listId = hash(url);
-      let list = reqiureFile(`${TEMP_DIR}/${listId}`);
-      list = JSON.parse(list).map((v) => ({
-        url: v.url,
-        title: v.name,
-        novel,
-        content: '',
-        author: '',
-        clutter,
-      }));
-      list = await chapterBulk(list);
-      return list;
-    }
-    return new ErrorModel(schemaFileInfo);
+    const result = await chapterDel(id);
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 新增章节
- */
-export async function addChapter({ url, title, novel, content, author, clutter }) {
+// noveler 詳情
+export async function getNoveler({ id, domain }) {
   try {
-    let result = await chapterInfo({ url });
-    if (result) {
-      return new ErrorModel(isExistInfo);
-    }
-    result = await chapterAdd({ url, title, novel, content, author, clutter });
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(addInfo);
+    const result = await novelerInfo({ id, domain });
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 修改章节
- */
-export async function modifyChapter({ id, title, content, author }) {
+// chapter 詳情
+export async function getChapter({ id }) {
   try {
-    const result = await chapterUpdate({ id, title, content, author });
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(updateInfo);
+    const result = await chapterInfo(id);
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
-
-/**
- * 根据 Id 获取章节内容
- */
-export async function contentChapter({ id, url }) {
+// 新增
+export async function setChapter({ url, title, author, content, type = 'novel', typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
   try {
-    const result = await chapterInfo({ id, url });
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(notExistInfo);
+    const result = await chapterAdd({ url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag });
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
