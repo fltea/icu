@@ -1,6 +1,7 @@
 import { UserAgent } from '../conf/constant.js';
 
-export function getHeader(cookie, referer) {
+export function headers(options = {}) {
+  const { cookie, referer, encode } = options;
   const header = {
     'User-Agent': UserAgent,
   };
@@ -11,7 +12,14 @@ export function getHeader(cookie, referer) {
   if (referer) {
     header.referer = referer;
   }
+  if (encode) {
+    header.encode = encode;
+  }
   return header;
+}
+
+export function getHeader(cookie, referer) {
+  return headers({ cookie, referer });
 }
 
 export function getData(data) {
@@ -74,19 +82,19 @@ export function getAttrs(root, attibutes, result) {
 /**
  * 获取列表
  */
-export function getList(doms, preurl, listSort) {
+export function getList(doms, preurl, cls = false) {
   const list = doms.map((a) => {
     const url = a.getAttribute('href');
     const name = a.text;
-    return {
+    const item = {
       name,
       url: `${preurl || ''}${url}`,
-      className: a.classList.value.join(' '),
     };
+    if (cls) {
+      item.className = a.classList.value.join(' ');
+    }
+    return item;
   });
-  if (listSort) {
-    // list.sort((a, b) => parseInt(a.url, 10) - parseInt(b.url, 10));
-  }
   return list;
 }
 
@@ -112,4 +120,26 @@ export function getTextContent(dom, title, arange) {
   } catch (error) {
     return '';
   }
+}
+
+export function formatPage(url, home) {
+  if (url.includes(home)) {
+    return url;
+  }
+  return `${home}${url}`;
+}
+export function getPage(url, home) {
+  const isHome = url === home;
+  if (!isHome) {
+    return url;
+  }
+  return null;
+}
+
+export function getRange(dstart, dend) {
+  let arange;
+  if (dstart || dend) {
+    arange = [+dstart, +dend];
+  }
+  return arange;
 }
