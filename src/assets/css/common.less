@@ -1,17 +1,17 @@
 
 :root {
-  --color-a: #1e88f6;
-  --color-ahover: #1bb934;
-  --color-aactive: #ff5b05;
+  --color-a: @linkColor;
+  --color-hover: @linkHoverColor;
+  --color-active: @linkActiveColor;
 }
 
 a {
   color: var(--color-a);
   &:hover {
-    color: var(--color-ahover);
+    color: var(--color-hover);
   }
   &:active {
-    color: var(--color-aactive);
+    color: var(--color-active);
   }
 }
 
@@ -22,10 +22,12 @@ body {
 
 body {
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 21px;
+  color: @textColor;
 }
 
 pre {
+  color: inherit;
   white-space: pre-wrap;
 }
 
@@ -55,32 +57,6 @@ textarea {
     z-index: 2;
     opacity: 0;
     cursor: pointer;
-  }
-}
-
-// 弹窗
-.dialog {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  max-width: 100%;
-  border: none;
-  background: transparent;
-  &::before {
-    content: '';
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-    background-color: rgba(0, 0, 0, .4);
-  }
-  .dialog-body {
-    max-width: 100%;
-    background-color: #fff;
   }
 }
 
