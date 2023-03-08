@@ -53,15 +53,15 @@ const close = () => {
 <style scoped lang="less">
 .com-dialog {
   position: fixed;
-  left: 0;
-  right: 0;
   top: 0;
   bottom: 0;
+  z-index: 2;
   padding: 0;
   border: none;
-  max-width: 100%;
+  max-width: 98%;
+  max-height: 98%;
+  border-radius: 6px;
   .dialog-model {
-    content: '';
     position: fixed;
     left: 0;
     right: 0;
@@ -71,11 +71,11 @@ const close = () => {
     background-color: @dialogModel;
   }
   .dialog-body {
-    max-width: 100%;
     background-color: @bgf;
   }
 }
 .dialog-body {
+  margin: 0 auto;
   min-width: 450px;
   border-radius: 6px;
 }
