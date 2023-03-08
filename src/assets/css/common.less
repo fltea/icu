@@ -31,33 +31,38 @@ pre {
   white-space: pre-wrap;
 }
 
+input,
+textarea,
 button {
-  font-size: 12px;
-  cursor: pointer;
-  + button {
+  padding: 2px 8px;
+  line-height: 22px;
+  border-radius: 3px;
+  border: 1px solid @inColor;
+  &:nth-child(n+2) {
     margin-left: 8px;
+  }
+}
+input,
+textarea {
+  &:focus {
+    border-color: @comBg;
+  }
+}
+button {
+  min-width: 60px;
+  cursor: pointer;
+  color: @bgf;
+  text-align: center;
+  border-color: @comBg;
+  background-color: @comBg;
+  &:hover {
+    opacity: .8;
   }
 }
 textarea {
   min-height: 50px;
   vertical-align: text-top;
   resize: none;
-}
-
-// 上传文件按钮
-.file-button {
-  position: relative;
-  overflow: hidden;
-  input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    opacity: 0;
-    cursor: pointer;
-  }
 }
 
 // 页面佈局
@@ -75,4 +80,7 @@ textarea {
   margin: 0 auto;
   width: 90%;
   min-width: 500px;
+}
+.com-controls {
+  padding-top: @small;
 }
