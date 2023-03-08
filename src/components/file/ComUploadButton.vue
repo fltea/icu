@@ -17,4 +17,18 @@ const changFile = (event) => {
   display: inline-block;
   line-height: 1;
 }
+.file-button {
+  position: relative;
+  overflow: hidden;
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
 </style>
