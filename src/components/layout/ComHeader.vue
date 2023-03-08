@@ -46,7 +46,7 @@ const subNavs = routes.filter((v) => v.path.includes(`/${currentRoute}/`)).filte
   .header-toper {
     display: flex;
     padding: 2px 10px;
-    background-color: @ProColor;
+    background-color: @proColor;
   }
   .header-logo {
     width: @logos;
