@@ -19,6 +19,7 @@ import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 import comMenus from '@/utils/comMenus';
+import { getComName } from '@/utils/tools';
 
 const router = useRouter();
 const menus = reactive(comMenus);
@@ -26,25 +27,26 @@ const routes = router.getRoutes();
 let { currentRoute } = router;
 currentRoute = currentRoute.value;
 currentRoute = currentRoute.path.split('/').filter((v) => !!v).shift();
-const subNavs = routes.filter((v) => v.path.includes(`/${currentRoute}/`)).map((v) => {
+const subNavs = routes.filter((v) => v.path.includes(`/${currentRoute}/`)).filter((v) => !v.path.includes(':') && (v.path.split('/').length <= 3)).map((v) => {
   const item = { ...v };
-  let name = item.name.replace(currentRoute, '');
-  name = name.replace('-', '');
-  name = name.replace('_', '');
-  item.name = name;
+  let { name } = item;
+  name = name.replace(currentRoute, '');
+  name = name.replace(/_/g, '');
+  const names = getComName(name);
+  item.name = names;
   return item;
 });
 </script>
 
 <style lang='less' scoped>
 .com-header {
-  padding-top: 10px;
+  // padding-top: 10px;
   padding-bottom: 10px;
   @logos: 30px;
   .header-toper {
     display: flex;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 2px 10px;
+    background-color: @ProColor;
   }
   .header-logo {
     width: @logos;
@@ -61,13 +63,17 @@ const subNavs = routes.filter((v) => v.path.includes(`/${currentRoute}/`)).map((
     white-space: nowrap;
     margin-left: 12px;
     line-height: @logos;
+    color: @linkrColor;
+    &:hover {
+      color: @linkrHoverColor;
+    }
   }
   .header-subnav {
     padding-top: 5px;
     padding-bottom: 8px;
     padding-left: 42px;
     padding-right: 10px;
-    background: #ddd;
+    background: @bgf8;
     .sub-nav {
       & + .sub-nav {
         margin-left: 12px;
