@@ -19,12 +19,12 @@ const __dirname = path.dirname(__filename);
  * }
  */
 
-// const options = {
-//   paranoid: true,
-//   createdAt: 'createdTime',
-//   updatedAt: 'updatedTime',
-//   deletedAt: 'deletedTime',
-// };
+const soptions = {
+  paranoid: true,
+  // createdAt: 'createdTime',
+  // updatedAt: 'updatedTime',
+  // deletedAt: 'deletedTime',
+};
 
 let keys = fs.readdirSync(__dirname);
 keys = keys.map((l) => l.replace('.js', '')).filter((l) => l !== 'index');
@@ -40,7 +40,7 @@ while (i < max) {
   item = item.default;
   // console.log('item', item);
   temp[key] = item;
-  models[key] = seq.define(key, item.model);
+  models[key] = seq.define(key, item.model, soptions);
   i += 1;
 }
 
