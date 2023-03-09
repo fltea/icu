@@ -1,10 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { Buffer } from 'node:buffer';
-
-import {
-// listNovel,
-// chapterNovel,
-} from './controllers/novel.js';
+import { isExistInfo, errorInfo } from './model/ErrorInfos.js';
 
 class WSS {
   static online = 0;
@@ -57,6 +53,8 @@ class WSS {
         const result = await import(`./sockets/${path}.js`);
         result.default(ws, message.toString());
       } catch (error) {
+        console.log('error', error);
+        ws.send(JSON.stringify(errorInfo));
         ws.close();
         this.removeWs(ws, path);
       }
@@ -82,7 +80,7 @@ class WSS {
         if (clients.includes(route)) {
           const pws = this.clients[route];
           if (pws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ message: '链接已生成', retCode: 200 }));
+            ws.send(JSON.stringify(isExistInfo));
             ws.close();
           } else {
             pws.close();
