@@ -59,6 +59,7 @@ export function getAttr(dom, attibute) {
 }
 
 export function getAttrs(root, attibutes, result) {
+  // console.log(root, attibutes, result);
   const keys = Object.keys(attibutes || {});
   keys.forEach((key) => {
     let value;
@@ -85,9 +86,9 @@ export function getAttrs(root, attibutes, result) {
 export function getList(doms, preurl, cls = false) {
   const list = doms.map((a) => {
     const url = a.getAttribute('href');
-    const name = a.text;
+    const title = a.text;
     const item = {
-      name,
+      title,
       url: `${preurl || ''}${url}`,
     };
     if (cls) {
