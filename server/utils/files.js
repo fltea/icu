@@ -93,7 +93,7 @@ export function setHashList(name, list) {
 export function getHashList(name) {
   const listId = hash(name);
   const list = reqiureFile(`${TEMP_DIR}/${listId}`);
-  return JSON.parse(list);
+  return list ? JSON.parse(list) : list;
 }
 
 export function toogleCookies(name, cookies) {
