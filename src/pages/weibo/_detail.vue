@@ -46,7 +46,7 @@ onMounted(detailData);
 
 <template>
 <h1>WEIBO</h1>
-<section>
+<section class="com-container">
   <list-item v-if="detail.id" :weibo="detail" detail>
     <list-item v-if="detail.retweeted_status" :weibo="detail.retweeted_status" retweeted detail></list-item>
   </list-item>
