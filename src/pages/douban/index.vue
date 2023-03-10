@@ -3,7 +3,6 @@ import { ref, reactive } from 'vue';
 import { durl } from '@/api/douban';
 import { getComName } from '@/utils/tools';
 
-import InputDialog from '@/components/InputDialog.vue';
 import GroupDetail from '@/components/douban/GroupDetail.vue';
 import DoulistDetail from '@/components/douban/DoulistDetail.vue';
 
@@ -83,7 +82,7 @@ const itemDetail = (url) => {
       <component :is="components[curCom]" :detail="curData.detail"></component>
     </section>
   </section>
-  <input-dialog v-model="idialog" @save="newItems"></input-dialog>
+  <text-dialog title="Link" v-model:show="idialog" @save="newItems"></text-dialog>
 </template>
 
 <style scoped lang='less'>

@@ -3,7 +3,6 @@ import { ref, reactive, onMounted } from 'vue';
 import { whome } from '@/api/weibo';
 import { deepCopy } from '@/utils/tools';
 
-import WCookie from '@/components/weibo/WCookie.vue';
 import ListItem from '@/components/weibo/ListItem.vue';
 
 const listData = reactive([]);
@@ -54,7 +53,9 @@ onMounted(initList);
 
 <template>
   <h1>Weibo</h1>
-  <button @click="setCookie">設置cookie</button>
+  <section class="com-controls">
+    <button @click="setCookie">設置cookie</button>
+  </section>
   <section class="weibo-list">
     <div v-for="item in listData" :key="`list-${item.bid}`" class="list-item">
       <list-item :weibo="item">
@@ -62,7 +63,7 @@ onMounted(initList);
       </list-item>
     </div>
   </section>
-  <w-cookie v-model:show="cdialog" @success="initList"></w-cookie>
+  <text-dialog textarea v-model:show="cdialog" title="Cookie" @save="initList"></text-dialog>
 <section>
 
 </section>

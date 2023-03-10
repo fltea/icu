@@ -3,7 +3,6 @@ import { ref, reactive, onMounted } from 'vue';
 import { wfavorite } from '@/api/weibo';
 import { deepCopy } from '@/utils/tools';
 
-import WCookie from '@/components/weibo/WCookie.vue';
 import ListItem from '@/components/weibo/ListItem.vue';
 
 const cdialog = ref(false);
@@ -66,7 +65,7 @@ onMounted(initList);
     </div>
     </com-list>
   </section>
-  <w-cookie v-model:show="cdialog" @success="initList"></w-cookie>
+  <text-dialog textarea v-model:show="cdialog" title="Cookie" @save="initList"></text-dialog>
 </template>
 
 <style lang='less' scoped>
