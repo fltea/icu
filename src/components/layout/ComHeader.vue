@@ -51,6 +51,7 @@ const subNavs = routes.filter((v) => v.path.includes(`/${currentRoute}/`)).filte
   .header-logo {
     width: @logos;
     font-size: 0;
+    line-height: 0;
     img {
       max-width: @logos;
       max-height: @logos;
