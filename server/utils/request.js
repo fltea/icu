@@ -21,6 +21,7 @@ const request = ({
   header = {},
   media,
   encode = 'utf8',
+  timeout,
 }) => new Promise((resolve, reject) => {
   let server;
   // 协议
@@ -51,8 +52,6 @@ const request = ({
   const options = {
     method,
     headers,
-    // 设置超时时间
-    timeout: 60 * 1000,
   };
   const req = server.request(url, options, (res) => {
     const values = [];
@@ -84,6 +83,17 @@ const request = ({
       }
     });
   });
+  let timenum = +timeout;
+  if (!isNaN(timenum)) {
+    timenum = 60 * 1000;
+  }
+  req.setTimeout(timenum, function to() {
+    const e = new Error(`http request timeout url:${url}`);
+    e.code = 'ESOCKETTIMEDOUT';
+    e.connect = false;
+    this.abort();
+    this.emit('error', e);
+  }.bind(req));
   req.on('error', (error) => {
     // console.error('request error', error);
     reject(error);
