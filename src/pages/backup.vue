@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { backups, backup, restore } from '@/api/common';
+import { backups, backup, restore } from '@/api/backup';
 
 const listData = ref([]);
 const listDatas = () => {
@@ -24,8 +24,10 @@ onMounted(listDatas);
 
 <template>
   <h1>Datas</h1>
+  <div class="com-controls">
   <button @click="backupData">新增备份</button>
-  <section class="list-container">
+  </div>
+  <section class="com-container">
     <div v-for="item in listData" :key="`listData-${item}`" class="list-item">
       <p>{{ item }} <button @click="restoreData(item)">还原备份</button></p>
     </div>
@@ -33,8 +35,7 @@ onMounted(listDatas);
 </template>
 
 <style scoped lang="less">
-.list-container {
-  margin-top: 12px;
+.com-container {
   .list-item {
     & +.list-item {
       margin-top: 12px;
