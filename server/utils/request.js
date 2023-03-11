@@ -84,7 +84,7 @@ const request = ({
     });
   });
   let timenum = +timeout;
-  if (!isNaN(timenum)) {
+  if (isNaN(timenum)) {
     timenum = 60 * 1000;
   }
   req.setTimeout(timenum, function to() {
