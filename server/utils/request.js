@@ -4,17 +4,6 @@ import { Buffer } from 'node:buffer';
 import zlib from 'node:zlib';
 import iconv from 'iconv-lite';
 
-const getTurn = (text, header, nheader) => {
-  if (nheader) {
-    return {
-      header,
-      data: text,
-    };
-  }
-
-  return text;
-};
-
 /**
  *
  * @param { String } url 请求地址
@@ -23,7 +12,6 @@ const getTurn = (text, header, nheader) => {
  * @param { Object } header 请求头配置
  * @param { Boolean } media 媒体文件
  * @param { String } encode 编码
- * @param { Boolean } gzip gzip压缩
  */
 
 const request = ({
@@ -33,8 +21,6 @@ const request = ({
   header = {},
   media,
   encode = 'utf8',
-  gzip,
-  nheader,
 }) => new Promise((resolve, reject) => {
   let server;
   // 协议
@@ -65,6 +51,8 @@ const request = ({
   const options = {
     method,
     headers,
+    // 设置超时时间
+    timeout: 60 * 1000,
   };
   const req = server.request(url, options, (res) => {
     const values = [];
@@ -77,21 +65,22 @@ const request = ({
 
     res.on('end', () => {
       // console.log('values', values);
+      const isGzip = res.headers['content-encoding'] === 'gzip';
       if (media) {
         resolve(values.join(''));
-      } else if (gzip) {
+      } else if (isGzip) {
         const buffer = Buffer.concat(values);
         zlib.gunzip(buffer, (err, decoded) => {
           const text = iconv.decode(decoded, encode);
-          resolve(getTurn(text, res.headers, nheader));
+          resolve(text);
         });
       } else if (encode) {
         const text = iconv.decode(Buffer.concat(values), encode);
-        resolve(getTurn(text, res.headers, nheader));
+        resolve(text);
       } else {
         let text = Buffer.from(values.join(''));
         text = text.toString();
-        resolve(getTurn(text, res.headers, nheader));
+        resolve(text);
       }
     });
   });

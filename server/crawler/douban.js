@@ -379,7 +379,7 @@ function getMedia(root) {
 export async function durlist(url, cookie) {
   const html = await request({
     url,
-    header: getHeader({ cookie }),
+    header: getHeader(cookie),
     method: 'GET',
   });
 

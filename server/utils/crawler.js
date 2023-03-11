@@ -1,7 +1,8 @@
 import { UserAgent } from '../conf/constant.js';
+import { deepCopy } from './tools.js';
 
 export function headers(options = {}) {
-  const { cookie, referer, encode } = options;
+  const { cookie, referer } = options;
   const header = {
     'User-Agent': UserAgent,
   };
@@ -12,9 +13,7 @@ export function headers(options = {}) {
   if (referer) {
     header.referer = referer;
   }
-  if (encode) {
-    header.encode = encode;
-  }
+
   return header;
 }
 
@@ -59,23 +58,24 @@ export function getAttr(dom, attibute) {
 }
 
 export function getAttrs(root, attibutes, result) {
-  // console.log(root, attibutes, result);
   const keys = Object.keys(attibutes || {});
   keys.forEach((key) => {
     let value;
-    let selector = attibutes[key];
+    let selector = deepCopy(attibutes[key]);
     if (Array.isArray(selector)) {
-      value = selector.slice(-1).pop();
-      selector = selector.slice().shift();
+      value = selector.pop();
+      selector = selector.shift();
     }
-    const dom = root.querySelector(selector);
-    if (dom) {
-      if (value) {
-        value = getAttr(dom, value);
-      } else {
-        value = getText(dom);
+    if (selector) {
+      const dom = root.querySelector(selector);
+      if (dom) {
+        if (value) {
+          value = getAttr(dom, value);
+        } else {
+          value = getText(dom);
+        }
+        result[key] = value;
       }
-      result[key] = value;
     }
   });
 }

@@ -24,6 +24,7 @@ export async function rollBack(promise, data) {
     await t.commit();
     return result;
   } catch (error) {
+    console.log('error', error);
     await t.rollback();
     return null;
   }
