@@ -32,7 +32,11 @@ const Chapter = {
     },
     typeId: {
       type: INTEGER,
-      comment: 'typeId',
+      comment: 'Chapter ID',
+    },
+    serial: {
+      type: INTEGER,
+      comment: '序号',
     },
     aurthor: {
       type: STRING,
@@ -69,6 +73,7 @@ const Chapter = {
   },
   belongsTo: {
     Clutter: 'clutter',
+    Chapter: 'typeId',
   },
 };
 
