@@ -55,6 +55,10 @@ const menus = [
     name: 'novel',
     path: '/novel',
   },
+  {
+    name: 'backup',
+    path: '/backup',
+  },
 ];
 
 export default menus;
