@@ -1,7 +1,7 @@
 import models from '../db/models/index.js';
 import { rollBack } from '../db/seq.js';
 import { BACKUP_DIR } from '../conf/constant.js';
-import { appendFile, reqiureFile } from '../utils/files.js';
+import { appendFile, hashBrFile, reqiureFile } from '../utils/files.js';
 import { deepCopy } from '../utils/tools.js';
 
 /**
@@ -11,26 +11,37 @@ import { deepCopy } from '../utils/tools.js';
 async function getDatas(type) {
   const item = models[type];
   const belong = {};
+  const textList = [];
+  const text = {};
   const attris = item.getAttributes();
-  const keys = Object.keys(attris).filter((key) => !!attris[key].references);
+  const keys = Object.keys(attris);
   if (keys.length) {
     keys.forEach((key) => {
-      const { model } = attris[key].references;
-      let name = model.substring(0, model.length - 1);
-      let table = models[name];
-      if (!table) {
-        table = models[model];
-        name = model;
+      const temp = attris[key];
+      // 外键
+      if (temp.references) {
+        const { model } = temp.references;
+        let name = model.substring(0, model.length - 1);
+        let table = models[name];
+        if (!table) {
+          table = models[model];
+          name = model;
+        }
+
+        if (table) {
+          belong[key] = {
+            name,
+            model: table,
+          };
+        }
       }
 
-      if (table) {
-        belong[key] = {
-          name,
-          model: table,
-        };
+      if (temp.type.toString() === 'TEXT') {
+        textList.push(key);
       }
     });
   }
+
   const result = await item.findAll();
   const list = [];
   let belongItems;
@@ -72,6 +83,19 @@ async function getDatas(type) {
       }
     }
 
+    if (textList.length) {
+      textList.forEach((key) => {
+        const textStr = value[key];
+        if (textStr) {
+          if (!text[value.id]) {
+            text[value.id] = {};
+          }
+          text[value.id][key] = textStr;
+          value[key] = '';
+        }
+      });
+    }
+
     list.push(value);
     i += 1;
   }
@@ -83,7 +107,15 @@ async function getDatas(type) {
     if (belongItems) {
       data.belongsTo = belongItems;
     }
-    return data;
+    const datas = {
+      data,
+    };
+    if (Object.keys(text).length) {
+      datas.text = text;
+      data.text = true;
+    }
+
+    return datas;
   }
   return null;
 }
@@ -94,25 +126,66 @@ export async function saveDatas(lpath) {
   const len = keys.length;
   for (; i < len; i++) {
     const key = keys[i];
-    const result = await getDatas(key);
+    const result = await getDatas(key, lpath);
     if (result) {
-      appendFile(`${lpath}/${key}.json`, JSON.stringify(result), { flag: 'w' });
+      const { data, text } = result;
+      appendFile(`${lpath}/${key}.json`, JSON.stringify(data), { flag: 'w' });
+      if (text) {
+        hashBrFile(lpath, key, JSON.stringify(text));
+      }
     }
   }
 }
 
 /**
+ * 恢复所有的 text
+ */
+async function setText(lpath, model, ids, attrs) {
+  let data = hashBrFile(lpath, model);
+  if (!data) {
+    return;
+  }
+  data = JSON.parse(data);
+  const keys = Object.keys(data);
+  const modelItem = models[model];
+  let max = keys.length;
+  while (max) {
+    const key = keys.pop();
+    max = keys.length;
+    const item = data[key];
+    const itemkeys = Object.keys(item);
+    const iresult = {};
+    itemkeys.forEach((v) => {
+      if (attrs.includes(v)) {
+        iresult[v] = item[v];
+      }
+    });
+    const id = +ids[key];
+    await modelItem.update(iresult, {
+      where: {
+        id,
+      },
+    });
+  }
+}
+
+/**
+ * 获取所有属性列
+ */
+function getAttributes(item) {
+  const isAt = /At$/;
+  const attris = item.getAttributes();
+  return Object.keys(attris).filter((key) => !isAt.test(key));
+}
+
+/**
  * 格式化数据
  */
-function formatItem(data, belongsTo) {
+function formatItem(data, attrs, belongsTo) {
   const item = deepCopy(data);
-  const isAt = /At$/;
   const isBelong = /^belong-/;
   delete item.id;
   Object.keys(item).forEach((key) => {
-    if (isAt.test(key)) {
-      delete item[key];
-    }
     if (isBelong.test(key)) {
       if (belongsTo) {
         const ID = item[key];
@@ -123,6 +196,8 @@ function formatItem(data, belongsTo) {
         item[attr] = +val;
       }
       delete item[key];
+    } else if (!attrs.includes(key)) {
+      delete item[key];
     }
   });
   return item;
@@ -132,13 +207,20 @@ function formatItem(data, belongsTo) {
  * 获取 id
  */
 async function getIds(item, datas) {
+  const attrs = getAttributes(item);
   const keys = Object.keys(datas);
   let i = 0;
   const max = keys.length;
+  const attris = item.getAttributes();
+  const attrikeys = Object.keys(attris).filter((k) => attris[k].type.toString() === 'TEXT');
   while (i < max) {
     const key = keys[i];
     let value = datas[key];
-    value = formatItem(value);
+    value = formatItem(value, attrs);
+    attrikeys.forEach((k) => {
+      delete value[k];
+    });
+    console.log(value);
     const result = await item.findOne({
       where: value,
       attributes: ['id'],
@@ -153,7 +235,8 @@ async function getIds(item, datas) {
 /**
  * 插入数据
  */
-async function createDatas({ type, date }) {
+async function createDatas({ type, date, types }) {
+  console.log('createDatas', type);
   const item = models[type];
   const lpath = `${BACKUP_DIR}/${date}`;
   let result = reqiureFile(`${lpath}/${type}.json`);
@@ -161,9 +244,6 @@ async function createDatas({ type, date }) {
     return null;
   }
   result = JSON.parse(result);
-  // if (result.lastTime === date) {
-  //   return result;
-  // }
   const belongsTo = deepCopy(result.belongsTo);
   let belongsSelf = false;
 
@@ -174,8 +254,10 @@ async function createDatas({ type, date }) {
     while (i < max) {
       const model = keys[i];
       if (model !== type) {
-        // 插入其他旧数据
-        await createDatas({ type: model, date });
+        if (!types.includes(model)) {
+          // 插入其他旧数据
+          await createDatas({ type: model, date, types });
+        }
         // 查询新数据 id
         const oitems = belongsTo[model];
         await getIds(models[model], oitems);
@@ -188,23 +270,29 @@ async function createDatas({ type, date }) {
   let li = 0;
   const { list } = result;
   const max = list.length;
+  const attrs = getAttributes(item);
+  const textIds = {};
   while (li < max) {
     // const belongsTo
     const oitem = list[li];
-    const litem = formatItem(oitem, belongsTo);
+    const OID = oitem.id;
+    const litem = formatItem(oitem, attrs, belongsTo);
     const [createItem] = await item.findOrCreate({
       where: litem,
     });
+    const NID = createItem.dataValues.id;
     if (belongsSelf) {
-      const datas = belongsTo[type][oitem.id];
+      const datas = belongsTo[type][OID];
       if (datas) {
-        belongsTo[type][oitem.id] = createItem.dataValues.id;
+        belongsTo[type][OID] = NID;
       }
     }
+    textIds[OID] = NID;
     li += 1;
   }
-  result.lastTime = date;
-  appendFile(`${lpath}/${type}.json`, JSON.stringify(result), { flag: 'w' });
+  await setText(lpath, type, textIds, attrs);
+  types.push(type);
+  console.log('createDatas end', type);
   return result;
 }
 
@@ -213,9 +301,10 @@ export async function setDatas(date) {
   let i = 0;
   const len = keys.length;
   const result = [];
+  const types = [];
   for (; i < len; i++) {
     const key = keys[i];
-    const iresult = await rollBack(createDatas, { type: key, date });
+    const iresult = await rollBack(createDatas, { type: key, date, types });
     result.push(iresult);
   }
   return result;
