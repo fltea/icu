@@ -62,9 +62,13 @@ export async function novelChapter({ url, encode, title, detail, detailex, arang
       selector: detail,
     });
   } else {
+    const urls = url.split('/');
+    urls.pop();
     html = await request({
       url,
-      header: headers(),
+      header: headers({
+        referer: urls.join('/'),
+      }),
       encode,
       method: 'GET',
       timeout: 10000,
@@ -76,11 +80,12 @@ export async function novelChapter({ url, encode, title, detail, detailex, arang
 
   const root = hparser.parse(html);
   const details = root.querySelector(detail);
-
-  const dexs = details.querySelectorAll(detailex);
-  dexs.forEach((v) => {
-    v.remove();
-  });
+  if (detailex) {
+    const dexs = details.querySelectorAll(detailex);
+    dexs.forEach((v) => {
+      v.remove();
+    });
+  }
 
   result.detail = getTextContent(details, title, arange);
 

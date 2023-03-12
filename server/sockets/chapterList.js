@@ -61,14 +61,14 @@ async function chapterContent(ws, curls, errcount, index, clutter, typeId) {
   if (index < (curls.length - 1)) {
     let sleepTime;
     if (index && !(index % 3)) {
-      sleepTime = randInt(5);
+      sleepTime = randInt(5, 13);
     }
     if (clutter.issleep) {
       let adder = +clutter.issleep;
       if (isNaN(adder) || adder < 3) {
         adder = 3;
       }
-      sleepTime = randInt(adder + 5, adder + 10);
+      sleepTime = randInt(adder + 3, adder + 8);
     }
     if (sleepTime) {
       console.log(index, 'sleepTime', sleepTime);

@@ -96,7 +96,7 @@ export async function chapterInfo({ id, novel, slide }) {
       if (slide) {
         const max = chapters.length;
         let [prev, next] = chapters;
-        if (max <= 1) {
+        if (max <= 1 && prev) {
           if (where.serial && prev.serial > serial) {
             [prev, next] = [next, prev];
           } else if (prev.id > id) {

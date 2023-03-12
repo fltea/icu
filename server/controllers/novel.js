@@ -80,13 +80,17 @@ export async function getNovel({ title, author, page, limit }) {
 export async function getNovelById({ id }) {
   try {
     const result = await chapterInfo({ id, novel: true });
-    let chapters = getHashList(result.url) || [];
-    chapters = chapters.filter((v) => !result.chapters.find((c) => c.url === v.url));
-    if (chapters.length) {
-      result.chapters.push(...chapters);
+    if (result) {
+      let chapters = getHashList(result.url) || [];
+      chapters = chapters.filter((v) => !result.chapters.find((c) => c.url === v.url));
+      if (chapters.length) {
+        result.chapters.push(...chapters);
+      }
+
+      return new SuccessModel(result);
     }
 
-    return new SuccessModel(result);
+    return new ErrorModel(notExistInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -161,7 +165,10 @@ export async function delNovel({ id }) {
 export async function getNoveler({ id, domain }) {
   try {
     const result = await novelerInfo({ id, domain });
-    return new SuccessModel(result);
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(notExistInfo);
   } catch (error) {
     return catchError(error);
   }

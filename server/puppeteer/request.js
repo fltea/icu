@@ -20,19 +20,15 @@ async function requst({ url, selector }) {
     clearTimeout(timer);
     timer = null;
   }
-  let page;
   if (opening) {
     await sleep(10000);
   }
   if (closing || !browser) {
     opening = true;
     browser = await puppeteer.launch({ headless: false });
-    const pages = await browser.pages();
-    [page] = pages.slice(0, 1);
     opening = false;
-  } else {
-    page = await browser.newPage();
   }
+  const page = await browser.newPage();
   await page.goto(url);
   await page.waitForSelector(selector, {
     timeout: 10000,
