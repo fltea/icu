@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { Buffer } from 'node:buffer';
-import { isExistInfo, errorInfo } from './model/ErrorInfos.js';
+import { putOutInfo, errorInfo } from './model/ErrorInfos.js';
 
 class WSS {
   static online = 0;
@@ -46,11 +46,12 @@ class WSS {
     //   console.log('pong function listen', +new Date(), ws.readyState);
     // });
     ws.on('message', async (data) => {
-      // console.log('message', data);
-      const message = Buffer.from(data);
-      // console.log('message', path, message.toString());
       try {
-        const result = await import(`./sockets/${path}.js`);
+      // console.log('message', data);
+        const message = Buffer.from(data);
+        // console.log('message', path, message.toString());
+        const fpath = path.split(':').shift();
+        const result = await import(`./sockets/${fpath}.js`);
         result.default(ws, message.toString());
       } catch (error) {
         console.log('error', error);
@@ -66,6 +67,7 @@ class WSS {
     //  [options.path] Accept only connections matching this path
     this.ws = new WebSocketServer({ server, path: spath });
     this.ws.on('connection', (ws, request) => {
+      console.log('ws connection');
       try {
         // console.log(request);
         // console.log('request.url', request.url);
@@ -80,18 +82,12 @@ class WSS {
         if (clients.includes(route)) {
           const pws = this.clients[route];
           if (pws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(isExistInfo));
-            ws.close();
-          } else {
+            pws.send(JSON.stringify(putOutInfo));
             pws.close();
-            this.clients[route] = ws;
-            this.wsEvent(ws);
           }
-        } else {
-          this.clients[route] = ws;
-          this.wsEvent(ws, route);
-          clients.push(route);
         }
+        this.clients[route] = ws;
+        this.wsEvent(ws, route);
 
         // do something
         // 这里可以做一些加强判断查询数据库等行为
