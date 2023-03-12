@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, reactive, watch } from 'vue';
+import { novelAdd, novelMod } from '@/api/novel';
 
-import { nurl, noveler, novelAdd, novelMod } from '@/api/novel';
+import Noveler from './Noveler.vue';
 
 const props = defineProps({
   show: Boolean,
@@ -16,28 +17,7 @@ const dialog = computed({
     return emit('update:show', value);
   },
 });
-const loading = ref(false);
-const cloading = ref(false);
-const crawler = ref(false);
-const clutter = reactive({
-  id: '',
-  domain: '',
-  encode: '',
-  title: '',
-  author: '',
-  content: '',
-  // loadpage:'',
-  lists: '',
-  listSort: '',
-  multlist: '',
-  detailurl: '',
-  detail: '',
-  detailex: '',
-  domainsearch: '',
-  dstart: '',
-  dend: '',
-  multpage: '',
-});
+const cdialog = ref(false);
 // https://www.tatajk.net/book/40857/
 const form = reactive({
   id: '',
@@ -50,203 +30,89 @@ const form = reactive({
   tag: '',
 });
 
-const setForm = (target, data) => {
+const setForm = (data) => {
   const val = data || {};
-  const keys = Object.keys(target);
+  const keys = Object.keys(form);
+  const Id = form.id;
   keys.forEach((key) => {
-    target[key] = val[key];
+    form[key] = val[key] || '';
   });
-};
-
-// 請求後台獲取數據
-const getNoveler = (domain) => {
-  cloading.value = true;
-  noveler({
-    domain,
-  }).then((res) => {
-    // console.log(res);
-    if (res.data) {
-      setForm(clutter, res.data);
-    }
-  }).finally(() => {
-    cloading.value = false;
-  });
-};
-
-const getDomain = (url) => {
-  if (url && url.includes('http')) {
-    const vals = url.split('://');
-    const links = vals.pop().split('/').shift();
-    vals.push(links);
-    const domain = vals.join('://');
-    if (domain !== clutter.domain) {
-      getNoveler(domain);
-    }
-  }
-};
-
-// 請求爬蟲數據
-const getContent = () => {
-  loading.value = true;
-  const item = { url: form.url, ...clutter, nolist: true };
-  console.log(item);
-  nurl(item).then((res) => {
-    // console.log(res);
-    setForm(form, res.data);
-  }).finally(() => {
-    loading.value = false;
-  });
+  form.id = Id || form.id;
 };
 
 const hide = () => {
   dialog.value = false;
-  setForm(form);
+  setForm();
 };
 
 const saveNovel = () => {
   const FN = form.id ? novelMod : novelAdd;
-  if (!form.id && clutter.domain) {
-    form.clutter = JSON.stringify(clutter);
+  const params = { ...form };
+  if (params.clutter) {
+    params.clutter = JSON.stringify(params.clutter);
   }
-  FN(form).then((res) => {
-    console.log(res);
+  FN(params).then(() => {
+    // console.log(res);
     emit('success');
     hide();
   });
 };
 
-watch(() => props.novel, (val) => {
-  setForm(form, val);
-  if (form.id) {
-    setForm(clutter);
-  }
-}, { immediate: true });
-
-watch(crawler, (val) => {
+watch(dialog, (val) => {
   if (val) {
-    if (form.url) {
-      getDomain(form.url);
-    }
-  } else {
-    setForm(clutter);
+    setForm(props.novel);
   }
 });
-watch(() => form.url, (val) => {
-  if (val && crawler) {
-    getDomain(val);
-  }
-});
+
+const getContent = () => {
+  cdialog.value = true;
+};
 
 </script>
 
 <template>
-  <com-dialog :show="dialog">
+  <com-dialog v-model="dialog" title="NOVEL">
     <section class="noveler-dialog">
-      <header>
-        <p>NOVEL</p>
-      </header>
-      <main>
-        <label>
-          <span class="label-title">url: </span>
-          <input type="text" v-model="form.url" />
-        </label>
-        <input type="checkbox" v-model="crawler" />
-        <label>
-          <span class="label-title">title: </span>
-          <input type="text" v-model="form.title" />
-        </label>
-        <label>
-          <span class="label-title">author: </span>
-          <input type="text" v-model="form.author" />
-        </label>
-        <label>
-          <span class="label-title">content: </span>
-          <textarea v-model="form.content"></textarea>
-        </label>
-        <label>
-          <span class="label-title">platform: </span>
-          <input type="text" v-model="form.platform" />
-        </label>
-        <label>
-          <span class="label-title">tag: </span>
-          <input type="text" v-model="form.tag" />
-        </label>
-      </main>
-      <section class="label-section" v-if="clutter.domain">
-        <label>
-          <span class="label-title">domain: </span>
-          <input type="text" v-model="clutter.domain" />
-        </label>
-        <label>
-          <span class="label-title">encode:  </span>
-          <input type="text" v-model="clutter.encode" />
-        </label>
-        <label>
-          <span class="label-title">title:  </span>
-          <input type="text" v-model="clutter.title" />
-        </label>
-        <label>
-          <span class="label-title">author:  </span>
-          <input type="text" v-model="clutter.author" />
-        </label>
-        <label>
-          <span class="label-title">content:  </span>
-          <input type="text" v-model="clutter.content" />
-        </label>
-        <label>
-          <span class="label-title">lists:  </span>
-          <input type="text" v-model="clutter.lists" />
-        </label>
-        <label>
-          <span class="label-title">listSort:  </span>
-          <input type="text" v-model="clutter.listSort" />
-        </label>
-        <label>
-          <span class="label-title">multlist:  </span>
-          <input type="text" v-model="clutter.multlist" />
-        </label>
-        <label>
-          <span class="label-title">detailurl: </span>
-          <input type="text" v-model="clutter.detailurl" />
+      <label>
+        <span class="label-title">url: </span>
+        <input type="text" v-model="form.url" />
       </label>
-        <label>
-          <span class="label-title">detail:  </span>
-          <input type="text" v-model="clutter.detail" />
-        </label>
-        <label>
-          <span class="label-title">detailex:  </span>
-          <input type="text" v-model="clutter.detailex" />
-        </label>
-        <label>
-          <span class="label-title">domainsearch:  </span>
-          <input type="text" v-model="clutter.domainsearch" />
+      <label>
+        <span class="label-title">title: </span>
+        <input type="text" v-model="form.title" />
       </label>
-        <label>
-          <span class="label-title">dstart:  </span>
-          <input type="text" v-model="clutter.dstart" />
-        </label>
-        <label>
-          <span class="label-title">dend:  </span>
-          <input type="text" v-model="clutter.dend" />
-        </label>
-        <label>
-          <span class="label-title">multpage:  </span>
-          <input type="text" v-model="clutter.multpage" />
-        </label>
-      </section>
-      <footer>
-        <button @click="hide">取消</button>
-        <button v-if="clutter.domain" @click="getContent">从url获取数据</button>
-        <button v-if="form.url" @click="saveNovel">保存</button>
-      </footer>
+      <label>
+        <span class="label-title">author: </span>
+        <input type="text" v-model="form.author" />
+      </label>
+      <label>
+        <span class="label-title">content: </span>
+        <textarea v-model="form.content"></textarea>
+      </label>
+      <label>
+        <span class="label-title">platform: </span>
+        <input type="text" v-model="form.platform" />
+      </label>
+      <label>
+        <span class="label-title">tag: </span>
+        <input type="text" v-model="form.tag" />
+      </label>
     </section>
+    <template #footer>
+      <button @click="hide">取消</button>
+      <button v-if="form.url" @click="getContent">从url获取数据</button>
+      <button v-if="form.url" @click="saveNovel">保存</button>
+    </template>
   </com-dialog>
+  <noveler v-model:show="cdialog" :noveler="form.clutter" :url="form.url" @success="setForm"></noveler>
 </template>
 
 <style lang='less' scoped>
 .noveler-dialog {
-  margin: 0 auto;
+  width: 650px;
+  max-height: 600px;
   padding: 12px;
+  overflow: auto;
   label {
     margin-top: 12px;
     display: block;
@@ -259,6 +125,9 @@ watch(() => form.url, (val) => {
     input,
     textarea {
       width: 400px;
+    }
+    input[type='checkbox'] {
+      width: auto;
     }
   }
   header {

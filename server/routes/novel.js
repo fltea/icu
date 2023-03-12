@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import { getNurl, getNurlChapter, getNovel, getNovelById, setNovel, modNovel, delNovel, getNoveler, getChapter, setChapter } from '../controllers/novel.js';
+import { getNurl, getNurlChapter, getNovel, getNovelById, setNovel, modNovel, delNovel, getNoveler, getChapter, setChapter, modChapter, sortChapter } from '../controllers/novel.js';
 
 const router = new Router();
 
@@ -56,6 +56,14 @@ router.post('/chapter', async (ctx) => {
 });
 router.post('/chapter/add', async (ctx) => {
   const result = await setChapter(ctx.request.body);
+  ctx.body = result;
+});
+router.post('/chapter/modify', async (ctx) => {
+  const result = await modChapter(ctx.request.body);
+  ctx.body = result;
+});
+router.post('/chapter/sort', async (ctx) => {
+  const result = await sortChapter(ctx.request.body);
   ctx.body = result;
 });
 

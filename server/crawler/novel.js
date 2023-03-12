@@ -1,25 +1,37 @@
 import hparser from 'node-html-parser';
 import request from '../utils/request.js';
-import { headers, getAttrs, getText, getList } from '../utils/crawler.js';
+import prequest from '../puppeteer/request.js';
+import { headers, getAttrs, getText, getList, getTextContent } from '../utils/crawler.js';
 
-export async function novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist }) {
-  const html = await request({
-    url,
-    header: headers({
+export async function novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist, puppeteer }) {
+  let html;
+  if (puppeteer) {
+    html = await prequest({
+      url,
+      selector: lists,
+    });
+  } else {
+    html = await request({
+      url,
+      header: headers(),
       encode,
-    }),
-    method: 'GET',
-  });
+      method: 'GET',
+      timeout: 10000,
+    });
+  }
   const result = {
     url,
   };
 
   const root = hparser.parse(html);
-  getAttrs(root, {
+  const attrs = {
     title,
     author,
-    multlist: [multlist, 'href'],
-  }, result);
+  };
+  if (multlist) {
+    attrs.multlist = [multlist, 'href'];
+  }
+  getAttrs(root, attrs, result);
 
   if (content) {
     // 內容簡介
@@ -34,44 +46,43 @@ export async function novelContent({ url, encode, title, author, content, lists,
     list.sort((a, b) => parseInt(a.url, 10) - parseInt(b.url, 10));
   }
   result.list = list;
+
+  // 标题
+  if (result.title) {
+    result.title = result.title.replace('首页>', '');
+  }
   return result;
 }
 
-export async function novelChapter({ url, encode, name, detail, detailex, arange, multpage }) {
-  const html = await request({
-    url,
-    header: headers({
+export async function novelChapter({ url, encode, title, detail, detailex, arange, multpage, puppeteer }) {
+  let html;
+  if (puppeteer) {
+    html = await prequest({
+      url,
+      selector: detail,
+    });
+  } else {
+    html = await request({
+      url,
+      header: headers(),
       encode,
-    }),
-    method: 'GET',
-  });
+      method: 'GET',
+      timeout: 10000,
+    });
+  }
   const result = {
     url,
   };
 
   const root = hparser.parse(html);
-  let details = root.querySelector(detail);
+  const details = root.querySelector(detail);
 
   const dexs = details.querySelectorAll(detailex);
   dexs.forEach((v) => {
     v.remove();
   });
 
-  details = details.innerHTML;
-  details = details.replace(/&nbsp;/g, '');
-  details = details.replace(/\r?\n?\s+?/g, '');
-  details = details.replace(/<.+?>+/g, '{BR}');
-  details = details.split('{BR}').filter((v) => !!v);
-
-  if (arange && Array.isArray(arange)) {
-    details = details.slice(...arange);
-  }
-
-  const title = name.replace(/\s+/, '');
-  details = details.filter((v) => title !== v);
-
-  // details = `\n${name}\n${details.join("\n")}`;
-  result.detail = details.join('\n');
+  result.detail = getTextContent(details, title, arange);
 
   if (multpage) {
     // 内容多页

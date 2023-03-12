@@ -61,3 +61,15 @@ export const chapterAdd = (data) => request({
   method: 'post',
   data,
 });
+
+export const chapterMod = (data) => request({
+  url: `${url}/chapter/modify`,
+  method: 'post',
+  data,
+});
+
+export const chapterSort = (data) => request({
+  url: `${url}/chapter/sort`,
+  method: 'post',
+  data,
+});

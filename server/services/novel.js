@@ -5,10 +5,17 @@ import { PAGE_SIZE } from '../conf/constant.js';
 
 const { Chapter, Clutter } = models;
 
+function formatClutter(data) {
+  const result = data.dataValues;
+  const content = JSON.parse(result.content);
+  return { id: result.id, ...content };
+}
+
 // 獲取列表
 export async function novelList({ title, aurthor, page = 1, limit = PAGE_SIZE }) {
   const where = {
     type: 'novel',
+    typeId: null,
   };
   if (title) {
     where.title = {
@@ -29,7 +36,7 @@ export async function novelList({ title, aurthor, page = 1, limit = PAGE_SIZE })
       search.offset = limit * (page - 1);
     }
   }
-  console.log(search);
+  // console.log(search);
   const result = await Chapter.findAndCountAll(search);
   const list = result.rows.map((row) => row.dataValues);
 
@@ -45,46 +52,83 @@ export async function novelList({ title, aurthor, page = 1, limit = PAGE_SIZE })
 }
 
 // 獲取詳情
-export async function chapterInfo(id, novel = false) {
-  const where = {
+export async function chapterInfo({ id, novel, slide }) {
+  let where = {
     id,
   };
-  let result = await Chapter.findOne({
+  const search = {
     where,
-  });
+  };
+  search.include = Clutter;
+  let result = await Chapter.findOne(search);
   if (result) {
     result = result.dataValues;
-    if (novel) {
-      const chapters = await Chapter.findAndCountAll({
-        where: {
-          type: 'novel',
-          typeId: id,
-        },
+    if (result.Clutter) {
+      result.clutter = formatClutter(result.Clutter);
+      delete result.Clutter;
+    }
+    if (novel || slide) {
+      const { type, typeId, serial } = result;
+      where = {
+        type,
+        typeId: novel ? id : typeId,
+      };
+
+      if (slide) {
+        if (serial) {
+          where.serial = {
+            [Op.in]: [+serial - 1, +serial + 1],
+          };
+        } else {
+          where.id = {
+            [Op.in]: [+id - 1, +id + 1],
+          };
+        }
+      }
+
+      // console.log(where);
+      const chapters = await Chapter.findAll({
+        attributes: ['id', 'title', 'url', 'serial'],
+        order: ['serial'],
+        where,
+        raw: true,
       });
-      result.chapters = chapters.rows.map((row) => row.dataValues);
-      result.chapterCount = chapters.count;
+      if (slide) {
+        const max = chapters.length;
+        let [prev, next] = chapters;
+        if (max <= 1) {
+          if (where.serial && prev.serial > serial) {
+            [prev, next] = [next, prev];
+          } else if (prev.id > id) {
+            [prev, next] = [next, prev];
+          }
+        }
+        result.prev = prev;
+        result.next = next;
+      } else {
+        result.chapters = chapters;
+      }
     }
   }
   return result;
 }
 
 // 新增
-async function addchapter({ url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
-  const chapter = { url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag };
+async function addchapter(chapter) {
   let result = await Chapter.create(chapter);
   if (result) {
     result = result.dataValues;
   }
   return result;
 }
-export async function chapterAdd({ url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
-  const result = await rollBack(addchapter, { url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag });
+export async function chapterAdd({ url, title, author, content, type, typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
+  const result = await rollBack(addchapter, { url, title, author, content, type, typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag });
   return result;
 }
 
 // 修改
-export async function chapterMod({ id, url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
-  const chapter = { url, title, author, content, type, typeId, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag };
+export async function chapterMod({ id, url, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag }) {
+  const chapter = { url, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag };
   const where = {
     id,
   };
@@ -121,9 +165,7 @@ async function addNoveler({ domain, content }) {
   };
   let result = await Clutter.create(clutter);
   if (result) {
-    result = result.dataValues;
-    const contents = JSON.parse(result.content);
-    result = { id: result.id, ...contents };
+    result = formatClutter(result);
   }
   return result;
 }
@@ -163,10 +205,27 @@ export async function novelerInfo({ id, domain }) {
     where,
   });
   if (result) {
-    result = result.dataValues;
-    console.log(result);
-    const content = JSON.parse(result.content);
-    result = { id: result.id, ...content };
+    result = formatClutter(result);
   }
   return result;
+}
+// 排序
+export async function chapterSort(sorts) {
+  let max = sorts.length;
+  const result = [];
+  while (max) {
+    const item = sorts.shift();
+    max = sorts.length;
+    const curId = item.id;
+    delete item.id;
+    const mresult = await Chapter.update(item, {
+      where: {
+        id: curId,
+      },
+    });
+    result.push(mresult[0] > 0);
+  }
+  // const result = await Chapter.bulkCreate(sorts, { updateOnDuplicate: ['serial'] });
+  // console.log(result);
+  return result.some((v) => v);
 }

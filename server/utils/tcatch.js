@@ -10,7 +10,8 @@ async function catchError(error) {
   // console.log(error.name); // ReferenceError
   // console.log(error.message); // lalala is not defined
   // console.log(error.stack);
-  if (error.message.includes('timeout')) {
+  const message = error.message.toLowerCase();
+  if (message.includes('timeout')) {
     info = timeoutInfo;
   }
   return new ErrorModel(info);

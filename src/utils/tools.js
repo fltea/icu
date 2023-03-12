@@ -88,3 +88,14 @@ export function getComName(name) {
   });
   return strs.join('');
 }
+
+export function getDomain(url) {
+  let domain;
+  if (url && url.includes('http')) {
+    const vals = url.split('://');
+    const links = vals.pop().split('/').shift();
+    vals.push(links);
+    domain = vals.join('://');
+  }
+  return domain;
+}

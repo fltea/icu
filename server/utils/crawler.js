@@ -103,24 +103,22 @@ export function getList(doms, preurl, cls = false) {
  * 获取纯文本内容
  */
 export function getTextContent(dom, title, arange) {
-  try {
-    let details = dom.innerHTML;
-    details = details.replace(/&nbsp;/g, '');
-    details = details.replace(/\r?\n?\s+?/g, '');
-    details = details.replace(/<.+?>+/g, '{BR}');
-    details = details.split('{BR}').filter((v) => !!v);
+  let details = dom.innerHTML;
+  details = details.replace(/&nbsp;/g, '');
+  details = details.replace(/\r?\n?\s+?/g, '');
+  details = details.replace(/<.+?>+/g, '{BR}');
+  details = details.split('{BR}').filter((v) => !!v);
 
-    if (arange && Array.isArray(arange)) {
-      details = details.slice(...arange);
-    }
-
-    const name = title.replace(/\s+/, '');
-    details = details.filter((v) => name !== v);
-
-    return details.join('\n');
-  } catch (error) {
-    return '';
+  if (arange && Array.isArray(arange)) {
+    details = details.slice(...arange);
   }
+  const excludes = ['恋上你看书网', 'www.newbiquge.org'];
+  if (title) {
+    excludes.push(title.replace(/\s+/, ''));
+  }
+
+  details = details.filter((v) => !excludes.some((ex) => v.includes(ex)));
+  return details.join('\n');
 }
 
 export function formatPage(url, home) {
@@ -139,8 +137,19 @@ export function getPage(url, home) {
 
 export function getRange(dstart, dend) {
   let arange;
-  if (dstart || dend) {
-    arange = [+dstart, +dend];
+  let start = +dstart;
+  if (isNaN) {
+    start = 0;
+  }
+  let end = +dend;
+  if (isNaN) {
+    end = 0;
+  }
+  if (start || end) {
+    arange = [start];
+    if (end) {
+      arange.push(end);
+    }
   }
   return arange;
 }
