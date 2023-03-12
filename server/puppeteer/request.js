@@ -1,8 +1,10 @@
 import puppeteer from 'puppeteer';
+import { sleep } from '../utils/tools.js';
 
 let browser;
 let timer;
 let closing;
+let opening;
 
 async function closeBrowser() {
   if (browser) {
@@ -19,10 +21,15 @@ async function requst({ url, selector }) {
     timer = null;
   }
   let page;
+  if (opening) {
+    await sleep(10000);
+  }
   if (closing || !browser) {
+    opening = true;
     browser = await puppeteer.launch({ headless: false });
     const pages = await browser.pages();
     [page] = pages.slice(0, 1);
+    opening = false;
   } else {
     page = await browser.newPage();
   }

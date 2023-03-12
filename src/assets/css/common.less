@@ -82,12 +82,29 @@ textarea {
   min-width: 500px;
 }
 .com-controls,
-.com-container {
+.com-container,
+.footer-contorls {
   padding-top: @tiny;
+}
+.com-controls,
+.footer-contorls {
+  .controls-link {
+    &:nth-child(n+2) {
+      margin-left: @small;
+    }
+  }
+}
+.footer-contorls {
+  text-align: right;
 }
 
 // 手机适配
 @media screen and (max-width: 620px) {
+  .com-header {
+    .header-navs {
+      display: none;
+    }
+  }
   .layout-inner {
     width: 98%;
     min-width: auto;
