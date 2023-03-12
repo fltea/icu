@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import zlib from 'node:zlib';
 
 import { FILE_DIR, LOG_DIR, TEMP_DIR, COOKIES_DIR, UserAgent } from '../conf/constant.js';
 import { formatDate } from './tools.js';
@@ -35,7 +36,7 @@ export function reqiureFile(filePath) {
     const result = fs.readFileSync(filePath);
     return result;
   } catch (error) {
-    setLog('', error);
+    setLog('error', error);
     return null;
   }
 }
@@ -44,7 +45,7 @@ export function statDir(dpath) {
   try {
     fs.statSync(dpath);
   } catch (error) {
-    // console.log('error', error);
+    setLog('error', error);
     fs.mkdirSync(dpath, { recursive: true });
   }
 }
@@ -78,6 +79,24 @@ export async function downSource(url, name, referer) {
 export function getFiles(fpath) {
   const result = fs.readdirSync(fpath);
   return result;
+}
+
+export function hashBrFile(path, name, data) {
+  const fileId = hash(name);
+  if (data) {
+    zlib.brotliCompress(data, (err, buffer) => {
+      if (err) {
+        throw err;
+      }
+      appendFile(`${path}/${fileId}`, buffer, { flag: 'w' });
+    });
+  } else {
+    const text = reqiureFile(`${path}/${fileId}`);
+    if (text) {
+      return zlib.brotliDecompressSync(text);
+    }
+  }
+  return null;
 }
 
 // 暂存list在服务器

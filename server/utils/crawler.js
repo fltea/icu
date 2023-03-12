@@ -112,7 +112,7 @@ export function getTextContent(dom, title, arange) {
   if (arange && Array.isArray(arange)) {
     details = details.slice(...arange);
   }
-  const excludes = ['恋上你看书网', 'www.newbiquge.org'];
+  const excludes = ['恋上你看书网', 'www.newbiquge.org', 'https://www.81zw.com'];
   if (title) {
     excludes.push(title.replace(/\s+/, ''));
   }

@@ -11,7 +11,7 @@ seq
     console.log('seq.sync ok.');
     process.exit();
   }).catch((err) => {
-    console.log(err);
+    console.log(err.message);
     setLog('mysql-sql', err);
   });
 
