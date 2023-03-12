@@ -83,5 +83,19 @@ textarea {
 }
 .com-controls,
 .com-container {
-  padding-top: @small;
+  padding-top: @tiny;
+}
+
+// 手机适配
+@media screen and (max-width: 620px) {
+  .layout-inner {
+    width: 98%;
+    min-width: auto;
+  }
+  .com-controls {
+    margin-top: -@tiny;
+    > * {
+      margin-top: @tiny;
+    }
+  }
 }
