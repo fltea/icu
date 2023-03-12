@@ -38,19 +38,19 @@ const Chapter = {
       type: INTEGER,
       comment: '序号',
     },
-    aurthor: {
+    author: {
       type: STRING,
       comment: '作者',
     },
-    aurthorId: {
+    authorId: {
       type: STRING,
       comment: '作者Id',
     },
-    aurthorLink: {
+    authorLink: {
       type: STRING,
       comment: '作者链接',
     },
-    aurthorIp: {
+    authorIp: {
       type: STRING,
       comment: '作者地址',
     },

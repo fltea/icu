@@ -16,7 +16,7 @@ function clu2item(row) {
 /**
  * 获取豆列
  */
-export async function doulistList({ title, aurthor, page = 1, limit = PAGE_SIZE }) {
+export async function doulistList({ title, author, page = 1, limit = PAGE_SIZE }) {
   const where = {
     type: 'doulist',
   };
@@ -26,9 +26,9 @@ export async function doulistList({ title, aurthor, page = 1, limit = PAGE_SIZE 
       [Op.like]: `%${title}%`,
     });
   }
-  if (aurthor) {
+  if (author) {
     ors.push({
-      [Op.like]: `${aurthor}%`,
+      [Op.like]: `${author}%`,
     });
   }
   if (ors.length) {
@@ -79,8 +79,8 @@ export async function doulistInfo(id) {
 /**
  * 新增豆列
  */
-export async function createDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
-  const doulist = { title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content };
+export async function createDoulist({ id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
+  const doulist = { title, author, authorIp, authorLink, count, createTime, updateTime, content };
   const clutter = {
     type: 'doulist',
     phrase: id,
@@ -96,8 +96,8 @@ export async function createDoulist({ id, title, aurthor, aurthorIp, aurthorLink
 /**
  * 修改豆列
  */
-export async function updateDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
-  const doulist = { title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content };
+export async function updateDoulist({ clutter, id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
+  const doulist = { title, author, authorIp, authorLink, count, createTime, updateTime, content };
   const where = {
     type: 'doulist',
     phrase: id,

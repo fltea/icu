@@ -15,7 +15,7 @@ const curData = reactive({
 });
 const search = reactive({
   title: '',
-  aurthor: '',
+  author: '',
 });
 let params = null;
 
@@ -46,16 +46,16 @@ const listItems = () => {
 
 const resetSearch = () => {
   search.title = '';
-  search.aurthor = '';
+  search.author = '';
   params = null;
   listItems();
 };
 
 const searchList = () => {
-  const { title, aurthor } = search;
+  const { title, author } = search;
   params = {
     title,
-    aurthor,
+    author,
     page: 0,
   };
   listItems();
@@ -83,7 +83,7 @@ onMounted(initList);
   <h1>Novel</h1>
   <div class="com-controls">
     <input type="text" v-model="search.title" placeholder="title">
-    <input type="text" v-model="search.aurthor" placeholder="aurthor">
+    <input type="text" v-model="search.author" placeholder="author">
     <button @click="searchList">查詢</button>
     <button @click="resetSearch">重設</button>
     <button @click="linkItems">新增 Novel</button>

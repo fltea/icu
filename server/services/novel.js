@@ -12,7 +12,7 @@ function formatClutter(data) {
 }
 
 // 獲取列表
-export async function novelList({ title, aurthor, page = 1, limit = PAGE_SIZE }) {
+export async function novelList({ title, author, page = 1, limit = PAGE_SIZE }) {
   const where = {
     type: 'novel',
     typeId: null,
@@ -22,9 +22,9 @@ export async function novelList({ title, aurthor, page = 1, limit = PAGE_SIZE })
       [Op.like]: `%${title}%`,
     };
   }
-  if (aurthor) {
-    where.aurthor = {
-      [Op.like]: `%${aurthor}%`,
+  if (author) {
+    where.author = {
+      [Op.like]: `%${author}%`,
     };
   }
   const search = {

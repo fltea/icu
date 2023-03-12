@@ -107,9 +107,9 @@ export async function getDetail({ url, cookie }) {
 /**
  * 获取豆列
  */
-export async function getDoulist({ title, aurthor, page, limit }) {
+export async function getDoulist({ title, author, page, limit }) {
   try {
-    const result = await doulistList({ title, aurthor, page, limit });
+    const result = await doulistList({ title, author, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -131,10 +131,10 @@ export async function getDoulistById(id) {
 /**
  * 新增豆列
  */
-export async function setDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
+export async function setDoulist({ id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
   try {
     if (id) {
-      const result = await createDoulist({ id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content });
+      const result = await createDoulist({ id, title, author, authorIp, authorLink, count, createTime, updateTime, content });
       if (result) {
         return new SuccessModel(result);
       }
@@ -148,9 +148,9 @@ export async function setDoulist({ id, title, aurthor, aurthorIp, aurthorLink, c
 /**
  * 修改豆列
  */
-export async function modDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content }) {
+export async function modDoulist({ clutter, id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
   try {
-    const result = await updateDoulist({ clutter, id, title, aurthor, aurthorIp, aurthorLink, count, createTime, updateTime, content });
+    const result = await updateDoulist({ clutter, id, title, author, authorIp, authorLink, count, createTime, updateTime, content });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);

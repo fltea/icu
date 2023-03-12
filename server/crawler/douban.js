@@ -447,9 +447,9 @@ export async function durl(url, cookie) {
   if (dom) {
     let text = dom.text.replace(/\r?\n?\s+?/g, '');
     text = text.split('(');
-    result.aurthor = text.shift();
-    result.aurthorIp = text.shift().replace(')', '');
-    result.aurthorLink = dom.getAttribute('href');
+    result.author = text.shift();
+    result.authorIp = text.shift().replace(')', '');
+    result.authorLink = dom.getAttribute('href');
   }
   // 数量总计
   dom = content.querySelector('.doulist-filter a');

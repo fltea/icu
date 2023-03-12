@@ -12,9 +12,9 @@ const addItems = () => {
     id,
     clutter,
     title,
-    aurthor,
-    aurthorIp,
-    aurthorLink,
+    author,
+    authorIp,
+    authorLink,
     count,
     createTime,
     updateTime,
@@ -25,9 +25,9 @@ const addItems = () => {
     id,
     clutter,
     title,
-    aurthor,
-    aurthorIp,
-    aurthorLink,
+    author,
+    authorIp,
+    authorLink,
     count,
     createTime,
     updateTime,
@@ -46,7 +46,7 @@ const addItems = () => {
         <button @click="addItems">收藏豆列</button>
       </slot>
     </div>
-    <p>{{ item.aurthor }}</p>
+    <p>{{ item.author }}</p>
     <p>{{ item.createTime }} {{ item.updateTime }}</p>
     <p>{{ item.count }}</p>
     <div v-html="item.content"></div>

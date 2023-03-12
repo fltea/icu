@@ -68,9 +68,9 @@ export async function getNurlChapter({ url, encode, name, detail, detailurl, det
 }
 
 // 獲取列表
-export async function getNovel({ title, aurthor, page, limit }) {
+export async function getNovel({ title, author, page, limit }) {
   try {
-    const result = await novelList({ title, aurthor, page, limit });
+    const result = await novelList({ title, author, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
