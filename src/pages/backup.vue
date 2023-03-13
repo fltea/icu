@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { backups, backup, restore } from '@/api/backup';
+import { backups } from '@/api/backup';
+import WS from '@/utils/ws';
 
 const listData = ref([]);
 const listDatas = () => {
@@ -9,15 +10,41 @@ const listDatas = () => {
     listData.value = res.data;
   });
 };
+
+let server;
+const wsServer = (datas) => {
+  server = WS('backupTable');
+  server.onopen = () => {
+    server.send(JSON.stringify(datas));
+  };
+  server.onmessage = (evt) => {
+    let msg = evt.data;
+    msg = JSON.parse(msg);
+    console.log(msg);
+  };
+};
 const backupData = () => {
-  backup().then(() => {
-    listDatas();
-  });
+  const datas = {
+    target: 'backup',
+  };
+  if (server) {
+    server.send(JSON.stringify(datas));
+  } else {
+    wsServer(datas);
+  }
 };
 const restoreData = (date) => {
-  restore({
-    date,
-  });
+  const datas = {
+    target: 'restore',
+    data: {
+      date,
+    },
+  };
+  if (server) {
+    server.send(JSON.stringify(datas));
+  } else {
+    wsServer(datas);
+  }
 };
 onMounted(listDatas);
 </script>

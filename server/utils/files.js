@@ -84,12 +84,8 @@ export function getFiles(fpath) {
 export function hashBrFile(path, name, data) {
   const fileId = hash(name);
   if (data) {
-    zlib.brotliCompress(data, (err, buffer) => {
-      if (err) {
-        throw err;
-      }
-      appendFile(`${path}/${fileId}`, buffer, { flag: 'w' });
-    });
+    const buffer = zlib.brotliCompressSync(data);
+    appendFile(`${path}/${fileId}`, buffer, { flag: 'w' });
   } else {
     const text = reqiureFile(`${path}/${fileId}`);
     if (text) {
