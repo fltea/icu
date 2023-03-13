@@ -1,7 +1,7 @@
 import hparser from 'node-html-parser';
 import request from '../utils/request.js';
 import prequest from '../puppeteer/request.js';
-import { headers, getAttrs, getText, getList, getTextContent } from '../utils/crawler.js';
+import { getHeader, getAttrs, getText, getList, getTextContent } from '../utils/crawler.js';
 
 export async function novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist, puppeteer }) {
   let html;
@@ -13,7 +13,7 @@ export async function novelContent({ url, encode, title, author, content, lists,
   } else {
     html = await request({
       url,
-      header: headers(),
+      header: getHeader(),
       encode,
       method: 'GET',
       timeout: 10000,
@@ -66,9 +66,7 @@ export async function novelChapter({ url, encode, title, detail, detailex, arang
     urls.pop();
     html = await request({
       url,
-      header: headers({
-        referer: urls.join('/'),
-      }),
+      header: getHeader('', urls.join('/')),
       encode,
       method: 'GET',
       timeout: 10000,

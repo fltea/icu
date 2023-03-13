@@ -1,8 +1,7 @@
 import { UserAgent } from '../conf/constant.js';
 import { deepCopy } from './tools.js';
 
-export function headers(options = {}) {
-  const { cookie, referer } = options;
+export function getHeader(cookie, referer) {
   const header = {
     'User-Agent': UserAgent,
   };
@@ -15,10 +14,6 @@ export function headers(options = {}) {
   }
 
   return header;
-}
-
-export function getHeader(cookie, referer) {
-  return headers({ cookie, referer });
 }
 
 export function getData(data) {
