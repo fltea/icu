@@ -1,9 +1,10 @@
-import { TEXT, INTEGER, STRING } from '../types.js';
+import { TEXT, INTEGER, STRING, DATE } from '../types.js';
 
 /**
- * 小说： 章节
+ * 豆瓣： 广播 日记 小组 讨论
+ * 微博： 微博 文章
  */
-const Chapter = {
+const Record = {
   model: {
     url: {
       type: STRING,
@@ -13,7 +14,6 @@ const Chapter = {
     },
     title: {
       type: STRING,
-      allowNull: false,
       comment: '标题',
     },
     content: {
@@ -24,21 +24,33 @@ const Chapter = {
       type: INTEGER,
       comment: 'clutter Id',
     },
-    typeId: {
-      type: INTEGER,
-      comment: 'Chapter ID',
-    },
-    serial: {
-      type: INTEGER,
-      comment: '序号',
+    type: {
+      type: STRING,
+      comment: 'type',
     },
     author: {
       type: STRING,
       comment: '作者',
     },
+    authorId: {
+      type: STRING,
+      comment: '作者Id',
+    },
+    authorLink: {
+      type: STRING,
+      comment: '作者链接',
+    },
+    authorIp: {
+      type: STRING,
+      comment: '作者地址',
+    },
     platform: {
       type: STRING,
       comment: '平台',
+    },
+    publishTime: {
+      type: DATE,
+      comment: '发表日期',
     },
     tag: {
       type: STRING,
@@ -47,8 +59,7 @@ const Chapter = {
   },
   belongsTo: {
     Clutter: 'clutter',
-    Chapter: 'typeId',
   },
 };
 
-export default Chapter;
+export default Record;
