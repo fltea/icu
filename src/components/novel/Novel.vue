@@ -40,6 +40,15 @@ const setForm = (data) => {
   form.id = Id || form.id;
 };
 
+const setNovel = (data) => {
+  const val = data || {};
+  if (val.title) {
+    setForm(val);
+  } else if (val.clutter) {
+    form.clutter = val.clutter;
+  }
+};
+
 const hide = () => {
   dialog.value = false;
   setForm();
@@ -104,7 +113,7 @@ const getContent = () => {
       <button v-if="form.url" @click="saveNovel">保存</button>
     </template>
   </com-dialog>
-  <noveler v-model:show="cdialog" :noveler="form.clutter" :url="form.url" @success="setForm"></noveler>
+  <noveler v-model:show="cdialog" :noveler="form.clutter" :url="form.url" @success="setNovel"></noveler>
 </template>
 
 <style lang='less' scoped>
