@@ -109,7 +109,10 @@ async function setText(lpath, model, ids, attrs) {
         iresult[v] = item[v];
       }
     });
-    const id = +ids[key];
+    let id = +ids[key];
+    if (isNaN(id)) {
+      id = +key;
+    }
     await modelItem.update(iresult, {
       where: {
         id,
@@ -135,7 +138,7 @@ function formatItem(data, attrs, belong, oIds) {
         const idlist = oIds[model];
         const oId = +idlist[value];
         if (!isNaN(oId)) {
-          item[key] = +idlist[value];
+          item[key] = oId;
         }
       }
     }
@@ -147,9 +150,11 @@ function formatItem(data, attrs, belong, oIds) {
  * 插入数据
  */
 async function createDatas({ table, lpath, oIds }) {
+  console.log('createDatas', table);
   const item = models[table];
+  const types = Object.keys(oIds);
   let result = reqiureFile(`${lpath}/${table}.json`);
-  if (!result) {
+  if (!result || types.includes(table)) {
     return;
   }
   result = JSON.parse(result);
@@ -157,7 +162,6 @@ async function createDatas({ table, lpath, oIds }) {
   let bolongs = Object.values(belong);
   bolongs = bolongs.filter((v) => v !== table);
 
-  const types = Object.keys(oIds);
   let max = bolongs.length;
   while (max) {
     const model = bolongs.shift();
@@ -177,7 +181,6 @@ async function createDatas({ table, lpath, oIds }) {
     const oitem = list.shift();
     const OID = oitem.id;
     const litem = formatItem(oitem, allkeys, belong, oIds);
-    console.log('table', table, ids);
     const [createItem] = await item.findOrCreate({
       where: litem,
       raw: true,
