@@ -14,7 +14,6 @@ function formatClutter(data) {
 // 獲取列表
 export async function novelList({ title, author, page = 1, limit = PAGE_SIZE }) {
   const where = {
-    type: 'novel',
     typeId: null,
   };
   if (title) {
@@ -68,9 +67,8 @@ export async function chapterInfo({ id, novel, slide }) {
       delete result.Clutter;
     }
     if (novel || slide) {
-      const { type, typeId, serial } = result;
+      const { typeId, serial } = result;
       where = {
-        type,
         typeId: novel ? id : typeId,
       };
 
@@ -121,14 +119,14 @@ async function addchapter(chapter) {
   }
   return result;
 }
-export async function chapterAdd({ url, title, author, content, type, typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
-  const result = await rollBack(addchapter, { url, title, author, content, type, typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag });
+export async function chapterAdd({ url, title, author, content, typeId, serial, clutter, platform, tag }) {
+  const result = await rollBack(addchapter, { url, title, author, content, typeId, serial, clutter, platform, tag });
   return result;
 }
 
 // 修改
-export async function chapterMod({ id, url, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag }) {
-  const chapter = { url, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag };
+export async function chapterMod({ id, url, title, author, content, platform, tag }) {
+  const chapter = { url, title, author, content, platform, tag };
   const where = {
     id,
   };

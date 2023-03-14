@@ -122,7 +122,7 @@ async function setClutter(novel) {
 }
 export async function setNovel({ url, title, author, content, clutter, platform, tag }) {
   try {
-    const novel = { type: 'novel', url, title, author, content, clutter, platform, tag };
+    const novel = { url, title, author, content, clutter, platform, tag };
     await setClutter(novel);
     const result = await chapterAdd(novel);
     if (result) {
@@ -186,9 +186,9 @@ export async function getChapter({ id }) {
   }
 }
 // 新增
-export async function setChapter({ url, title, author, content, type = 'novel', typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag }) {
+export async function setChapter({ url, title, author, content, typeId, serial, clutter, platform, tag }) {
   try {
-    const chapter = { url, title, author, content, type, typeId, serial, authorId, authorLink, clutter, platform, authorIp, platformId, publishTime, tag };
+    const chapter = { url, title, author, content, typeId, serial, clutter, platform, tag };
     const result = await chapterAdd(chapter);
     if (result) {
       return new SuccessModel(result);
@@ -200,9 +200,9 @@ export async function setChapter({ url, title, author, content, type = 'novel', 
   }
 }
 
-export async function modChapter({ id, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag }) {
+export async function modChapter({ id, title, author, content, platform, tag }) {
   try {
-    const chapter = { id, title, author, content, authorId, authorLink, platform, authorIp, platformId, publishTime, tag };
+    const chapter = { id, title, author, content, platform, tag };
     const result = await chapterMod(chapter);
     if (result) {
       return new SuccessModel(result);
