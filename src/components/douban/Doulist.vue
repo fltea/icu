@@ -72,7 +72,7 @@ watch(() => props.doulist, (val) => {
 </script>
 
 <template>
-<com-dialog :show="dialog">
+<com-dialog v-model="dialog">
   <section class="doulist-dialog">
     <header>
       <p>DOULIST</p>

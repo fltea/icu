@@ -77,7 +77,7 @@ const save = () => {
 </script>
 
 <template>
-<com-dialog :show="dialog">
+<com-dialog v-model="dialog">
   <section class="tie-dialog">
     <header>
       <p>ATIE</p>
