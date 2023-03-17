@@ -1,20 +1,29 @@
 <script setup>
-// import { computed } from 'vue';
-import { addClutter } from '@/api/common';
+import { computed, onMounted } from 'vue';
+import { userSave } from '@/api/weibo';
+
+import useWuerStore from '@/store/wuser';
+
+const wuserStore = useWuerStore();
 
 const props = defineProps({
   user: Object,
-  noAct: Boolean,
+  nopic: Boolean,
   detail: Boolean,
 });
+const usersList = computed(() => wuserStore.users);
 // const user = computed(() => props.user);
-const saveUser = () => {
+// const emits = defineEmits(['saveUser']);
+const saveBtn = computed(() => {
   const item = props.user;
-  addClutter({
-    type: 'follow',
-    content: JSON.stringify(item),
-    phrase: item.id,
-  });
+  return !usersList.value.includes(`${item.id}`);
+});
+const saveUser = async () => {
+  const item = props.user;
+  const res = await userSave(item);
+  if (res.id) {
+    wuserStore.setUser(item.id);
+  }
 };
 
 const linkUser = () => {
@@ -24,15 +33,24 @@ const linkUser = () => {
     window.open(`/weibo/user/${item.id}`);
   }
 };
+
+onMounted(() => {
+  if (!usersList.value.length) {
+    wuserStore.getUsers();
+  }
+});
 </script>
 
 <template>
-  <section class="weibo-user" :class="{'no-act': noAct}" v-if="user" @click="linkUser">
-    <img class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
-    <p>{{user.screen_name}}  <slot name="created_at"></slot></p>
+  <section class="weibo-user" v-if="user">
+    <img v-if="!nopic" class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
+    <p>
+      <span class="user-name" @click="linkUser">{{user.screen_name}}</span>
+      <slot name="created_at"></slot>
+    </p>
     <p class="user-desc">{{user.description}}</p>
-    <div class="user-act" v-if="!noAct">
-      <button @click="saveUser" v-if="!user.clutterId">存ID</button>
+    <div class="user-act">
+      <button @click="saveUser" v-if="saveBtn">存ID</button>
       <slot name="acts"></slot>
     </div>
   </section>
@@ -57,9 +75,13 @@ const linkUser = () => {
     height: 50px;
     border-radius: 50%;
   }
-  .user-desc {
-    font-size: 14px;
-    color: #939393;
+  .user-name {
+    margin-right: 12px;
+    font-weight: bold;
+  }
+  :deep(.user-desc) {
+    font-size: 12px;
+    color: @subTextColor;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -69,6 +91,12 @@ const linkUser = () => {
     top: 0;
     right: 10px;
     width: 100px;
+    text-align: right;
+    :deep(button){
+      min-width: 40px;
+      font-size: 12px;
+      line-height: 16px;
+    }
   }
 }
 </style>

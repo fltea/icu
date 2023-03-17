@@ -34,9 +34,6 @@ const saveWeibo = () => {
   // console.log(item);
   save(item.value);
 };
-const delWeibo = () => {
-  console.log(item);
-};
 const linkWeibo = () => {
   if (!props.detail) {
     console.log(item);
@@ -46,14 +43,13 @@ const linkWeibo = () => {
 </script>
 
 <template>
-<section class="weibo-item">
-  <user-item :user="item.user">
-    <template v-slot:created_at>
+<section class="weibo-item" :class="{'weibo-detail': props.detail}">
+  <user-item :user="item.user" :nopic="!!props.retweeted">
+    <template #created_at>
       <span class="user-desc">{{formatTime(item.created_at)}}</span>
     </template>
-    <template v-slot:acts>
+    <template #acts>
       <button @click="saveWeibo">保存</button>
-      <button @click="delWeibo">刪除</button>
     </template>
   </user-item>
   <section class="weibo-inner">
@@ -75,16 +71,24 @@ const linkWeibo = () => {
 <style lang="less" scoped>
 .weibo-item {
   padding-top: 8px;
-  font-size: 16px;
-  line-height: 1.4;
   background: #f6f6f6;
   border-radius: 3px;
+  &.weibo-detail {
+    .weibo-pics {
+      .pics-item {
+        height: 300px;
+      }
+    }
+    .weibo-comments {
+      max-height: unset;
+    }
+  }
   .weibo-item {
     margin: 0;
     background-color: #ddd;
   }
   .weibo-inner {
-    padding-left: 8px;
+    padding-left: 70px;
     padding-right: 8px;
     padding-bottom: 8px;
   }
@@ -109,12 +113,13 @@ const linkWeibo = () => {
     height: 300px;
   }
   .weibo-comments {
+    padding-left: 70px;
     max-height: 300px;
     overflow: auto;
   }
 
-  ::v-deep(a) {
-    color: #eb7340;
+  :deep(a) {
+    color: @emColor;
     .url-icon {
       filter: sepia(100%) saturate(3800%) contrast(75%);
       img {

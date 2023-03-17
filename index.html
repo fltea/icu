@@ -10,5 +10,9 @@
   <body>
     <div id="app"><!--ssr-outlet--></div>
     <script type="module" src="/src/entry-client.js"></script>
+
+    <script>
+      window.__INITIAL_STATE__ = '<!--pinia-state-->';
+    </script>
   </body>
 </html>

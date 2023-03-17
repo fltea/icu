@@ -35,8 +35,9 @@ export function getText(dom, key = 'text') {
   try {
     // return dom.rawText;
     let text = dom[key];
-    text = text.replace(/\f?\n?\r?\t?\v?/g, '');
-    text = text.replace(/\s{2,}?/g, '');
+    text = text.replace(/\r?\n?/g, '');
+    text = text.replace(/^\s+?/g, '');
+    text = text.replace(/\s+?$/g, '');
     return text;
   } catch (error) {
     return '';

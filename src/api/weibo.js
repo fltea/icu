@@ -49,43 +49,51 @@ export const warticle = (data) => request({
   data,
 });
 
-export const homelist = (data) => request({
-  url: `${url}`,
+export const block = () => request({
+  url: `${url}/block`,
+  method: 'get',
+});
+
+export const saveBlock = (data) => request({
+  url: `${url}/block/save`,
   method: 'post',
   data,
 });
 
-export const follows = (data) => request({
-  url: `${url}/follows`,
+export const user = (data) => request({
+  url: `${url}/user`,
+  method: 'get',
+  data,
+});
+
+export const userSave = (data) => request({
+  url: `${url}/user/save`,
   method: 'post',
   data,
 });
-export const userlist = (data) => request({
-  url: `${url}/userlist`,
+export const userDetail = (id) => request({
+  url: `${url}/user/${id}`,
+  method: 'get',
+});
+
+export const record = (data) => request({
+  url: `${url}/record`,
+  method: 'get',
+  data,
+});
+
+export const recordSave = (data) => request({
+  url: `${url}/record/save`,
   method: 'post',
   data,
+});
+export const recordDetail = (id) => request({
+  url: `${url}/record/${id}`,
+  method: 'get',
 });
 
 export const save = (data) => request({
-  url: `${url}/save`,
-  method: 'post',
-  data,
-});
-
-export const detail = (data) => request({
-  url: `${url}/detail`,
-  method: 'post',
-  data,
-});
-
-export const comments = (data) => request({
-  url: `${url}/comments`,
-  method: 'post',
-  data,
-});
-
-export const articles = (data) => request({
-  url: `${url}/articles`,
+  url: `${url}/record/save`,
   method: 'post',
   data,
 });

@@ -1,4 +1,4 @@
-import { addInfo, errorInfo } from '../model/ErrorInfos.js';
+import { addInfo, errorInfo, updateInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 // import { WEIBO_CONF } from '../conf/constant.js';
 import catchError from '../utils/tcatch.js';
@@ -12,10 +12,10 @@ import {
   weiboDetail,
   weiboInfo,
   weiboComment,
-  userList,
+  weiboUsers,
   weiboArticle,
   weiboArticleP,
-} from '../services/weibo.js';
+} from '../crawler/weibo.js';
 
 import {
   picAdd,
@@ -25,6 +25,8 @@ import {
   videoAdd,
   // picBulk,
 } from '../services/video.js';
+
+import { blockAdd, blockList, blockMod, userAdd, userList } from '../services/weibo.js';
 
 /**
  * 獲取home列表
@@ -67,11 +69,9 @@ export async function getFavorites({ page, cookie }) {
  */
 export async function getDetail({ id, cookie }) {
   try {
-    if (id) {
-      const result = await weiboDetail(cookie, id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const result = await weiboDetail(cookie, id);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(errorInfo);
   } catch (error) {
@@ -80,11 +80,9 @@ export async function getDetail({ id, cookie }) {
 }
 export async function getWiebo({ id, cookie }) {
   try {
-    if (id) {
-      const result = await weiboInfo(cookie, id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const result = await weiboInfo(cookie, id);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(errorInfo);
   } catch (error) {
@@ -112,9 +110,9 @@ export async function getComment({ id, cookie }) {
 /**
  * 獲取列表
  */
-export async function getUser({ id, sinceId, cookie }) {
+export async function getUsers({ id, sinceId, cookie }) {
   try {
-    const result = await userList({ id, sinceId, cookie });
+    const result = await weiboUsers({ id, sinceId, cookie });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -157,7 +155,7 @@ export async function createSource(weibo) {
           console.log(pic);
         }
         index += 1;
-        await sleep(3000);
+        // await sleep(3000);
       }
     }
     if (pageInfo) {
@@ -206,6 +204,113 @@ export async function getArticles({ id, type }) {
       }
     }
     return new ErrorModel(errorInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 获取微博屏蔽
+ */
+export async function getBlock() {
+  try {
+    const result = await blockList();
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 保存微博屏蔽
+ */
+export async function setBlock({ id, content }) {
+  try {
+    let result;
+    if (id) {
+      result = await blockMod(id, content);
+    } else {
+      result = await blockAdd(content);
+    }
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(updateInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 获取用户
+ */
+export async function getUser({ ids }) {
+  try {
+    const result = await userList(ids);
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 保存用户
+ */
+export async function setUser(user) {
+  try {
+    const result = await userAdd(user);
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(addInfo);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 用户详情
+ */
+export async function User() {
+  try {
+    const result = 'await userList({ id, sinceId, cookie })';
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 获取微博
+ */
+export async function getRecord() {
+  try {
+    const result = 'await userList({ id, sinceId, cookie })';
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 保存微博
+ */
+export async function setRecord() {
+  try {
+    const result = 'await userList({ id, sinceId, cookie })';
+    return new SuccessModel(result);
+  } catch (error) {
+    return catchError(error);
+  }
+}
+
+/**
+ * 微博详情
+ */
+export async function Record() {
+  try {
+    const result = 'await userList({ id, sinceId, cookie })';
+    return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }

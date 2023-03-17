@@ -35,9 +35,9 @@ const setRouter = (router, viteServer) => {
         const { render } = await viteServer.ssrLoadModule('/src/entry-server.js');
 
         //  4. 渲染应用的 HTML
-        const [renderedHtml] = await render(ctx);
+        const [renderedHtml, state] = await render(ctx);
 
-        const html = template.replace('<!--ssr-outlet-->', renderedHtml);
+        const html = template.replace('<!--ssr-outlet-->', renderedHtml).replace('<!--pinia-state-->', state);
 
         ctx.type = 'text/html';
         ctx.body = html;

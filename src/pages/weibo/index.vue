@@ -1,12 +1,18 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { whome } from '@/api/weibo';
+import { whome, block, saveBlock } from '@/api/weibo';
 import { deepCopy } from '@/utils/tools';
+import { loadUsers } from '@/utils/localData';
 
 import ListItem from '@/components/weibo/ListItem.vue';
 
 const listData = reactive([]);
 const cdialog = ref(false);
+const text = reactive({
+  title: 'Cookie',
+  text: '',
+});
+let bItem = null;
 
 let cookie = '';
 // const timer = '';
@@ -15,12 +21,25 @@ let cookie = '';
 // // 首頁刷新間隔
 // const homeTime = 10 * 60 * 1000;
 
+const setBlock = () => {
+  text.title = 'Block';
+  if (bItem) {
+    text.text = bItem.content || '';
+  } else {
+    text.text = '';
+  }
+  cdialog.value = true;
+};
+
 const setCookie = () => {
+  text.title = 'Cookie';
+  text.text = '';
   cdialog.value = true;
 };
 const getCookie = (str) => {
   if (str) {
     cookie = str || '';
+    localStorage.setItem('wcookie', cookie);
   } else {
     cookie = localStorage.getItem('wcookie') || '';
   }
@@ -48,13 +67,45 @@ const initList = (str) => {
   listItems();
 };
 
-onMounted(initList);
+const getBlock = () => {
+  block().then((res) => {
+    if (res.data) {
+      bItem = res.data;
+    }
+    initList();
+  });
+};
+const setBlocks = (content) => {
+  const params = {
+    content,
+  };
+  if (bItem) {
+    params.id = bItem.id;
+  }
+  saveBlock(params).then((res) => {
+    console.log(res);
+  });
+};
+
+const getText = (str) => {
+  if (text.title === 'Block') {
+    setBlocks(str);
+  } else {
+    initList(str);
+  }
+};
+
+onMounted(() => {
+  getBlock();
+  loadUsers();
+});
 </script>
 
 <template>
   <h1>Weibo</h1>
   <section class="com-controls">
     <button @click="setCookie">設置cookie</button>
+    <button @click="setBlock">設置屏蔽關鍵詞</button>
   </section>
   <section class="weibo-list">
     <div v-for="item in listData" :key="`list-${item.bid}`" class="list-item">
@@ -63,7 +114,7 @@ onMounted(initList);
       </list-item>
     </div>
   </section>
-  <text-dialog textarea v-model:show="cdialog" title="Cookie" @save="initList"></text-dialog>
+  <text-dialog textarea v-model:show="cdialog" :text="text.text" :title="text.title" @save="getText"></text-dialog>
 <section>
 
 </section>

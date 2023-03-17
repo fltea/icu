@@ -13,6 +13,7 @@ const follow = reactive({
   loading: false,
   list: [],
   page: 0,
+  userIds: [],
 });
 const setCookie = () => {
   cdialog.value = true;
@@ -54,16 +55,20 @@ const initList = (str) => {
   listItems();
 };
 
-onMounted(initList);
+onMounted(() => {
+  initList();
+});
 </script>
 
 <template>
   <h1>WEIBO FOLLOW</h1>
-  <button @click="setCookie">設置cookie</button>
+  <div class="com-controls">
+    <button @click="setCookie">設置cookie</button>
+  </div>
   <section>
     <com-list :finished="follow.finished" :laoding="follow.laoding" @load="listItems">
       <div v-for="item in follow.list" :key="`list-${item.bid}`" class="list-user">
-        <user-item :list="followList" :user="item" @succese="listItems"></user-item>
+        <user-item :user="item" @succese="listItems"></user-item>
       </div>
     </com-list>
   </section>

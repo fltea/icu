@@ -28,6 +28,7 @@
     "md-editor-v3": "^2.10.0",
     "mysql2": "^2.3.3",
     "node-html-parser": "^6.1.4",
+    "pinia": "^2.0.33",
     "puppeteer": "^19.6.3",
     "sequelize": "^6.28.0",
     "vue": "^3.2.45",
