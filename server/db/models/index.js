@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
  */
 
 const soptions = {
-  paranoid: true,
+  // paranoid: true,
   // createdAt: 'createdTime',
   // updatedAt: 'updatedTime',
   // deletedAt: 'deletedTime',
