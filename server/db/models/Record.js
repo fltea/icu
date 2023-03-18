@@ -20,6 +20,10 @@ const Record = {
       type: TEXT,
       comment: '内容',
     },
+    more: {
+      type: TEXT,
+      comment: '更多内容',
+    },
     clutter: {
       type: INTEGER,
       comment: 'clutter Id',
@@ -28,13 +32,18 @@ const Record = {
       type: STRING,
       comment: 'type',
     },
+    typeId: {
+      type: STRING,
+      comment: 'type',
+      unique: 'type',
+    },
     author: {
       type: STRING,
       comment: '作者',
     },
-    authorId: {
+    authorDesc: {
       type: STRING,
-      comment: '作者Id',
+      comment: '作者描述',
     },
     authorLink: {
       type: STRING,

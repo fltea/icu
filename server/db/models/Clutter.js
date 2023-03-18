@@ -29,6 +29,7 @@ const Clutter = {
     // 爬虫数据
     Media: 'clutter',
     Chapter: 'clutter',
+    Record: 'clutter',
   },
 };
 

@@ -32,13 +32,9 @@ const Media = {
       type: STRING,
       comment: 'ISBN',
     },
-    loaded: {
-      type: INTEGER,
-      comment: '已下载数量',
-    },
-    finish: {
+    finished: {
       type: BOOLEAN,
-      comment: '已下载完',
+      comment: '状态',
     },
     price: {
       type: FLOAT,

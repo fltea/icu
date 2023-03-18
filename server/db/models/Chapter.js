@@ -24,9 +24,9 @@ const Chapter = {
       type: INTEGER,
       comment: 'clutter Id',
     },
-    typeId: {
+    media: {
       type: INTEGER,
-      comment: 'Chapter ID',
+      comment: 'Media ID',
     },
     serial: {
       type: INTEGER,
@@ -47,7 +47,7 @@ const Chapter = {
   },
   belongsTo: {
     Clutter: 'clutter',
-    Chapter: 'typeId',
+    Media: 'media',
   },
 };
 
