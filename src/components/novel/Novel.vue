@@ -23,8 +23,8 @@ const form = reactive({
   id: '',
   url: '',
   title: '',
-  author: '',
-  content: '',
+  creator: '',
+  abstract: '',
   clutter: '',
   platform: '',
   tag: '',
@@ -91,12 +91,12 @@ const getContent = () => {
         <input type="text" v-model="form.title" />
       </label>
       <label>
-        <span class="label-title">author: </span>
-        <input type="text" v-model="form.author" />
+        <span class="label-title">creator: </span>
+        <input type="text" v-model="form.creator" />
       </label>
       <label>
-        <span class="label-title">content: </span>
-        <textarea v-model="form.content"></textarea>
+        <span class="label-title">abstract: </span>
+        <textarea v-model="form.abstract"></textarea>
       </label>
       <label>
         <span class="label-title">platform: </span>

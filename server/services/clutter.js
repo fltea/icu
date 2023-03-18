@@ -1,147 +1,108 @@
 import models from '../db/models/index.js';
+import { rollBack } from '../db/seq.js';
+import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
-const { Clutter, Novel, Article } = models;
+const { Clutter } = models;
+
+function formatClutter(result) {
+  if (!result) {
+    return result;
+  }
+  let data = result;
+  if (data.dataValues) {
+    data = data.dataValues;
+  }
+  const content = JSON.parse(data.content);
+  const { id: clutter, phrase, type } = data;
+  return { clutter, phrase, type, ...content };
+}
+
 /**
  * 根據ID獲取 clutter
  * @param {number} id ID
  */
 export async function clutterInfo({ id, type, phrase }) {
-  let result;
-  try {
-    const where = {};
-    if (id) {
-      where.id = id;
-    } else {
-      where.type = type;
-      where.phrase = phrase;
-    }
-    const search = {
-      where,
+  const where = {};
+  if (id) {
+    where.id = id;
+  } else {
+    where.type = type;
+    where.phrase = phrase;
+  }
+  const search = {
+    where,
+    raw: true,
+  };
+  const result = await Clutter.findOne(search);
+  return formatClutter(result);
+}
+
+export async function clutters({ type, content, page = 1, limit = PAGE_SIZE }) {
+  // 查询条件
+  const where = {};
+
+  if (type) {
+    where.type = type;
+  }
+  if (content) {
+    where.content = {
+      [Op.like]: `%${content}%`,
     };
-    if (type === 'doulist') {
-      search.include = Article;
+  }
+  const search = {
+    where,
+    raw: true,
+  };
+  if (page) {
+    search.limit = limit;
+    if (page > 1) {
+      search.offset = limit * (page - 1);
     }
-    result = await Clutter.findOne(search);
+  }
 
-    if (result) {
-      result = result.dataValues;
-    }
-  } catch (error) {
-    throw new Error(error);
+  // 查询
+  const { rows, count } = await Clutter.findAndCountAll(search);
+  const list = rows.map(formatClutter);
+
+  const result = {
+    count,
+    list,
+  };
+  if (page) {
+    result.page = page;
+    result.limit = limit;
   }
   return result;
 }
 
-export async function clutterList({ type, page = 1, limit = PAGE_SIZE }) {
-  let result;
-  try {
-    // 查询条件
-    const search = {};
-
-    if (type) {
-      search.where = {
-        type,
-      };
-    }
-    if (page) {
-      search.limit = limit;
-      if (page > 1) {
-        search.offset = limit * (page - 1);
-      }
-    }
-
-    if (type === 'noveler') {
-      search.include = Novel;
-    }
-
-    // 查询
-    result = await Clutter.findAndCountAll(search);
-    const list = result.rows.map((row) => row.dataValues);
-
-    result = {
-      count: result.count,
-      list,
-    };
-  } catch (error) {
-    throw new Error(error);
+async function addClutter({ type, content, phrase }) {
+  let result = await Clutter.create({ type, content, phrase });
+  if (result) {
+    result = formatClutter(result);
   }
   return result;
 }
 
-export async function clutterAdd({ type, content, phrase }) {
-  let result;
-  try {
-    result = await Clutter.create({ type, content, phrase });
-
-    if (result) {
-      result = result.dataValues;
-    }
-  } catch (error) {
-    throw new Error(error);
-  }
+export async function newClutter(item) {
+  const result = await rollBack(addClutter, item);
   return result;
 }
 
-export async function clutterUpdate({ id, type, content, phrase }) {
-  let result;
-  try {
-    const where = {
+export async function changeClutter({ id, content }) {
+  const item = await Clutter.findByPk(id);
+  if (item) {
+    item.content = content;
+    await item.save();
+  }
+  return !!item;
+}
+
+export async function deleteClutter(id) {
+  const result = await Clutter.destroy({
+    where: {
       id,
-    };
-    result = await Clutter.update({ type, content, phrase }, {
-      where,
-    });
-    result = result[0] > 0;
-  } catch (error) {
-    throw new Error(error);
-  }
-  return result;
-}
-export async function clutterDelete(id) {
-  let result;
-  try {
-    const where = {
-      id,
-    };
-
-    result = await Clutter.destroy({
-      where,
-    });
-
-    result = result > 0;
-  } catch (error) {
-    throw new Error(error);
-  }
-  return result;
-}
-export async function clutterBulk(list) {
-  const result = [];
-  try {
-    const dataes = [];
-    const keys = ['type', 'content', 'phrase'];
-    list.forEach((v) => {
-      if (v.type) {
-        const item = {};
-        keys.forEach((key) => {
-          item[key] = v[key];
-        });
-        dataes.push(item);
-      }
-    });
-    let len = dataes.length;
-    if (len) {
-      while (len > 0) {
-        const datas = dataes.splice(0, 100);
-        let values = await Clutter.bulkCreate(datas, { ignoreDuplicates: true });
-        values = values.map((row) => row.dataValues);
-        result.push(...values);
-        len = dataes.length;
-      }
-    }
-  } catch (error) {
-    throw new Error(error);
-  }
-
-  return result;
+    },
+  });
+  return result > 0;
 }

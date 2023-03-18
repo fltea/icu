@@ -42,7 +42,7 @@ const Media = {
     },
     channel: {
       type: STRING,
-      comment: '渠道',
+      comment: '渠道 douban weibo twitter',
     },
     tag: {
       type: STRING,

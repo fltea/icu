@@ -3,12 +3,17 @@ import catchError from '../utils/tcatch.js';
 import { setHashList, getHashList } from '../utils/files.js';
 import { getRange, formatPage, getPage } from '../utils/crawler.js';
 import { novelContent, novelChapter } from '../crawler/novel.js';
-import { novelList, chapterInfo, chapterAdd, chapterMod, chapterDel, novelerAdd, novelerMod, novelerInfo, chapterSort } from '../services/novel.js';
 import { addInfo, delInfo, notExistInfo, updateInfo } from '../model/ErrorInfos.js';
+import { changeMedia, deleteMedia, mediaInfo, medias, newMedia } from '../services/media.js';
+import { chaptersByMedia, chapterInfo, sortChapters, changeChapter, newChapter } from '../services/chapter.js';
+import { changeClutter, clutterInfo, newClutter } from '../services/clutter.js';
 
 // 根据url获取详情
 export async function getNurl({ url, encode, title, author, content, lists, detailurl, listSort, multlist, nolist, puppeteer }) {
   try {
+    if (!detailurl) {
+      detailurl = url;
+    }
     const result = await novelContent({ url, encode, title, author, content, lists, detailurl, listSort, multlist, puppeteer });
     // console.log(nolist);
     let nextPage;
@@ -70,21 +75,27 @@ export async function getNurlChapter({ url, encode, name, detail, detailurl, det
 // 獲取列表
 export async function getNovel({ title, author, page, limit }) {
   try {
-    const result = await novelList({ title, author, page, limit });
+    const result = await medias({ type: 'novel', title, author, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
   }
 }
 // 獲取詳情
-export async function getNovelById({ id }) {
+export async function getNovelInfo({ id }) {
   try {
-    const result = await chapterInfo({ id, novel: true });
+    const result = await mediaInfo(id);
+
     if (result) {
-      let chapters = getHashList(result.url) || [];
-      chapters = chapters.filter((v) => !result.chapters.find((c) => c.url === v.url));
-      if (chapters.length) {
-        result.chapters.push(...chapters);
+      const { rows, count } = await chaptersByMedia(id);
+      const chapters = getHashList(result.url) || [];
+      const diffs = chapters.filter((v) => !rows.find((c) => c.url === v.url));
+      result.chapters = [...rows, ...diffs];
+      result.chapterCount = count;
+
+      if (result.clutter) {
+        const clutter = await clutterInfo({ id: result.clutter });
+        result.clutter = clutter;
       }
 
       return new SuccessModel(result);
@@ -100,31 +111,32 @@ async function setClutter(novel) {
   const { clutter } = novel;
   let result;
   if (clutter && isNaN(clutter)) {
-    const clutterInfo = JSON.parse(clutter);
-    const { domain, id } = clutterInfo;
+    const data = JSON.parse(clutter);
+    const { domain, id } = data;
     if (id) {
-      delete clutterInfo.id;
-      result = await novelerMod({
+      delete data.id;
+      result = await changeClutter({
         id,
-        content: JSON.stringify(clutterInfo),
+        content: JSON.stringify(data),
       });
       novel.clutter = id;
     } else if (domain) {
       // 新增clutter
-      delete clutterInfo.id;
-      result = await novelerAdd({
-        domain,
-        content: JSON.stringify(clutterInfo),
+      delete data.id;
+      result = await newClutter({
+        type: 'noveler',
+        phrase: domain,
+        content: JSON.stringify(data),
       });
       novel.clutter = result.id;
     }
   }
 }
-export async function setNovel({ url, title, author, content, clutter, platform, tag }) {
+export async function setNovel({ url, title, creator, abstract, clutter, finished, tag }) {
   try {
-    const novel = { url, title, author, content, clutter, platform, tag };
+    const novel = { url, type: 'novel', title, creator, abstract, clutter, finished, tag };
     await setClutter(novel);
-    const result = await chapterAdd(novel);
+    const result = await newMedia(novel);
     if (result) {
       return new SuccessModel(result);
     }
@@ -134,15 +146,15 @@ export async function setNovel({ url, title, author, content, clutter, platform,
   }
 }
 // 修改
-export async function modNovel({ id, url, title, author, content, clutter, platform, tag }) {
+export async function modNovel({ id, url, title, creator, abstract, clutter, finished, tag }) {
   try {
-    const novel = { id, url, title, author, content, clutter, platform, tag };
+    const novel = { id, url, title, creator, abstract, clutter, finished, tag };
     await setClutter(novel);
-    const result = await chapterMod(novel);
+    const result = await changeMedia(novel);
     if (result) {
       return new SuccessModel(result);
     }
-    return new ErrorModel(delInfo);
+    return new ErrorModel(updateInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -150,7 +162,7 @@ export async function modNovel({ id, url, title, author, content, clutter, platf
 // 刪除
 export async function delNovel({ id }) {
   try {
-    const result = await chapterDel(id);
+    const result = await deleteMedia(id);
     if (result) {
       return new SuccessModel({
         message: '删除成功',
@@ -161,10 +173,11 @@ export async function delNovel({ id }) {
     return catchError(error);
   }
 }
+
 // noveler 詳情
 export async function getNoveler({ id, domain }) {
   try {
-    const result = await novelerInfo({ id, domain });
+    const result = await clutterInfo({ id, type: 'noveler', phrase: domain });
     if (result) {
       return new SuccessModel(result);
     }
@@ -173,10 +186,11 @@ export async function getNoveler({ id, domain }) {
     return catchError(error);
   }
 }
+
 // chapter 詳情
 export async function getChapter({ id }) {
   try {
-    const result = await chapterInfo({ id, slide: true });
+    const result = await chapterInfo(id);
     if (result) {
       return new SuccessModel(result);
     }
@@ -186,10 +200,10 @@ export async function getChapter({ id }) {
   }
 }
 // 新增
-export async function setChapter({ url, title, author, content, typeId, serial, clutter, platform, tag }) {
+export async function setChapter({ url, title, author, content, media, serial, clutter, platform, tag }) {
   try {
-    const chapter = { url, title, author, content, typeId, serial, clutter, platform, tag };
-    const result = await chapterAdd(chapter);
+    const chapter = { url, title, author, content, media, serial, clutter, platform, tag };
+    const result = await newChapter(chapter);
     if (result) {
       return new SuccessModel(result);
     }
@@ -202,8 +216,7 @@ export async function setChapter({ url, title, author, content, typeId, serial, 
 
 export async function modChapter({ id, title, author, content, platform, tag }) {
   try {
-    const chapter = { id, title, author, content, platform, tag };
-    const result = await chapterMod(chapter);
+    const result = await changeChapter({ id, title, author, content, platform, tag });
     if (result) {
       return new SuccessModel(result);
     }
@@ -225,7 +238,7 @@ export async function sortChapter({ sort }) {
       });
     });
     // console.log(sorts);
-    const result = await chapterSort(sorts);
+    const result = await sortChapters(sorts);
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);

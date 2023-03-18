@@ -63,6 +63,8 @@ const setForm = (data, init = true) => {
   });
   if (!init) {
     form.id = '';
+  } else {
+    form.id = data.clutter || '';
   }
   if (domain) {
     form.domain = domain;
@@ -73,6 +75,8 @@ const save = (data = {}) => {
   const result = {
     clutter: { ...form },
     ...data,
+    abstract: data.content,
+    creator: data.author,
   };
   emit('success', result);
   hide();

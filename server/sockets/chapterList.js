@@ -3,11 +3,11 @@ import { randInt } from '../utils/tools.js';
 
 import {
   getNurlChapter,
-  getNovelById,
+  getNovelInfo,
   setChapter,
 } from '../controllers/novel.js';
 
-async function chapterContent(ws, curls, errcount, index, clutter, typeId) {
+async function chapterContent(ws, curls, errcount, index, clutter, media) {
   if (ws.readyState !== 1) {
     console.log('chapterContent: ws is closed');
     return;
@@ -38,7 +38,7 @@ async function chapterContent(ws, curls, errcount, index, clutter, typeId) {
     if (result.code === 10003) {
       console.log('setTimeout sleepTime', 30 * 1000);
       setTimeout(() => {
-        chapterContent(ws, curls, errCount, index, clutter, typeId);
+        chapterContent(ws, curls, errCount, index, clutter, media);
       }, 30 * 1000);
       return;
     }
@@ -48,8 +48,8 @@ async function chapterContent(ws, curls, errcount, index, clutter, typeId) {
     // console.log('setChapter', title, url);
     result = await setChapter({
       title,
-      typeId,
-      clutter: clutter.id,
+      media,
+      clutter: clutter.clutter,
       url,
       content: detail,
       serial,
@@ -73,10 +73,10 @@ async function chapterContent(ws, curls, errcount, index, clutter, typeId) {
     if (sleepTime) {
       console.log(index, 'sleepTime', sleepTime);
       setTimeout(() => {
-        chapterContent(ws, curls, errCount, index + 1, clutter, typeId);
+        chapterContent(ws, curls, errCount, index + 1, clutter, media);
       }, sleepTime * 1000);
     } else {
-      chapterContent(ws, curls, errCount, index + 1, clutter, typeId);
+      chapterContent(ws, curls, errCount, index + 1, clutter, media);
     }
   }
 }
@@ -90,7 +90,7 @@ async function chapterList(ws, data) {
     return;
   }
 
-  let novelValue = await getNovelById({ id: novelId });
+  let novelValue = await getNovelInfo({ id: novelId });
   // 无 novel
   if (novelValue.code !== 200) {
     ws.send(JSON.stringify(novelValue));

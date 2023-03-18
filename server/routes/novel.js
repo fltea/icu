@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import { getNurl, getNurlChapter, getNovel, getNovelById, setNovel, modNovel, delNovel, getNoveler, getChapter, setChapter, modChapter, sortChapter } from '../controllers/novel.js';
+import { getNurl, getNurlChapter, getNovel, getNovelInfo, setNovel, modNovel, delNovel, getNoveler, getChapter, setChapter, modChapter, sortChapter } from '../controllers/novel.js';
 
 const router = new Router();
 
@@ -26,7 +26,7 @@ router.get('/', async (ctx) => {
 
 // 獲取詳情
 router.post('/detail', async (ctx) => {
-  const result = await getNovelById(ctx.request.body);
+  const result = await getNovelInfo(ctx.request.body);
   ctx.body = result;
 });
 // 新增
