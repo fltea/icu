@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { formatTime } from '@/utils/tools';
-import { save } from '@/api/weibo';
+import { winfo, wcomment, save } from '@/api/weibo';
 import ComVideo from '@/components/ComVideo.vue';
 import Comments from './Comment.vue';
 import UserItem from './UserItem.vue';
@@ -11,6 +11,7 @@ const props = defineProps({
   retweeted: Boolean,
   detail: Boolean,
 });
+const cookie = localStorage.getItem('wcookie') || '';
 const item = computed(() => props.weibo);
 // const media = ref(props.weibo.page_info);
 const video = computed(() => {
@@ -32,13 +33,41 @@ const video = computed(() => {
 
 const saveWeibo = () => {
   // console.log(item);
-  save(item.value);
+  save({
+    weibo: JSON.stringify(item.value),
+  });
 };
-const linkWeibo = () => {
-  if (!props.detail) {
-    console.log(item);
-    window.open(`/weibo/${item.value.id}`);
-  }
+// const linkWeibo = () => {
+//   if (!props.detail) {
+//     console.log(item);
+//     window.open(`/weibo/${item.value.id}`);
+//   }
+// };
+
+const detailComment = () => {
+  wcomment({
+    id: item.value.id,
+    cookie,
+  }).then((res) => {
+    // console.log(res);
+    item.value.comments = res.list;
+  });
+};
+const detailData = () => {
+  winfo({
+    id: item.value.id,
+    cookie,
+  }).then((res) => {
+    // console.log(res);
+    if (res.data) {
+      const { comments_count: count, detail } = res.data;
+      item.value.text = detail;
+      item.value.isLongText = false;
+      if (!props.retweeted && count) {
+        detailComment();
+      }
+    }
+  });
 };
 </script>
 
@@ -49,11 +78,13 @@ const linkWeibo = () => {
       <span class="user-desc">{{formatTime(item.created_at)}}</span>
     </template>
     <template #acts>
-      <button @click="saveWeibo">保存</button>
+      <slot name="acts"></slot>
+      <button v-if="item.isLongText" @click="detailData">详情</button>
+      <button v-else @click="saveWeibo">保存</button>
     </template>
   </user-item>
   <section class="weibo-inner">
-    <div v-html="item.text" @click="linkWeibo"></div>
+    <div v-html="item.text"></div>
     <div class="weibo-pics" v-if="item.pics">
       <div v-for="(pic, index) in item.pics" :key="`pics-${index}`" class="pics-item">
         <img class="pics-inner" :src="pic.url">

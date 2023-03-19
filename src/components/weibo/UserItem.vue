@@ -44,11 +44,13 @@ onMounted(() => {
 <template>
   <section class="weibo-user" v-if="user">
     <img v-if="!nopic" class="user-pic" :src="user.profile_image_url" :alt="user.screen_name">
-    <p>
-      <span class="user-name" @click="linkUser">{{user.screen_name}}</span>
-      <slot name="created_at"></slot>
-    </p>
-    <p class="user-desc">{{user.description}}</p>
+    <div class="user-content">
+      <p>
+        <span class="user-name" @click="linkUser">{{user.screen_name}}</span>
+        <slot name="created_at"></slot>
+      </p>
+      <p class="user-desc">{{user.description}}</p>
+    </div>
     <div class="user-act">
       <button @click="saveUser" v-if="saveBtn">存ID</button>
       <slot name="acts"></slot>
@@ -59,13 +61,17 @@ onMounted(() => {
 <style lang='less' scoped>
 .weibo-user {
   margin-bottom: 6px;
-  position: relative;
   padding-left: 70px;
-  padding-right: 110px;
   padding-top: 4px;
+  position: relative;
+  display: flex;
   height: 46px;
   &.no-act {
     padding-right: 8px;
+  }
+  .user-content {
+    flex: 1;
+    min-width: 50%;
   }
   .user-pic {
     position: absolute;
@@ -87,11 +93,11 @@ onMounted(() => {
     text-overflow: ellipsis;
   }
   .user-act {
-    position: absolute;
-    top: 0;
-    right: 10px;
-    width: 100px;
+    margin-left: 12px;
+    padding-top: 10px;
+    padding-right: 8px;
     text-align: right;
+    white-space: nowrap;
     :deep(button){
       min-width: 40px;
       font-size: 12px;
