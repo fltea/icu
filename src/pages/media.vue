@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { upload } from '@/api/common';
-import { list, add, del } from '@/api/pic';
+import { ref, reactive, onMounted } from 'vue';
+import { list, upload, del } from '@/api/media';
+import newMedia from '@/components/media/Media.vue';
 
 const uploadFile = (file) => {
   const form = new FormData();
@@ -9,19 +9,18 @@ const uploadFile = (file) => {
   return upload(form);
 };
 
-const listData = ref([]);
+const curData = reactive({
+  list: [],
+  media: null,
+});
+const idialog = ref(false);
+const ndialog = ref(false);
 const listItems = () => {
   list().then((res) => {
-    console.log(res);
-    listData.value = [...res.list];
+    // console.log(res);
+    curData.list = [...res.list];
   });
 };
-// const newItem = (item) => {
-//   console.log(item);
-//   modify(item).then(() => {
-//     listItems();
-//   });
-// };
 const delItem = (id) => {
   del({
     id,
@@ -30,76 +29,61 @@ const delItem = (id) => {
   });
 };
 const changFile = (event) => {
-  // console.log(event);
   const target = event.target || {};
   const files = target.files || [];
-  // console.log(files);
   if (files.length) {
-    // console.log(Array.from(list).map(v => v.size))
-    uploadFile(files[0]).then((res) => {
-      add(res.data).then(() => {
-        listItems();
-      });
+    uploadFile(files[0]).then(() => {
+      listItems();
     });
   }
+};
+
+const addUrl = () => {
+  idialog.value = true;
+};
+const urlUpload = (url) => {
+  upload({
+    url,
+  }).then(() => {
+    listItems();
+  });
+};
+
+const editMedia = (item) => {
+  ndialog.value = true;
+  curData.media = item || null;
 };
 
 onMounted(listItems);
 </script>
 
 <template>
-  <h1>Pic</h1>
-  <section>
-    <!-- <button @click="newItem">新增</button> -->
-    <button class="file-button">上传Pic<input type="file" name="file" id="myFile" @change="changFile"></button>
+  <h1>Media</h1>
+  <section class="com-controls">
+    <button @click="editMedia()">新增</button>
+    <button @click="addUrl">网络下载</button>
+    <com-upload-button @change="changFile">上传文件</com-upload-button>
   </section>
   <!-- 列表 -->
   <div class="list-item">
     <!-- 内容 -->
-    <div class="item-inner" v-for="item in listData" :key="`list${item.id}`">
-      <img class="item-img" :src="item.url" alt="">
-      <div class="item-tools">
-        <span>{{ item.creator }}</span>
-        <!-- <input type="text" placeholder="link" v-model="item.link"> -->
-        <!-- <input type="text" placeholder="creator" v-model="item.creator"> -->
-        <!-- <input type="text" placeholder="remark" v-model="item.remark"> -->
-      <!-- <button @click="newItem(item)">修改</button> -->
+    <div class="item-inner" v-for="item in curData.list" :key="`list${item.id}`">
+      <span>{{ item.title }}</span>
+      <span>{{ item.utl }}</span>
+      <span>{{ item.type }}</span>
+      <button @click="editMedia(item)">修改</button>
       <button @click="delItem(item.id)">删除</button>
-      </div>
     </div>
   </div>
+  <text-dialog title="Link" v-model:show="idialog" @save="urlUpload"></text-dialog>
+  <new-media v-model:show="ndialog" :media="curData.media" @success="listItems"></new-media>
 </template>
 
 <style scoped lang="less">
 .list-item {
   margin-top: 12px;
-  margin-right: -12px;
-  display: flex;
-  flex-wrap: wrap;
   .item-inner {
-    margin-right: 12px;
     margin-bottom: 12px;
-    position: relative;
-    width: 300px;
-    height: 250px;
-    text-align: center;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    overflow: hidden;
-    .item-img {
-      width: 100%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .item-tools {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 50px;
-    }
   }
 }
 </style>

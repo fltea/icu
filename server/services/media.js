@@ -68,8 +68,8 @@ export async function medias({ title, abstract, type, creator, channel, tag, pag
   return result;
 }
 
-async function addMedia({ url, title, abstract, clutter, type, creator, staff, ISBN, finished, price, channel, publishDate, tag, remark }) {
-  const item = { url, title, abstract, clutter, type, creator, staff, ISBN, finished, price, channel, publishDate, tag, remark };
+async function addMedia({ url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark }) {
+  const item = { url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark };
   const result = await Media.create(item);
   return result;
 }
@@ -79,10 +79,10 @@ export async function newMedia(item) {
   return result;
 }
 
-export async function changeMedia({ id, url, title, abstract, clutter, type, creator, staff, ISBN, finished, price, channel, publishDate, tag, remark }) {
+export async function changeMedia({ id, url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark }) {
   const item = await Media.findByPk(id);
   if (item) {
-    const newItem = { url, title, abstract, clutter, type, creator, staff, ISBN, finished, price, channel, publishDate, tag, remark };
+    const newItem = { url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark };
     Object.keys(newItem).forEach((key) => {
       if (newItem[key] === undefined) {
         delete newItem[key];

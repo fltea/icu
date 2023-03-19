@@ -18,7 +18,7 @@ const Media = {
     },
     type: {
       type: STRING,
-      comment: '类型 书 小说 影片 电视剧 图片',
+      comment: '类型 书 小说 影片 电视剧 图片 视频',
     },
     creator: {
       type: STRING,
@@ -28,7 +28,7 @@ const Media = {
       type: TEXT,
       comment: '工作人员',
     },
-    ISBN: {
+    isbn: {
       type: STRING,
       comment: 'ISBN',
     },
