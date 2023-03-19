@@ -3,7 +3,7 @@ import { koaBody } from 'koa-body';
 import path from 'node:path';
 import fs from 'node:fs';
 
-import { FILE_DIR, LOG_DIR, BACKUP_DIR, TEMP_DIR } from './conf/constant.js';
+import { FILE_DIR, LOG_DIR, BACKUP_DIR, TEMP_DIR, MEDIA_DIR } from './conf/constant.js';
 import { setEnv } from './config.js';
 import { statDir } from './utils/files.js';
 import { urlParse } from './utils/tools.js';
@@ -17,6 +17,7 @@ statDir(FILE_DIR);
 statDir(LOG_DIR);
 statDir(BACKUP_DIR);
 statDir(TEMP_DIR);
+statDir(MEDIA_DIR);
 
 const app = new Koa();
 let viteServer;

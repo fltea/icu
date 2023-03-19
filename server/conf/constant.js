@@ -14,6 +14,8 @@ export const BACKUP_DIR = `${dpath}/backups`;
 export const TEMP_DIR = `${dpath}/temps`;
 // 默认 cookies 文件夹
 export const COOKIES_DIR = `${dpath}/cookies`;
+// 默认 media 文件夹
+export const MEDIA_DIR = `${dpath}/media`;
 
 // 請求設置
 export const UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36';
@@ -26,6 +28,8 @@ export const WEIBO_CONF = {
   detail: 'https://m.weibo.cn/detail/{id}',
   detailE: 'https://m.weibo.cn/statuses/extend?id={id}',
   detailS: 'https://m.weibo.cn/statuses/show?id={id}',
+  // https://weibo.com/ajax/statuses/show?id=MxHWMlXnG
+  detailCom: 'https://weibo.com/ajax/statuses/show?id={id}',
   comment: 'https://m.weibo.cn/comments/hotflow?id={id}&mid={id}&max_id_type=0',
   delFav: 'https://m.weibo.cn/api/statuses/destroyfav',
   user: 'https://m.weibo.cn/profile/info?uid={id}',
