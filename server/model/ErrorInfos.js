@@ -26,9 +26,9 @@ export const schemaFileInfo = {
   code: 999,
   message: '格式校验失败',
 };
-export const uploadFileSizeFailInfo = {
+export const uploadInfo = {
   code: 10001,
-  message: '上传文件尺寸过大',
+  message: '上传失败',
 };
 export const putOutInfo = {
   code: 10002,

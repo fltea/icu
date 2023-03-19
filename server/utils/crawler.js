@@ -36,8 +36,7 @@ export function getText(dom, key = 'text') {
     // return dom.rawText;
     let text = dom[key];
     text = text.replace(/\r?\n?/g, '');
-    text = text.replace(/^\s+?/g, '');
-    text = text.replace(/\s+?$/g, '');
+    text = text.replace(/\s+?/g, '');
     return text;
   } catch (error) {
     return '';
@@ -81,11 +80,14 @@ export function getAttrs(root, attibutes, result) {
  */
 export function getList(doms, preurl, cls = false) {
   const list = doms.map((a) => {
-    const url = a.getAttribute('href');
     const title = a.text;
+    let url = a.getAttribute('href');
+    if (!url.includes('http')) {
+      url = `${preurl || ''}${url}`;
+    }
     const item = {
       title,
-      url: `${preurl || ''}${url}`,
+      url,
     };
     if (cls) {
       item.className = a.classList.value.join(' ');

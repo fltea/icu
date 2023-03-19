@@ -26,6 +26,10 @@ export function setLog(name, data) {
   appendFile(`${LOG_DIR}/${name}${date}.txt`, `${formatDate({})}\n${data}\n`);
 }
 
+export function renameFile(oldPath, newPath) {
+  fs.renameSync(oldPath, newPath);
+}
+
 /**
  *
  * @param {string} filePath
@@ -51,29 +55,27 @@ export function statDir(dpath) {
 }
 
 export async function downSource(url, name, referer) {
-  try {
-    const options = {
-      url,
-      header: {
-        'User-Agent': UserAgent,
-      },
-      method: 'GET',
-      media: true,
-    };
-    if (referer) {
-      options.header.referer = referer;
-    }
-    const source = await request(options);
+  const options = {
+    url,
+    header: {
+      'User-Agent': UserAgent,
+    },
+    method: 'GET',
+    media: true,
+  };
+  if (referer) {
+    options.header.referer = referer;
+  }
+  const source = await request(options);
+  if (source) {
     const npath = `${FILE_DIR}/${name}`;
     appendFile(npath, source, {
       encoding: 'binary',
       flag: 'w',
     });
-    // console.log(npath, url);
     return npath;
-  } catch (error) {
-    throw new Error(error);
   }
+  return null;
 }
 
 export function getFiles(fpath) {
