@@ -78,10 +78,10 @@ const clickChapter = (chapter) => {
     <slot name="controls"></slot>
   </div>
   <section class="com-container">
-    <p>{{ item.author }}</p>
+    <pre v-html="item.abstract"></pre>
+    <p>{{ item.creator }}</p>
     <p>{{ item.createdAt }} {{ item.updatedAt }}</p>
-    <p>{{ item.chapterCount }}</p>
-    <div v-html="item.content"></div>
+    <p>章节数量：{{ item.chapterCount }}</p>
     <template v-if="chapterList.length">
     <div>
       <label v-if="selction" class="chapter-item">
