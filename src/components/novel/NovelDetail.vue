@@ -78,8 +78,9 @@ const clickChapter = (chapter) => {
     <slot name="controls"></slot>
   </div>
   <section class="com-container">
-    <pre v-html="item.abstract"></pre>
     <p>{{ item.creator }}</p>
+    <p> <a :href="item.url" target="_blank">原文链接</a></p>
+    <pre v-html="item.abstract"></pre>
     <p>{{ item.createdAt }} {{ item.updatedAt }}</p>
     <p>章节数量：{{ item.chapterCount }}</p>
     <template v-if="chapterList.length">
