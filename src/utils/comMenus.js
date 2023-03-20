@@ -32,14 +32,6 @@ const menus = [
     path: '/property',
   },
   {
-    name: 'Clutter',
-    path: '/clutter',
-  },
-  {
-    name: 'Chapter',
-    path: '/chapter',
-  },
-  {
     name: 'Stats',
     path: '/stats',
   },
