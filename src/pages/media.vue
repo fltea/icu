@@ -67,13 +67,17 @@ onMounted(listItems);
   <!-- 列表 -->
   <div class="list-item">
     <!-- 内容 -->
-    <div class="item-inner" v-for="item in curData.list" :key="`list${item.id}`">
-      <span>{{ item.title }}</span>
-      <span>{{ item.utl }}</span>
-      <span>{{ item.type }}</span>
-      <button @click="editMedia(item)">修改</button>
-      <button @click="delItem(item.id)">删除</button>
-    </div>
+    <table class="list-table">
+      <tr v-for="item in curData.list" :key="`list${item.id}`">
+        <td>{{ item.title }}</td>
+        <td>{{ item.utl }}</td>
+        <td>{{ item.type }}</td>
+        <td>
+          <button @click="editMedia(item)">修改</button>
+          <button @click="delItem(item.id)">删除</button>
+        </td>
+      </tr>
+    </table>
   </div>
   <text-dialog title="Link" v-model:show="idialog" @save="urlUpload"></text-dialog>
   <new-media v-model:show="ndialog" :media="curData.media" @success="listItems"></new-media>
@@ -82,8 +86,10 @@ onMounted(listItems);
 <style scoped lang="less">
 .list-item {
   margin-top: 12px;
-  .item-inner {
-    margin-bottom: 12px;
+  .list-table {
+    td {
+      padding: 5px;
+    }
   }
 }
 </style>
