@@ -25,10 +25,10 @@ const loadItem = () => {
       curItem[v] = result[v] || '';
     });
     if (curItem.prev) {
-      curItem.prev.link = `/novel/${curItem.id}/${curItem.prev.id}`;
+      curItem.prev.link = `/novel/${curItem.media}/${curItem.prev.id}`;
     }
     if (curItem.next) {
-      curItem.next.link = `/novel/${curItem.id}/${curItem.next.id}`;
+      curItem.next.link = `/novel/${curItem.media}/${curItem.next.id}`;
     }
     curItem.chapter = res.data;
   });

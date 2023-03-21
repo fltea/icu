@@ -15,8 +15,10 @@ export async function chapterInfo(id) {
     raw: true,
   });
   if (result) {
-    const { serial } = result;
-    const where = {};
+    const { serial, media } = result;
+    const where = {
+      media,
+    };
     if (serial) {
       where.serial = {
         [Op.in]: [+serial - 1, +serial + 1],
