@@ -129,14 +129,16 @@ const detailData = () => {
     flex-wrap: wrap;
     .pics-item {
       margin-bottom: 6px;
-      width: 48%;
-      height: 200px;
-      overflow: auto;
-      border: 1px solid;
+      width: 350px;
+      height: 320px;
+      overflow: hidden;
     }
     .pics-inner {
-      width: 100%;
-      // max-height: 100%;
+      position: relative;
+      left: 50%;
+      top: 50%;
+      max-width: 350px;
+      transform: translate(-50%, -50%);
     }
   }
 
