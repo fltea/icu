@@ -6,7 +6,7 @@ import { rollBack } from '../db/seq.js';
 const { Record, Clutter } = models;
 
 function formatClutter(data) {
-  const result = data.dataValues;
+  const result = data.dataValues || data;
   const content = JSON.parse(result.content);
   return { clutter: result.id, ...content };
 }
@@ -65,7 +65,8 @@ export async function userList(ids) {
   if (ids) {
     return result.map((v) => v.phrase);
   }
-  return result;
+
+  return result.map(formatClutter);
 }
 
 // 新增
