@@ -20,7 +20,7 @@ const Record = {
       type: TEXT,
       comment: '内容',
     },
-    more: {
+    infos: {
       type: TEXT,
       comment: '更多内容',
     },

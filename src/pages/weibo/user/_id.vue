@@ -64,10 +64,9 @@ onMounted(detailData);
 
 <template>
 <h1>USER</h1>
-
-<user-item :user="userData.detail" detail></user-item>
+<user-item :user="userData.detail" detail class="list-item"></user-item>
 <section class="weibo-list">
-  <com-list :finished="userData.finished" :laoding="userData.laoding" @load="listItems">
+  <com-list :finished="userData.finished" :laoding="userData.loading" @load="listItems">
     <div v-for="item in userData.list" :key="`list-${item.bid}`" class="list-item">
       <list-item :weibo="item">
         <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>

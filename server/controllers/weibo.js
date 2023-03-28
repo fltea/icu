@@ -27,6 +27,7 @@ import {
 import { blockAdd, blockList, blockMod, userAdd, userList } from '../services/weibo.js';
 import { newRecord, recordInfo, records } from '../services/record.js';
 import { WEIBO_CONF } from '../conf/constant.js';
+import { deepCopy } from '../utils/tools.js';
 
 /**
  * 獲取home列表
@@ -317,11 +318,12 @@ function formatData(data) {
 
 // 微博详情
 function detail2Record(data) {
-  const { created_at: publishTime, mid, text, user, region_name: region, pics, page_info: video } = data;
+  const { created_at: publishTime, mid, text, user, region_name: region } = data;
   const { screen_name: author, id, profile_url: authorLink } = user;
-  const authorIp = region.split(' ').pop();
+  const authorIp = region ? region.split(' ').pop() : '';
   const url = WEIBO_CONF.detail.replace('{id}', mid);
   formatData(data);
+  const infos = deepCopy(data);
   const record = {
     url,
     type: 'weibodetail',
@@ -333,9 +335,9 @@ function detail2Record(data) {
     platform: 'weibo',
     publishTime: new Date(publishTime),
     content: text,
-    more: JSON.stringify(data),
+    infos,
   };
-  return { record, pics, video };
+  return { record, infos };
 }
 // 微博文章
 function article2Record(data) {
@@ -356,20 +358,32 @@ export async function setRecord({ weibo }) {
       values = detail2Record(data);
     }
 
-    const { record, pics, video } = values;
+    const { record, infos } = values;
+    const { pics, page_info: video } = infos;
     console.log(record);
     // 图片
     if (pics && pics.length) {
-      const picList = pics.map((v) => v.large.url);
-      const max = picList.length - 1;
-      console.log(max);
-      // while (max) {
-      //   const item =
-      // }
+      // const picList = pics.map((v) => v.large.url);
+      let max = pics.length - 1;
+      while (max >= 0) {
+        const pic = pics[max];
+        const { url } = pic.large;
+        const name = pic.url.split('/').pop();
+        const item = await downSource(url, name, 'https://m.weibo.cn');
+        // if (item) {
+
+        // }
+        max -= 1;
+        console.log('pics', item);
+      }
     }
     // 视频
     if (video) {
       console.log(video);
+      const { mp4_720p_mp4: url } = video.urls;
+      const name = url.split('?').shift().split('/').pop();
+      const item = await downSource(url, name, 'https://m.weibo.cn');
+      console.log('video', item);
     }
 
     // const result = await newRecord(record);
