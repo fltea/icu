@@ -10,6 +10,7 @@ const props = defineProps({
   user: Object,
   nopic: Boolean,
   detail: Boolean,
+  noactions: Boolean,
 });
 const usersList = computed(() => wuserStore.users);
 // const user = computed(() => props.user);
@@ -51,7 +52,7 @@ onMounted(() => {
       </p>
       <p class="user-desc">{{user.description}}</p>
     </div>
-    <div class="user-act">
+    <div class="user-act" v-if="!noactions">
       <button @click="saveUser" v-if="saveBtn">存ID</button>
       <slot name="acts"></slot>
     </div>

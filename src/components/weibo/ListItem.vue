@@ -10,6 +10,7 @@ const props = defineProps({
   weibo: Object,
   retweeted: Boolean,
   detail: Boolean,
+  noactions: Boolean,
 });
 const cookie = localStorage.getItem('wcookie') || '';
 const item = computed(() => props.weibo);
@@ -22,9 +23,9 @@ const video = computed(() => {
     const isVideo = type === 'video';
     if (isVideo) {
       result = {
-        picUrl: info.page_pic.url,
+        picUrl: info.page_pic ? info.page_pic.url : '',
         title: info.title,
-        url: info.urls.mp4_ld_mp4,
+        url: info.urls ? info.urls.mp4_ld_mp4 : info.url,
       };
     }
   }
@@ -69,18 +70,26 @@ const detailData = () => {
     }
   });
 };
+const hasSave = (data) => {
+  let result = !data.isLongText;
+  if (data.retweeted_status) {
+    result = result && !data.retweeted_status.isLongText;
+  }
+
+  return result;
+};
 </script>
 
 <template>
 <section class="weibo-item" :class="{'weibo-detail': props.detail}">
-  <user-item :user="item.user" :nopic="!!props.retweeted">
+  <user-item :user="item.user" :nopic="!!props.retweeted" :noactions="props.noactions">
     <template #created_at>
       <span class="user-desc">{{formatTime(item.created_at)}}</span>
     </template>
-    <template #acts>
+    <template #acts v-if="!noactions">
       <slot name="acts"></slot>
       <button v-if="item.isLongText" @click="detailData">详情</button>
-      <button v-else @click="saveWeibo">保存</button>
+      <button v-if="hasSave(item)" @click="saveWeibo">保存</button>
     </template>
   </user-item>
   <section class="weibo-inner">
@@ -106,8 +115,13 @@ const detailData = () => {
   border-radius: 3px;
   &.weibo-detail {
     .weibo-pics {
+      display: block;
       .pics-item {
-        height: 300px;
+        width: auto;
+        height: auto;
+        .pics-inner {
+          max-width: 100%;
+        }
       }
     }
     .weibo-comments {
@@ -129,8 +143,8 @@ const detailData = () => {
     flex-wrap: wrap;
     .pics-item {
       margin-bottom: 6px;
-      width: 350px;
-      height: 320px;
+      width: 300px;
+      height: 280px;
       overflow: hidden;
     }
     .pics-inner {
