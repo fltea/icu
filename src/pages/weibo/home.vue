@@ -6,7 +6,12 @@ import { loadUsers } from '@/utils/localData';
 
 import ListItem from '@/components/weibo/ListItem.vue';
 
-const listData = reactive([]);
+const listData = reactive({
+  finished: false,
+  loading: false,
+  list: [],
+  page: 0,
+});
 const cdialog = ref(false);
 const text = reactive({
   title: 'Cookie',
@@ -48,18 +53,28 @@ const getCookie = (str) => {
 const listItems = () => {
   if (!cookie) {
     setCookie();
+    listData.maxId = null;
+    listData.finished = true;
     return;
   }
-  whome({
+  listData.loading = true;
+  const params = {
     cookie,
-  }).then((res) => {
+  };
+  if (listData.maxId) {
+    params.maxId = listData.maxId;
+  }
+  whome(params).then((res) => {
     console.log(res);
     if (res.list) {
-      const oids = listData.map((v) => v.id);
+      const oids = listData.list.map((v) => v.id);
       const nlist = deepCopy(res.list).filter((l) => !oids.includes(l.id));
-      listData.unshift(...nlist);
-      // listDetails(nlist.map((v) => v.id), homeList);
+      listData.list.push(...nlist);
+      listData.maxId = nlist.slice(-1).pop().id;
+      listData.finished = listData.list.length === res.count;
     }
+  }).finally(() => {
+    listData.loading = false;
   });
 };
 const initList = (str) => {
@@ -108,11 +123,13 @@ onMounted(() => {
     <button @click="setBlock">設置屏蔽關鍵詞</button>
   </section>
   <section class="weibo-list">
-    <div v-for="item in listData" :key="`list-${item.bid}`" class="list-item">
-      <list-item :weibo="item">
-        <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
-      </list-item>
-    </div>
+    <com-list :finished="listData.finished" :laoding="listData.laoding" @load="listItems">
+      <div v-for="item in listData.list" :key="`list-${item.bid}`" class="list-item">
+        <list-item :weibo="item">
+          <list-item v-if="item.retweeted_status" :weibo="item.retweeted_status" retweeted></list-item>
+        </list-item>
+      </div>
+    </com-list>
   </section>
   <text-dialog textarea v-model:show="cdialog" :text="text.text" :title="text.title" @save="getText"></text-dialog>
 <section>
