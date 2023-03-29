@@ -5,6 +5,28 @@ import { PAGE_SIZE } from '../conf/constant.js';
 
 const { Record } = models;
 
+function shortContent(data) {
+  if (!data) {
+    return data;
+  }
+  const item = data.dataValues || data;
+  let content = item.content || '';
+  let split = false;
+  if (content.includes('<')) {
+    content = content.replace(/<.+?>+/g, '');
+    split = true;
+  }
+  if (content.length > 100) {
+    content = content.substring(0, 100);
+    split = true;
+  }
+  if (split) {
+    content = `${content}...`;
+  }
+  item.content = content;
+  return item;
+}
+
 export async function recordInfo(id) {
   const item = await Record.findOne({
     where: {
@@ -56,10 +78,11 @@ export async function records({ title, content, type, author, platform, tag, pag
   }
 
   const { rows, count } = await Record.findAndCountAll(search);
+  const list = rows.map(shortContent);
 
   const result = {
     count,
-    list: rows,
+    list,
   };
   if (page) {
     result.page = page;
@@ -68,10 +91,10 @@ export async function records({ title, content, type, author, platform, tag, pag
   return result;
 }
 
-async function addRecord({ url, title, content, clutter, type, author, authorId, authorLink, authorIp, platform, publishTime, price, tag }) {
-  const item = { url, title, content, clutter, type, author, authorId, authorLink, authorIp, platform, publishTime, price, tag };
+async function addRecord({ url, title, content, infos, clutter, type, typeId, author, authorDesc, authorLink, authorIp, platform, publishTime, tag }) {
+  const item = { url, title, content, infos, clutter, type, typeId, author, authorDesc, authorLink, authorIp, platform, publishTime, tag };
   const result = await Record.create(item);
-  return result;
+  return shortContent(result);
 }
 
 export async function newRecord(item) {
