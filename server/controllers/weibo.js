@@ -1,7 +1,7 @@
 import { addInfo, errorInfo, notExistInfo, updateInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
-import { downSource } from '../utils/files.js';
+import { renameFile, downSource } from '../utils/files.js';
 
 import {
   homes,
@@ -28,6 +28,7 @@ import { blockAdd, blockList, blockMod, userAdd, userList } from '../services/we
 import { newRecord, recordInfo, records } from '../services/record.js';
 import { WEIBO_CONF } from '../conf/constant.js';
 import { deepCopy } from '../utils/tools.js';
+import { newMedia } from '../services/media.js';
 
 /**
  * 獲取home列表
@@ -360,7 +361,7 @@ export async function setRecord({ weibo }) {
 
     const { record, infos } = values;
     const { pics, page_info: video } = infos;
-    console.log(record);
+    // console.log(record);
     // 图片
     if (pics && pics.length) {
       // const picList = pics.map((v) => v.large.url);
@@ -370,26 +371,46 @@ export async function setRecord({ weibo }) {
         const { url } = pic.large;
         const name = pic.url.split('/').pop();
         const item = await downSource(url, name, 'https://m.weibo.cn');
-        // if (item) {
+        const newPath = item.replace('files', 'files/media');
+        renameFile(item, newPath);
 
-        // }
+        const media = await newMedia({
+          type: name.split('.').pop(),
+          title: name,
+          url: `/${newPath}`,
+        });
+        if (media) {
+          const { url: murl, title, id } = media.dataValues;
+          pics[max] = { url: murl, nurl: url, title, id };
+        }
         max -= 1;
-        console.log('pics', item);
       }
     }
     // 视频
     if (video) {
-      console.log(video);
       const { mp4_720p_mp4: url } = video.urls;
       const name = url.split('?').shift().split('/').pop();
       const item = await downSource(url, name, 'https://m.weibo.cn');
-      console.log('video', item);
-    }
+      const newPath = item.replace('files', 'files/media');
+      renameFile(item, newPath);
 
-    // const result = await newRecord(record);
-    // if (result) {
-    //   return new SuccessModel(result);
-    // }
+      const media = await newMedia({
+        type: name.split('.').pop(),
+        title: name,
+        url: `/${newPath}`,
+      });
+      if (media) {
+        const { url: murl, title, id } = media.dataValues;
+        infos.page_info = { url: murl, nurl: url, title, id };
+      }
+    }
+    // console.log('record', record, pics, infos);
+    record.infos = JSON.stringify(infos);
+
+    const result = await newRecord(record);
+    if (result) {
+      return new SuccessModel(result);
+    }
     return new ErrorModel(addInfo);
   } catch (error) {
     return catchError(error);
