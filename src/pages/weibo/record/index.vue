@@ -20,6 +20,7 @@ onMounted(listData);
 <section class="list-container">
   <div class="list-item" v-for="item in list.datas" :key="item.id">
     <a :href="item.authorLink" target="_blank">{{item.author}}</a>
+    <a :href="`/weibo/record/${item.id}`" target="_blank">詳情</a>
     <div v-html="item.content"></div>
   </div>
 </section>
