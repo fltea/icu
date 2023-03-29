@@ -387,7 +387,7 @@ export async function setRecord({ weibo }) {
       }
     }
     // 视频
-    if (video) {
+    if (video && video.type === 'video') {
       const { mp4_720p_mp4: url } = video.urls;
       const name = url.split('?').shift().split('/').pop();
       const item = await downSource(url, name, 'https://m.weibo.cn');
@@ -401,7 +401,7 @@ export async function setRecord({ weibo }) {
       });
       if (media) {
         const { url: murl, title, id } = media.dataValues;
-        infos.page_info = { url: murl, nurl: url, title, id };
+        infos.page_info = { url: murl, nurl: url, title, id, type: video.type };
       }
     }
     // console.log('record', record, pics, infos);
@@ -420,9 +420,9 @@ export async function setRecord({ weibo }) {
 /**
  * 微博详情
  */
-export async function Record(id) {
+export async function Record({ id }) {
   try {
-    const result = await recordInfo(id);
+    const result = await recordInfo(+id);
     if (result) {
       return new SuccessModel(result);
     }
