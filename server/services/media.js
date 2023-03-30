@@ -68,8 +68,8 @@ export async function medias({ title, abstract, type, creator, channel, tag, pag
   return result;
 }
 
-async function addMedia({ url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark }) {
-  const item = { url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark };
+async function addMedia({ url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark, origin }) {
+  const item = { url, title, abstract, clutter, type, creator, staff, isbn, finished, price, channel, publishDate, tag, remark, origin };
   const result = await Media.create(item);
   return result;
 }
@@ -107,4 +107,12 @@ async function delMedia(id) {
 export async function deleteMedia(id) {
   const result = await rollBack(delMedia, id);
   return result;
+}
+
+export async function findORCreateMedia(item) {
+  const [media] = await Media.findOrCreate({
+    where: item,
+  });
+  // console.log(media.dataValues, isCreate);
+  return media.dataValues;
 }
