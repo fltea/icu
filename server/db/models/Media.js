@@ -16,6 +16,10 @@ const Media = {
       type: STRING,
       comment: '链接',
     },
+    origin: {
+      type: STRING,
+      comment: '來源',
+    },
     type: {
       type: STRING,
       comment: '类型 书 小说 影片 电视剧 图片 视频',
