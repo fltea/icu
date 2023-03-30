@@ -120,7 +120,9 @@ const hasSave = (data) => {
         width: auto;
         height: auto;
         .pics-inner {
+          position: unset;
           max-width: 100%;
+          transform: none;
         }
       }
     }
