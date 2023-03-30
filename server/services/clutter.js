@@ -13,7 +13,16 @@ function formatClutter(result) {
   if (data.dataValues) {
     data = data.dataValues;
   }
-  const content = JSON.parse(data.content);
+  let content = {};
+  if (data.content) {
+    try {
+      content = JSON.parse(data.content);
+    } catch (e) {
+      content = {
+        content: data.content,
+      };
+    }
+  }
   const { id: clutter, phrase, type } = data;
   return { clutter, phrase, type, ...content };
 }
@@ -38,7 +47,7 @@ export async function clutterInfo({ id, type, phrase }) {
   return formatClutter(result);
 }
 
-export async function clutters({ type, content, page = 1, limit = PAGE_SIZE }) {
+export async function clutters({ type, content, ids, page = 1, limit = PAGE_SIZE }) {
   // 查询条件
   const where = {};
 
@@ -54,6 +63,9 @@ export async function clutters({ type, content, page = 1, limit = PAGE_SIZE }) {
     where,
     raw: true,
   };
+  if (ids) {
+    search.attributes = ['phrase'];
+  }
   if (page) {
     search.limit = limit;
     if (page > 1) {
@@ -63,8 +75,11 @@ export async function clutters({ type, content, page = 1, limit = PAGE_SIZE }) {
 
   // 查询
   const { rows, count } = await Clutter.findAndCountAll(search);
-  const list = rows.map(formatClutter);
+  if (ids) {
+    return rows.map((v) => v.phrase);
+  }
 
+  const list = rows.map(formatClutter);
   const result = {
     count,
     list,
@@ -95,7 +110,7 @@ export async function changeClutter({ id, content }) {
     item.content = content;
     await item.save();
   }
-  return !!item;
+  return formatClutter(item);
 }
 
 export async function deleteClutter(id) {
