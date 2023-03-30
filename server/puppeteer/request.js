@@ -30,10 +30,16 @@ async function requst({ url, selector }) {
   }
   const page = await browser.newPage();
   await page.goto(url);
-  await page.waitForSelector(selector, {
-    timeout: 10000,
-  });
-  const html = await page.evaluate(() => document.documentElement.innerHTML);
+  let html;
+  try {
+    await page.waitForSelector(selector, {
+      timeout: 10000,
+    });
+    html = await page.evaluate(() => document.documentElement.innerHTML);
+  } catch (error) {
+    console.log(error);
+    html = '';
+  }
   await page.close();
   timer = setTimeout(closeBrowser, 3 * 60 * 1000);
 
