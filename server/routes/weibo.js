@@ -9,6 +9,7 @@ import {
   getDetail,
   getWiebo,
   getComment,
+  getArticles,
   getUsers,
   getBlock,
   setBlock,
@@ -62,7 +63,7 @@ router.post('/wcomment', async (ctx) => {
 });
 // 微博文章
 router.post('/warticle', async (ctx) => {
-  const result = 'await getWiebo(ctx.request.body)';
+  const result = await getArticles(ctx.request.body);
   // console.log(result);
   ctx.body = result;
 });

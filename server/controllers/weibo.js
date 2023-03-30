@@ -11,24 +11,14 @@ import {
   weiboInfo,
   weiboComment,
   weiboUsers,
-  weiboArticle,
-  weiboArticleP,
+  weiboArticles,
 } from '../crawler/weibo.js';
 
-import {
-  picAdd,
-  // picBulk,
-} from '../services/pic.js';
-import {
-  videoAdd,
-  // picBulk,
-} from '../services/video.js';
-
-import { blockAdd, blockList, blockMod, userAdd, userList } from '../services/weibo.js';
 import { newRecord, recordInfo, records } from '../services/record.js';
 import { WEIBO_CONF } from '../conf/constant.js';
 import { deepCopy } from '../utils/tools.js';
-import { newMedia } from '../services/media.js';
+import { findORCreateMedia } from '../services/media.js';
+import { changeClutter, clutterInfo, newClutter, clutters } from '../services/clutter.js';
 
 /**
  * 獲取home列表
@@ -122,88 +112,13 @@ export async function getUsers({ id, sinceId, cookie }) {
 }
 
 /**
- * 保存source
- */
-export async function createSource(weibo) {
-  try {
-    // console.log(weibo);
-    // const basic = JSON.stringify(weibo);
-    // const basicId = weibo.id;
-    const { pics, page_info: pageInfo } = weibo;
-    // const link = WEIBO_CONF.detail.replace('{id}', basicId);
-    // const author = user.screen_name;
-    // const authorId = user.id;
-    // const authorLink = WEIBO_CONF.userLink.replace('{id}', authorId);
-    // const publishTime = formatDate({
-    //   date: weibo.created_at,
-    // });
-    // const source = { basic, basicId, plaform: 'weibo', link, author, authorId, authorLink, publishTime };
-    // console.log(source);
-    const result = {};
-    // 圖片
-    if (pics) {
-      console.log('pics', pics);
-      let index = 0;
-      const len = pics.length;
-      while (index < len) {
-        const { url } = pics[index].large;
-        const name = url.split('/').pop();
-        const downResult = await downSource(url, name, 'https://weibo.com/');
-        if (downResult) {
-          const pic = await picAdd({
-            url: name,
-            link: url,
-          });
-          console.log(pic);
-        }
-        index += 1;
-        // await sleep(3000);
-      }
-    }
-    if (pageInfo) {
-      // 文章
-      console.log('pageInfo', pageInfo);
-      // 視頻
-      if (pageInfo.type === 'video') {
-        const { mp4_ld_mp4: url, url_ori: urlOri, title, content2: text } = pageInfo.urls;
-        const name = url.split('?').shift().split('/').pop();
-        const downResult = await downSource(url, name);
-        if (downResult) {
-          const video = await videoAdd({
-            title,
-            text,
-            url: name,
-            link: urlOri,
-          });
-          console.log(video);
-        }
-      }
-    }
-
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(addInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-
-/**
  * 獲取文章
  */
-export async function getArticles({ id, type }) {
+export async function getArticles({ url }) {
   try {
-    if (id) {
-      let result;
-      if (type) {
-        result = await weiboArticleP(id);
-      } else {
-        result = await weiboArticle(id);
-      }
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const result = await weiboArticles(url);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(errorInfo);
   } catch (error) {
@@ -214,9 +129,13 @@ export async function getArticles({ id, type }) {
 /**
  * 获取微博屏蔽
  */
+const blockType = 'weiboBlock';
 export async function getBlock() {
   try {
-    const result = await blockList();
+    const result = await clutterInfo({
+      type: blockType,
+      phrase: '',
+    });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -228,13 +147,19 @@ export async function getBlock() {
  */
 export async function setBlock({ id, content }) {
   try {
+    const clutter = {
+      type: blockType,
+      content,
+      id,
+    };
     let result;
     if (id) {
-      result = await blockMod(id, content);
+      result = await changeClutter(clutter);
     } else {
-      result = await blockAdd(content);
+      result = await newClutter(clutter);
     }
     if (result) {
+      delete result.type;
       return new SuccessModel(result);
     }
     return new ErrorModel(updateInfo);
@@ -246,9 +171,14 @@ export async function setBlock({ id, content }) {
 /**
  * 获取用户
  */
+const userType = 'weiboUser';
 export async function getUser({ ids }) {
   try {
-    const result = await userList(ids);
+    const result = await clutters({
+      type: userType,
+      page: 0,
+      ids,
+    });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -260,7 +190,12 @@ export async function getUser({ ids }) {
  */
 export async function setUser(user) {
   try {
-    const result = await userAdd(user);
+    const clutter = {
+      type: userType,
+      phrase: user.id,
+      content: JSON.stringify(user),
+    };
+    const result = await newClutter(clutter);
     if (result) {
       return new SuccessModel(result);
     }
@@ -273,9 +208,12 @@ export async function setUser(user) {
 /**
  * 用户详情
  */
-export async function User() {
+export async function User({ name }) {
   try {
-    const result = 'await userList({ id, sinceId, cookie })';
+    const result = await clutters({
+      type: userType,
+      content: name,
+    });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -323,11 +261,11 @@ function detail2Record(data) {
   const { screen_name: author, id, profile_url: authorLink } = user;
   const authorIp = region ? region.split(' ').pop() : '';
   const url = WEIBO_CONF.detail.replace('{id}', mid);
-  formatData(data);
   const infos = deepCopy(data);
+  formatData(infos);
   const record = {
     url,
-    type: 'weibodetail',
+    type: 'weiboDetail',
     typeId: mid,
     author,
     authorId: id,
@@ -340,27 +278,33 @@ function detail2Record(data) {
   };
   return { record, infos };
 }
-// 微博文章
-function article2Record(data) {
-  console.log(data);
-  return {};
+
+// 下載圖片
+async function downLoadMedias(url, type) {
+  const name = url.split('?').shift().split('/').pop();
+  const item = await downSource(url, name, 'https://m.weibo.cn');
+  if (item) {
+    const newPath = item.replace('files', 'files/media');
+    renameFile(item, newPath);
+    const result = await findORCreateMedia({
+      type: type || name.split('.').pop(),
+      title: name,
+      url: `/${newPath}`,
+      origin: url,
+    });
+    return { type: result.type, title: result.title, url: result.url, origin: result.origin };
+  }
+  return null;
 }
+
 export async function setRecord({ weibo }) {
   try {
     const data = JSON.parse(weibo);
-    const { page_info: info } = data;
-    let values;
-
-    if (info && info.type === 'article') {
-      // 文章
-      values = article2Record(data);
-    } else {
-      // 微博内容
-      values = detail2Record(data);
-    }
+    // 微博内容
+    const values = detail2Record(data);
 
     const { record, infos } = values;
-    const { pics, page_info: video } = infos;
+    const { pics, page_info: minfos } = infos;
     // console.log(record);
     // 图片
     if (pics && pics.length) {
@@ -369,48 +313,51 @@ export async function setRecord({ weibo }) {
       while (max >= 0) {
         const pic = pics[max];
         const { url } = pic.large;
-        const name = pic.url.split('/').pop();
-        const item = await downSource(url, name, 'https://m.weibo.cn');
-        const newPath = item.replace('files', 'files/media');
-        renameFile(item, newPath);
-
-        const media = await newMedia({
-          type: name.split('.').pop(),
-          title: name,
-          url: `/${newPath}`,
-        });
-        if (media) {
-          const { url: murl, title, id } = media.dataValues;
-          pics[max] = { url: murl, nurl: url, title, id };
+        const item = await downLoadMedias(url);
+        if (item) {
+          pics[max] = item;
         }
         max -= 1;
       }
     }
-    // 视频
-    if (video && video.type === 'video') {
-      const { mp4_720p_mp4: url } = video.urls;
-      const name = url.split('?').shift().split('/').pop();
-      const item = await downSource(url, name, 'https://m.weibo.cn');
-      const newPath = item.replace('files', 'files/media');
-      renameFile(item, newPath);
-
-      const media = await newMedia({
-        type: name.split('.').pop(),
-        title: name,
-        url: `/${newPath}`,
-      });
-      if (media) {
-        const { url: murl, title, id } = media.dataValues;
-        infos.page_info = { url: murl, nurl: url, title, id, type: video.type };
+    // 有其他內容
+    if (minfos) {
+      // 视频
+      if (minfos.type === 'video') {
+        const { mp4_720p_mp4: url } = minfos.urls;
+        const item = await downLoadMedias(url, minfos.type);
+        if (item) {
+          infos.page_info = item;
+        }
+      } else if (minfos.type === 'article') {
+        const { title, content, pics: vpics } = await weiboArticles(minfos.page_url);
+        let max = vpics.length - 1;
+        while (max >= 0) {
+          const url = vpics[max];
+          const item = await downLoadMedias(url);
+          if (item) {
+            content.replace(url, item.url);
+          }
+          max -= 1;
+        }
+        record.type = 'weiboArticle';
+        record.title = title;
+        record.content = content;
+        delete record.infos;
       }
     }
-    // console.log('record', record, pics, infos);
-    record.infos = JSON.stringify(infos);
-
-    const result = await newRecord(record);
-    if (result) {
-      return new SuccessModel(result);
+    if (record.infos) {
+      record.infos = JSON.stringify(infos);
     }
+
+    // console.log('record', record);
+    if (record) {
+      const result = await newRecord(record);
+      if (result) {
+        return new SuccessModel(result);
+      }
+    }
+
     return new ErrorModel(addInfo);
   } catch (error) {
     return catchError(error);
