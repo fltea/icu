@@ -28,8 +28,6 @@ onMounted(listData);
 
 <style lang='less' scoped>
 .list-container {
-  display: flex;
-  flex-wrap: wrap;
   .list-item {
     margin-bottom: 12px;
     margin-right: 12px;
