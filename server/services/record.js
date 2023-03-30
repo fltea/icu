@@ -13,6 +13,7 @@ function shortContent(data) {
   let content = item.content || '';
   let split = false;
   if (content.includes('<')) {
+    content = content.replace(/\s+/g, '');
     content = content.replace(/<.+?>+/g, '');
     split = true;
   }
@@ -22,6 +23,9 @@ function shortContent(data) {
   }
   if (split) {
     content = `${content}...`;
+  }
+  if (item.infos) {
+    delete item.infos;
   }
   item.content = content;
   return item;
@@ -34,6 +38,9 @@ export async function recordInfo(id) {
     },
     raw: true,
   });
+  if (item.infos) {
+    item.infos = JSON.parse(item.infos);
+  }
   return item;
 }
 
