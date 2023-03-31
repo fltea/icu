@@ -20,7 +20,7 @@ const curData = reactive({
 });
 
 // eslint-disable-next-line max-len
-const cookie = 'push_doumail_num=0; __utmv=30149280.13127; douban-fav-remind=1; gr_user_id=24a9c2e5-a767-4e2b-9901-e8a5f83da0ed; Hm_lvt_19fc7b106453f97b6a84d64302f21a04=1663477434; push_noty_num=0; bid=KJ9_esXKCRQ; __yadk_uid=oBu2WVliLYXCqj6SdSR6gUln4gXwy06V; ll="118282"; dbcl2="131278996:nVCDmpLC6xI"; __gads=ID=c3d35a1e5b88a1cf-227756a803da00de:T=1677068513:RT=1677068513:S=ALNI_MY893Op78ab2d3uY7rbS5uvWVTfzA; _ga_RXNMP372GL=GS1.1.1677678442.5.0.1677678446.56.0.0; _ga=GA1.2.1540038648.1643368021; __utmz=30149280.1678802750.486.20.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; ct=y; _pk_ref.100001.8cb4=["","",1679136459,"https://cn.bing.com/"]; _pk_id.100001.8cb4=39d4ceef2c12c115.1643368019.535.1679136459.1679122374.; __gpi=UID=00000484bdd2b501:T=1649163901:RT=1679136460:S=ALNI_MZM5ovW_sVJQUr8tnYTWFe56RmW6Q; __utma=30149280.1540038648.1643368021.1679122377.1679136460.490';
+const cookie = 'douban-fav-remind=1; gr_user_id=d952d8e1-4c94-4a0f-85a6-490602a01830; bid=sGzzesrzR8E; __yadk_uid=2tgceX4XwgQlaNL0gfZpxOjk76Mbgitp; push_doumail_num=0; __gads=ID=0b674c3fdcc0edfc-22d65fc651d70030:T=1662346158:RT=1664342376:S=ALNI_MbK9TYegXLdmkHPHxEkK83SEaLWRw; __utmv=30149280.13127; _ga_RXNMP372GL=GS1.1.1669346365.38.1.1669348395.27.0.0; _ga=GA1.2.59920987.1629339426; __utmz=30149280.1677034364.212.11.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; dbcl2="131278996:4V01cmtw1Vk"; ct=y; ck=8yXD; __utmc=30149280; frodotk_db="9577d63424818f73c067829c6d84ae59"; push_noty_num=0; __gpi=UID=00000497fdd48c5d:T=1649325353:RT=1680225213:S=ALNI_MaFZ3dNZtn3hazPPqcfFdAbnigL3A; _pk_ref.100001.8cb4=["","",1680233168,"https://cn.bing.com/"]; __utma=30149280.59920987.1629339426.1680228144.1680233168.256; _pk_id.100001.8cb4=e66e4702929ba5e6.1679655305.1.1680233377.undefined.';
 
 const linkItems = () => {
   idialog.value = true;
@@ -72,7 +72,7 @@ const itemDetail = (url) => {
   <section class="list-container">
     <section class="list-items" v-if="curData.list.length">
       <div v-for="(item, index) in curData.list" :key="`curData.list${index}`" class="list-item">
-        <p><a :href="item.url" target="_blank">{{ item.name }}</a></p>
+        <p><a :href="item.url" target="_blank">{{ item.title }}</a></p>
         <p>
           <button class="list-button" v-if="curType === 'group'" @click="itemDetail(item.url)">小组详情</button>
         </p>
