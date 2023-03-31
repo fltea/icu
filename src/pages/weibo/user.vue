@@ -9,7 +9,7 @@ const list = reactive({
 const listData = () => {
   user().then((res) => {
     console.log(res);
-    list.datas = res.data;
+    list.datas = res.list;
   });
 };
 
