@@ -38,8 +38,7 @@ router.get('/doulist', async (ctx) => {
 });
 // 获取豆列详情
 router.get('/doulist/:id', async (ctx) => {
-  console.log('ctx.request.params ', ctx.request.params);
-  const result = await getDoulistById();
+  const result = await getDoulistById(ctx.request.params);
   ctx.body = result;
 });
 // 新增豆列
@@ -61,7 +60,7 @@ router.get('/group', async (ctx) => {
 });
 // 获取小组详情
 router.get('/group/:id', async (ctx) => {
-  const result = await getGroupById(ctx.request.body);
+  const result = await getGroupById(ctx.request.params);
   ctx.body = result;
 });
 // 新增小组

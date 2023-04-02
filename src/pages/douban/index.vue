@@ -74,7 +74,7 @@ const itemDetail = (url) => {
       <div v-for="(item, index) in curData.list" :key="`curData.list${index}`" class="list-item">
         <p><a :href="item.url" target="_blank">{{ item.title }}</a></p>
         <p>
-          <button class="list-button" v-if="curType === 'group'" @click="itemDetail(item.url)">小组详情</button>
+          <button class="list-button" @click="itemDetail(item.url)">详情</button>
         </p>
       </div>
     </section>

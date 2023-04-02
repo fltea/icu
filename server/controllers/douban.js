@@ -1,10 +1,10 @@
-import { schemaFileInfo, addInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { schemaFileInfo, updateInfo, addInfo, delInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 import { sleep } from '../utils/tools.js';
 import { setHashList } from '../utils/files.js';
 import { durlist, durl, gurlist, gurl, dDetail } from '../crawler/douban.js';
-import { doulistList, createDoulist, updateDoulist, createGroup, updateGroup, groupList, doubanDelete } from '../services/douban.js';
+import { newClutter, changeClutter, deleteClutter, clutterInfo, clutters } from '../services/clutter.js';
 
 /**
  * 所有豆列
@@ -107,9 +107,16 @@ export async function getDetail({ url, cookie }) {
 /**
  * 获取豆列
  */
-export async function getDoulist({ title, author, page, limit }) {
+const dtype = 'doubanDoulist';
+export async function getDoulist({ title, page, limit }) {
   try {
-    const result = await doulistList({ title, author, page, limit });
+    const search = {
+      type: dtype,
+      content: title,
+      page,
+      limit,
+    };
+    const result = await clutters(search);
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -119,9 +126,9 @@ export async function getDoulist({ title, author, page, limit }) {
 /**
  * 获取豆列详情
  */
-export async function getDoulistById(id) {
+export async function getDoulistById({ id }) {
   try {
-    const result = { id };
+    const result = await clutterInfo({ id });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -131,13 +138,16 @@ export async function getDoulistById(id) {
 /**
  * 新增豆列
  */
-export async function setDoulist({ id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
+export async function setDoulist(doulist) {
   try {
-    if (id) {
-      const result = await createDoulist({ id, title, author, authorIp, authorLink, count, createTime, updateTime, content });
-      if (result) {
-        return new SuccessModel(result);
-      }
+    const clutter = {
+      type: dtype,
+      phrase: doulist.id,
+      content: JSON.stringify(doulist),
+    };
+    const result = await newClutter(clutter);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(addInfo);
   } catch (error) {
@@ -148,10 +158,21 @@ export async function setDoulist({ id, title, author, authorIp, authorLink, coun
 /**
  * 修改豆列
  */
-export async function modDoulist({ clutter, id, title, author, authorIp, authorLink, count, createTime, updateTime, content }) {
+export async function modDoulist(doulist) {
   try {
-    const result = await updateDoulist({ clutter, id, title, author, authorIp, authorLink, count, createTime, updateTime, content });
-    return new SuccessModel(result);
+    const { clutter } = doulist;
+    ['clutter', 'phrase', 'type'].forEach((key) => {
+      delete doulist[key];
+    });
+    const item = {
+      content: JSON.stringify(doulist),
+      id: clutter,
+    };
+    const result = await changeClutter(item);
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(updateInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -160,9 +181,16 @@ export async function modDoulist({ clutter, id, title, author, authorIp, authorL
 /**
  * 获取小组
  */
+const gtype = 'doubanGroup';
 export async function getGroup({ name, page, limit }) {
   try {
-    const result = await groupList({ name, page, limit });
+    const search = {
+      type: gtype,
+      content: name,
+      page,
+      limit,
+    };
+    const result = await clutters(search);
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -172,9 +200,9 @@ export async function getGroup({ name, page, limit }) {
 /**
  * 获取小组详情
  */
-export async function getGroupById(id) {
+export async function getGroupById({ id }) {
   try {
-    const result = { id };
+    const result = await clutterInfo({ id });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -184,13 +212,22 @@ export async function getGroupById(id) {
 /**
  * 新增小组
  */
-export async function setGroup({ id, name, info, content, tags }) {
+export async function setGroup(group) {
   try {
-    if (id) {
-      const result = await createGroup({ id, name, info, content, tags });
-      if (result) {
-        return new SuccessModel(result);
-      }
+    if (group.tabs) {
+      group.tabs = JSON.parse(group.tabs);
+    }
+    if (group.tags) {
+      group.tags = JSON.parse(group.tags);
+    }
+    const clutter = {
+      type: gtype,
+      phrase: group.id,
+      content: JSON.stringify(group),
+    };
+    const result = await newClutter(clutter);
+    if (result) {
+      return new SuccessModel(result);
     }
     return new ErrorModel(addInfo);
   } catch (error) {
@@ -201,10 +238,21 @@ export async function setGroup({ id, name, info, content, tags }) {
 /**
  * 修改小组
  */
-export async function modGroup({ clutter, id, name, info, content, tags }) {
+export async function modGroup(group) {
   try {
-    const result = await updateGroup({ clutter, id, name, info, content, tags });
-    return new SuccessModel(result);
+    const { clutter } = group;
+    ['clutter', 'phrase', 'type'].forEach((key) => {
+      delete group[key];
+    });
+    const item = {
+      content: JSON.stringify(group),
+      id: clutter,
+    };
+    const result = await changeClutter(item);
+    if (result) {
+      return new SuccessModel(result);
+    }
+    return new ErrorModel(updateInfo);
   } catch (error) {
     return catchError(error);
   }
@@ -215,11 +263,11 @@ export async function modGroup({ clutter, id, name, info, content, tags }) {
  */
 export async function delDouban({ clutter }) {
   try {
-    if (clutter) {
-      const result = await doubanDelete({ clutter });
+    const result = await deleteClutter(clutter);
+    if (result) {
       return new SuccessModel(result);
     }
-    return new ErrorModel(notExistInfo);
+    return new ErrorModel(delInfo);
   } catch (error) {
     return catchError(error);
   }

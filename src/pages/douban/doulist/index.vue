@@ -80,4 +80,7 @@ onMounted(listData);
 </template>
 
 <style scoped lang='less'>
+.list-item {
+  margin-top: @small;
+}
 </style>

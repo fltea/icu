@@ -10,7 +10,6 @@ const item = computed(() => props.detail);
 const addItems = () => {
   const {
     id,
-    clutter,
     title,
     author,
     authorIp,
@@ -23,7 +22,6 @@ const addItems = () => {
   // console.log(id, name, info, content, tags);
   doulistAdd({
     id,
-    clutter,
     title,
     author,
     authorIp,
@@ -40,8 +38,8 @@ const addItems = () => {
 
 <template>
   <section>
-    <h1>{{ item.title }}</h1>
-    <div>
+    <h1><a :href="`/douban/doulist/${item.clutter}`" target="_blank">{{ item.title }}</a></h1>
+    <div class="com-controls">
       <slot name="controls">
         <button @click="addItems">收藏豆列</button>
       </slot>
