@@ -23,8 +23,8 @@ function formatClutter(result) {
       };
     }
   }
-  const { id: clutter, phrase, type } = data;
-  return { clutter, phrase, type, ...content };
+  const { id: clutter, phrase } = data;
+  return { clutter, phrase, ...content };
 }
 
 /**
@@ -113,11 +113,16 @@ export async function changeClutter({ id, content }) {
   return formatClutter(item);
 }
 
-export async function deleteClutter(id) {
+async function delClutter(id) {
   const result = await Clutter.destroy({
     where: {
       id,
     },
   });
   return result > 0;
+}
+
+export async function deleteClutter(id) {
+  const result = await rollBack(delClutter, id);
+  return result;
 }
