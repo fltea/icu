@@ -392,11 +392,10 @@ export async function durlist(url, cookie) {
     result.content = getWrapper(root, '.out');
     return result;
   }
-  const list = root.querySelectorAll('.doulist-list h3 a');
-  result.list = list.map((v) => ({
-    name: v.text,
-    link: v.getAttribute('href'),
-  }));
+  const dom = root.querySelectorAll('.doulist-list h3 a');
+  if (dom) {
+    result.list = getList(dom);
+  }
   let nextPage = root.querySelector('.next a');
   if (!nextPage) {
     nextPage = root.querySelector('.switch_tabs a');
