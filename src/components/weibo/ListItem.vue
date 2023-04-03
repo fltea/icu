@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { formatTime } from '@/utils/tools';
 import { winfo, wcomment, save } from '@/api/weibo';
 import ComVideo from '@/components/ComVideo.vue';
@@ -78,6 +78,45 @@ const hasSave = (data) => {
 
   return result;
 };
+
+const aEvent = (event) => {
+  event.preventDefault();
+  let dom = event.target;
+  if (dom.tagName.toUpperCase() !== 'A') {
+    dom = dom.parentNode;
+  }
+  const link = dom.href;
+  // console.log(link);
+  if (link.includes('/status/')) {
+    // 查看全文
+    detailData();
+  } else if (link.includes('/n/')) {
+    // 微博用户
+    window.open(`https://m.weibo.cn/n/${link.split('/n/').pop()}`);
+  } else if (link.includes('/sinaurl?u=')) {
+    // 外部链接
+    window.open(decodeURIComponent(link.split('/sinaurl?u=').pop()));
+  } else {
+    window.open(link);
+  }
+};
+const textDom = ref(null);
+let links = null;
+onMounted(() => {
+  links = textDom.value.querySelectorAll('a');
+  if (links.length) {
+    links.forEach((element) => {
+      element.addEventListener('click', aEvent);
+    });
+  }
+});
+onBeforeUnmount(() => {
+  if (links.length) {
+    links.forEach((element) => {
+      element.removeEventListener('click', aEvent);
+    });
+  }
+});
 </script>
 
 <template>
@@ -93,7 +132,7 @@ const hasSave = (data) => {
     </template>
   </user-item>
   <section class="weibo-inner">
-    <div v-html="item.text"></div>
+    <div v-html="item.text" ref="textDom"></div>
     <div class="weibo-pics" v-if="item.pics">
       <div v-for="(pic, index) in item.pics" :key="`pics-${index}`" class="pics-item">
         <img class="pics-inner" :src="pic.url">
