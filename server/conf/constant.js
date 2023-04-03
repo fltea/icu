@@ -38,6 +38,7 @@ export const WEIBO_CONF = {
   userList: 'https://m.weibo.cn/api/container/getIndex?type=uid&value={id}&containerid=107603{id}', // page_type: 03  since_id: 4812900419764247
   article: 'https://weibo.com/ttarticle/p/show?id={id}',
   articleP: 'https://weibo.com/p/{pid}',
+  pindex: 'https://m.weibo.cn/api/container/getIndex?containerid=10080862239e6c0f995ae1fdc00d18b7905eac_-_feed',
 };
 
 // 豆瓣
