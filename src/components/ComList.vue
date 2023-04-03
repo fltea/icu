@@ -39,11 +39,6 @@ watch(loading, (val) => {
     }, 100);
   }
 });
-watch(finished, (val) => {
-  loadDom.classList.toggle('list-loading', !val);
-  loadDom.classList.toggle('is-finished', val);
-});
-
 const observerHandle = (entries) => {
   isInvisible.value = entries[0].isIntersecting;
   loadData();
@@ -68,13 +63,14 @@ onBeforeUnmount(() => {
 <template>
 <section class="com-list">
   <slot></slot>
-  <div class="load-item list-loading" ref="loadMain"></div>
+  <div class="load-item" ref="loadMain">
+    <div class="list-loading" v-if="!finished"></div>
+  </div>
 </section>
 </template>
 
 <style lang='less' scoped>
 .com-list {
-  overflow: auto;
   .list-loading {
     margin: 0 auto;
   }
