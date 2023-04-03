@@ -6,54 +6,60 @@ const props = defineProps({
   loading: Boolean,
 });
 const emit = defineEmits(['load']);
+
 const finished = computed(() => props.finished);
 const loading = computed(() => props.loading);
 
 const loadMain = ref(null);
 const isInvisible = ref(false);
+let loadDom = null;
+
 const loadData = () => {
   // console.log('isInvisible', isInvisible.value);
   let nextLoad = isInvisible.value;
-  const Dom = loadMain.value;
-  // 判断是否一致
-  nextLoad = nextLoad && (Dom.offsetTop !== Dom.parentNode.offsetTop);
-  // 不在加载中
-  nextLoad = nextLoad && !loading.value;
-  // 不在已结束
-  nextLoad = nextLoad && !finished.value;
-  if (nextLoad) {
-    emit('load');
+  if (loadDom && nextLoad) {
+    // 判断是否一致
+    nextLoad = nextLoad && (loadDom.offsetTop !== loadDom.parentNode.offsetTop);
+    // 不在加载中
+    nextLoad = nextLoad && !loading.value;
+    // 不在已结束
+    nextLoad = nextLoad && !finished.value;
+    if (nextLoad) {
+      emit('load');
+    }
   }
 };
 
 watch(loading, (val) => {
   if (!val) {
-    const Dom = loadMain.value;
     setTimeout(() => {
-      if (Dom && isInvisible.value) {
+      if (loadDom && isInvisible.value) {
         loadData();
       }
     }, 100);
   }
+});
+watch(finished, (val) => {
+  loadDom.classList.toggle('list-loading', !val);
+  loadDom.classList.toggle('is-finished', val);
 });
 
 const observerHandle = (entries) => {
   isInvisible.value = entries[0].isIntersecting;
   loadData();
 };
-let observer;
 
+let observer;
 onMounted(() => {
-  // console.log('onMounted', loadMain.value);
+  loadDom = loadMain.value;
   if (IntersectionObserver) {
     observer = new IntersectionObserver(observerHandle);
-    observer.observe(loadMain.value);
+    observer.observe(loadDom);
   }
 });
 onBeforeUnmount(() => {
-  // console.log('onMounted', loadMain.value);
   if (observer) {
-    observer.unobserve(loadMain.value);
+    observer.unobserve(loadDom);
     observer.disconnect();
   }
 });
@@ -62,15 +68,15 @@ onBeforeUnmount(() => {
 <template>
 <section class="com-list">
   <slot></slot>
-  <div class="list-loading" ref="loadMain" v-if="!finished"></div>
+  <div class="load-item list-loading" ref="loadMain"></div>
 </section>
 </template>
 
 <style lang='less' scoped>
 .com-list {
   overflow: auto;
-}
-.list-loading {
-  height: 30px;
+  .list-loading {
+    margin: 0 auto;
+  }
 }
 </style>

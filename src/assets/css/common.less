@@ -146,6 +146,7 @@ textarea {
   }
 }
 
+// loading 类
 .com-loading {
   position: relative;
   @w: 6px;
@@ -203,3 +204,19 @@ textarea {
   }
 }
 
+@keyframes circle {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.list-loading {
+  width: 30px;
+  height: 30px;
+  border: 2px solid @proColor;
+  border-top-color: transparent;
+  border-radius: 100%;
+  animation:  circle infinite .75s linear;
+}
