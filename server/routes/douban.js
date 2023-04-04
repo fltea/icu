@@ -33,7 +33,7 @@ router.post('/durl/detail', async (ctx) => {
 // 数据库操作
 // 获取豆列
 router.get('/doulist', async (ctx) => {
-  const result = await getDoulist(ctx.request.gquery);
+  const result = await getDoulist(ctx.request.query);
   ctx.body = result;
 });
 // 获取豆列详情
@@ -54,8 +54,8 @@ router.post('/doulist/modify', async (ctx) => {
 
 // 获取小组
 router.get('/group', async (ctx) => {
-  // console.log('ctx.request.gquery ', ctx.request.gquery);
-  const result = await getGroup(ctx.request.gquery);
+  // console.log('ctx.request.query ', ctx.request.query);
+  const result = await getGroup(ctx.request.query);
   ctx.body = result;
 });
 // 获取小组详情

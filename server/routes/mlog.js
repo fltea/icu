@@ -16,7 +16,7 @@ const router = new Router();
 router.prefix('/api/mlog');
 
 router.get('/', async (ctx) => {
-  const result = await getMlogs(ctx.request.gquery);
+  const result = await getMlogs(ctx.request.query);
   ctx.body = result;
 });
 

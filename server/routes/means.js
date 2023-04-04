@@ -16,7 +16,7 @@ const router = new Router();
 router.prefix('/api/means');
 
 router.get('/', async (ctx) => {
-  const result = await getMeansList(ctx.request.gquery);
+  const result = await getMeansList(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });

@@ -16,7 +16,7 @@ const router = new Router();
 router.prefix('/api/todo');
 
 router.get('/', async (ctx) => {
-  const result = await getTodos(ctx.request.gquery);
+  const result = await getTodos(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });

@@ -18,7 +18,7 @@ const router = new Router();
 router.prefix('/api/account');
 
 router.get('/', async (ctx) => {
-  const result = await getAccounts(ctx.request.gquery);
+  const result = await getAccounts(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });

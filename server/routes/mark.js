@@ -16,8 +16,8 @@ const router = new Router();
 router.prefix('/api/mark');
 
 router.get('/', async (ctx) => {
-  // console.log('ctx.request.gquery ', ctx.request.gquery);
-  const result = await getMarks(ctx.request.gquery);
+  // console.log('ctx.request.query ', ctx.request.query);
+  const result = await getMarks(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });

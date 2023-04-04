@@ -89,7 +89,7 @@ router.post('/block/save', async (ctx) => {
 
 // 获取用户
 router.get('/user', async (ctx) => {
-  const result = await getUser(ctx.request.gquery);
+  const result = await getUser(ctx.request.query);
   ctx.body = result;
 });
 // 保存用户
@@ -106,7 +106,7 @@ router.get('/user/:id', async (ctx) => {
 
 // 获取微博
 router.get('/record', async (ctx) => {
-  const result = await getRecord(ctx.request.gquery);
+  const result = await getRecord(ctx.request.query);
   ctx.body = result;
 });
 // 保存微博

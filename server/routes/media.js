@@ -8,7 +8,7 @@ const router = new Router();
 router.prefix('/api/media');
 
 router.get('/', async (ctx) => {
-  const result = await getMedias(ctx.request.gquery);
+  const result = await getMedias(ctx.request.query);
   ctx.body = result;
 });
 router.get('/:id', async (ctx) => {

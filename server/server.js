@@ -6,7 +6,6 @@ import fs from 'node:fs';
 import { FILE_DIR, LOG_DIR, BACKUP_DIR, TEMP_DIR, MEDIA_DIR } from './conf/constant.js';
 import { setEnv } from './config.js';
 import { statDir } from './utils/files.js';
-import { urlParse } from './utils/tools.js';
 
 setEnv();
 const ROOT_DIR = process.cwd();
@@ -42,16 +41,12 @@ app.use(
 
 // 處理get數據
 app.use(async (ctx, next) => {
-  const isGet = ctx.request.method === 'GET';
-  const isAPI = ctx.request.url.includes('/api/');
-  if (isAPI && isGet) {
-    let query = {};
-    const hasSearch = ctx.request.url.includes('?');
-    if (hasSearch) {
-      query = ctx.request.url.split('?').pop();
-      query = urlParse(query);
-    }
-    ctx.request.gquery = query;
+  const { query } = ctx.request;
+  if (query) {
+    ['page', 'limit'].forEach((key) => {
+      const no = +query[key];
+      query[key] = isNaN(no) ? -1 : no;
+    });
   }
   await next();
 });

@@ -20,7 +20,7 @@ router.post('/nurl/chapter', async (ctx) => {
 // 数据库操作
 // 獲取列表
 router.get('/', async (ctx) => {
-  const result = await getNovel(ctx.request.gquery);
+  const result = await getNovel(ctx.request.query);
   ctx.body = result;
 });
 
