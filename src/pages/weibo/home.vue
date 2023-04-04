@@ -72,6 +72,8 @@ const listItems = () => {
       listData.list.push(...nlist);
       listData.maxId = nlist.slice(-1).pop().id;
       listData.finished = listData.list.length === res.count;
+    } else {
+      listData.finished = true;
     }
   }).finally(() => {
     listData.loading = false;
