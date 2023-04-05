@@ -21,10 +21,6 @@ const Property = {
       type: STRING,
       comment: '渠道',
     },
-    company: {
-      type: STRING,
-      comment: '公司',
-    },
     beginDate: {
       type: DATE,
       comment: '开始日期',

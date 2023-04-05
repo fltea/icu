@@ -19,9 +19,14 @@ const Note = {
       type: INTEGER,
       comment: '文章',
     },
+    record: {
+      type: INTEGER,
+      comment: '文章',
+    },
   },
   belongsTo: {
     Article: 'article',
+    Record: 'record',
   },
 };
 

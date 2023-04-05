@@ -25,12 +25,6 @@ const Clutter = {
       comment: '内容',
     },
   },
-  hasMany: {
-    // 爬虫数据
-    Media: 'clutter',
-    Chapter: 'clutter',
-    Record: 'clutter',
-  },
 };
 
 export default Clutter;

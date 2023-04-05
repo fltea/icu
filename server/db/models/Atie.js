@@ -1,10 +1,11 @@
-import { INTEGER, TEXT, DATEONLY, STRING } from '../types.js';
+import { INTEGER, DATEONLY, STRING } from '../types.js';
 
 const Atie = {
   model: {
     tied: {
       type: INTEGER,
       allowNull: false,
+      unique: 'account',
       comment: '被绑定账户',
     },
     tiedName: {
@@ -29,7 +30,7 @@ const Atie = {
       comment: '解绑时间',
     },
     remark: {
-      type: TEXT,
+      type: STRING,
       comment: '备注',
     },
   },

@@ -15,9 +15,9 @@ const Mlog = {
       type: STRING,
       comment: '创建者',
     },
-    source: {
+    medias: {
       type: TEXT,
-      comment: 'Source',
+      comment: 'medias',
     },
     remark: {
       type: STRING,

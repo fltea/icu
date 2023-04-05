@@ -1,4 +1,4 @@
-import { STRING, DATEONLY, FLOAT, BOOLEAN, TEXT } from '../types.js';
+import { STRING, DATEONLY, FLOAT, BOOLEAN } from '../types.js';
 
 const Account = {
   model: {
@@ -6,6 +6,16 @@ const Account = {
       type: STRING,
       allowNull: false,
       comment: '账号',
+      unique: 'platform',
+    },
+    platform: {
+      type: STRING,
+      allowNull: false,
+      comment: '平台',
+    },
+    link: {
+      type: STRING,
+      comment: '账号主页',
     },
     nickName: {
       type: STRING,
@@ -23,14 +33,6 @@ const Account = {
     desc: {
       type: STRING,
       comment: '账户描述',
-    },
-    platform: {
-      type: STRING,
-      comment: '平台',
-    },
-    platformURL: {
-      type: STRING,
-      comment: '平台官网',
     },
     paswd: {
       type: STRING,
@@ -59,10 +61,6 @@ const Account = {
     endDate: {
       type: DATEONLY,
       comment: '销户日期',
-    },
-    remark: {
-      type: TEXT,
-      comment: '备注',
     },
   },
   hasMany: {

@@ -10,7 +10,7 @@ const Record = {
       type: STRING,
       allowNull: false,
       unique: true,
-      comment: '地址',
+      comment: '链接地址',
     },
     title: {
       type: STRING,
@@ -34,7 +34,7 @@ const Record = {
     },
     typeId: {
       type: STRING,
-      comment: 'type',
+      comment: 'type ID',
       unique: 'type',
     },
     author: {

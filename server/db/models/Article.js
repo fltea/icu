@@ -1,4 +1,4 @@
-import { STRING, DATEONLY, INTEGER, TEXT, FLOAT } from '../types.js';
+import { STRING, DATEONLY, TEXT } from '../types.js';
 
 const Article = {
   model: {
@@ -20,14 +20,6 @@ const Article = {
       type: STRING,
       comment: '作者',
     },
-    translator: {
-      type: STRING,
-      comment: '译者',
-    },
-    link: {
-      type: STRING,
-      comment: '原文链接',
-    },
     channel: {
       type: STRING,
       comment: '渠道',
@@ -36,41 +28,19 @@ const Article = {
       type: STRING,
       comment: '相关链接',
     },
-    publish: {
-      type: STRING,
-      comment: '出版方',
-    },
-    price: {
-      type: FLOAT,
-      comment: '定价',
-    },
+
     publishDate: {
       type: DATEONLY,
       comment: '发表日期',
     },
-    todo: {
-      type: INTEGER,
-      comment: '目标ID',
-    },
-    book: {
-      type: INTEGER,
-      comment: '书Id',
-    },
     cover: {
-      type: INTEGER,
-      comment: 'Pic Id',
+      type: STRING,
+      comment: '图片地址',
     },
-    remark: {
+    infos: {
       type: TEXT,
-      comment: '备注',
+      comment: '更多内容',
     },
-    clutter: {
-      type: INTEGER,
-      comment: 'Clutter Id',
-    },
-  },
-  belongsTo: {
-    Clutter: 'clutter',
   },
 };
 
