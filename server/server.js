@@ -45,7 +45,7 @@ app.use(async (ctx, next) => {
   if (query) {
     ['page', 'limit'].forEach((key) => {
       const no = +query[key];
-      query[key] = isNaN(no) ? -1 : no;
+      query[key] = isNaN(no) ? null : no;
     });
   }
   await next();
