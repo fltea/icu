@@ -51,7 +51,7 @@ onMounted(listData);
 </script>
 
 <template>
-  <h1>MEANS</h1>
+  <h1>Property</h1>
   <section class="com-controls">
     <input type="text" v-model="search.name" placeholder="name">
     <button @click="searchList">查詢</button>
