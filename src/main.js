@@ -11,6 +11,6 @@ export const createApp = () => {
   // 自定义指令
   app.use(setDirective);
   // 全局组件
-  app.use(inComps(['ComDialog', 'ComTab', 'ComList', 'ComDownButton', 'ComUploadButton', 'TextDialog']));
+  app.use(inComps(['ComDialog', 'ComTab', 'ComList', 'ComDownButton', 'ComUploadButton', 'TextDialog', 'Popover']));
   return { app };
 };
