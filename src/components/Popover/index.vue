@@ -35,7 +35,7 @@ const toggle = (show) => {
 
 let removeFoucsOut;
 const isFocusOut = (event) => {
-  console.log(event.type, popoverSection.value);
+  // console.log(event.type, popoverSection.value);
   if (event.type === 'blur') {
     toggle(false);
     removeFoucsOut();
@@ -89,7 +89,6 @@ const handleClick = () => {
     <slot name="content">
       <p v-if="content">{{ content }}</p>
     </slot>
-    <input type="text">
     <div class="popover-arrow"></div>
   </section>
 </span>
@@ -101,6 +100,7 @@ const handleClick = () => {
 }
 .popover-container {
   position: absolute;
+  margin-top: 6px;
   min-width: 150px;
   padding: 12px;
   line-height: 1.4;
@@ -113,19 +113,28 @@ const handleClick = () => {
   z-index: 2000;
   .popover-arrow {
     position: absolute;
+    top: -11px;
+    left: 20px;
     width: 0;
     height: 0;
     border-color: transparent;
     border-style: solid;
+    border-width: 6px;
+    border-bottom-color: #ebeef5;
+    z-index: 2;
     &::after{
-      position: absolute;
       content:'';
+      position: absolute;
+      left: -6px;
+      top: -5px;
       display: block;
       width: 0;
       height: 0;
       border-width: 6px;
       border-color: transparent;
       border-style: solid;
+      border-bottom-color: #fff;
+      z-index: 2;
     }
   }
 }
