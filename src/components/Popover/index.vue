@@ -16,8 +16,11 @@ const tritype = computed(() => props.trigger || 'click');
 
 const dialog = computed({
   get() {
-    const val = props.modelValue;
-    return val || dshow.value;
+    let val = props.modelValue;
+    if (typeof val !== 'boolean') {
+      val = dshow.value;
+    }
+    return val;
   },
   set(value) {
     dshow.value = value;
@@ -35,7 +38,7 @@ const toggle = (show) => {
 
 let removeFoucsOut;
 const isFocusOut = (event) => {
-  // console.log(event.type, popoverSection.value);
+  // console.log(event.type, event.target);
   if (event.type === 'blur') {
     toggle(false);
     removeFoucsOut();
@@ -105,7 +108,7 @@ const handleClick = () => {
   padding: 12px;
   line-height: 1.4;
   font-size: 14px;
-  color: #606266;
+  color: @norColor;
   border: 1px solid #ebeef5;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   background: #fff;
