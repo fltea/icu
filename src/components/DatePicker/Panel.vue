@@ -118,6 +118,13 @@ const nextYear = () => {
   panel.year += 1;
 };
 
+const resetCurd = () => {
+  const items = curlist.value.filter((v) => v.cur);
+  items.forEach((v) => {
+    v.curd = v.date === valuedate.date;
+  });
+};
+
 watch(() => props.modelValue, (val) => {
   // console.log('watch props.modelValue', val);
   valuedate = dateInfos(val);
@@ -128,13 +135,13 @@ watch(() => props.modelValue, (val) => {
       panel.year = year;
       panel.month = month;
     } else {
-      const items = curlist.value.filter((v) => v.cur);
-      items.forEach((v) => {
-        v.curd = v.date === valuedate.date;
-      });
+      resetCurd();
     }
-  } else if (!panel.year) {
-    initPanel();
+  } else {
+    if (!panel.year) {
+      initPanel();
+    }
+    resetCurd();
   }
 }, { immediate: true });
 </script>
