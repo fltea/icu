@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
   trigger: String,
@@ -11,6 +11,7 @@ const emit = defineEmits(['update:modelValue', 'save']);
 // 默认值
 const popoverSection = ref(null);
 const dshow = ref(false);
+let setFO = false;
 // click/focus/hover/manual
 const tritype = computed(() => props.trigger || 'click');
 
@@ -36,26 +37,25 @@ const toggle = (show) => {
   // console.log('toogle', dialog.value);
 };
 
-let removeFoucsOut;
 const isFocusOut = (event) => {
   // console.log(event.type, event.target);
   if (event.type === 'blur') {
     toggle(false);
-    removeFoucsOut();
     return;
   }
   const isContains = popoverSection.value.contains(event.target);
   if (!isContains) {
     toggle(false);
-    removeFoucsOut();
   }
 };
 const setFoucsOut = () => {
+  setFO = true;
   document.addEventListener('click', isFocusOut);
   document.addEventListener('focusin', isFocusOut);
   window.addEventListener('blur', isFocusOut);
 };
-removeFoucsOut = () => {
+const removeFoucsOut = () => {
+  setFO = false;
   document.removeEventListener('click', isFocusOut);
   document.removeEventListener('focusin', isFocusOut);
   window.removeEventListener('blur', isFocusOut);
@@ -83,6 +83,11 @@ const handleClick = () => {
     toggle();
   }
 };
+watch(dialog, (val) => {
+  if (!val && setFO) {
+    removeFoucsOut();
+  }
+});
 </script>
 
 <template>
