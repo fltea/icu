@@ -7,16 +7,28 @@ const props = defineProps({
 });
 const emit = defineEmits(['selected']);
 const panel = reactive({
-  curyear: null,
-  curmonth: null,
-  curd: null,
+  year: null,
+  month: null,
   list: [],
 });
-// 获取某月最后一天信息
-const monthDates = (year, month) => {
-  const ldate = new Date(year, month, 0);
+
+// 获取某天信息
+const dateInfos = (year, month) => {
+  let ldate;
+  if (year) {
+    if (month) {
+      ldate = new Date(year, month, 0);
+    } else {
+      ldate = new Date(year);
+    }
+  }
+
+  if (isNaN(+ldate)) {
+    console.error(`${year} ${month} is not a date.`);
+    return {};
+  }
   return {
-    total: ldate.getDate(),
+    date: ldate.getDate(),
     // Sunday - Saturday : 0 - 6
     day: ldate.getDay(),
     year: ldate.getFullYear(),
@@ -24,21 +36,39 @@ const monthDates = (year, month) => {
   };
 };
 
+let valuedate = {};
+const nowdate = dateInfos(new Date());
+
+const initPanel = () => {
+  // console.log('initPanel', nowdate);
+  panel.year = nowdate.year;
+  panel.month = nowdate.month;
+};
+// 日期列表
 const datesList = (list, max, item, type = 0) => {
-  const { total, day, year, month, date = -1 } = item;
+  const { date, day, year, month } = item;
   const isPrev = type < 0;
+  let now;
+  let curd;
   if (!type) {
     panel.curyear = year;
     panel.curmonth = month;
+    if (nowdate.year === year && nowdate.month === month) {
+      now = nowdate.date;
+    }
+    if (valuedate.year === year && valuedate.month === month) {
+      curd = valuedate.date;
+    }
   }
-  let dateno = isPrev ? total - day : 1;
-  while (dateno <= total && list.length < max) {
+  let dateno = isPrev ? date - day : 1;
+  while (dateno <= date && list.length < max) {
     list.push({
       date: dateno,
       year,
       month,
       cur: type === 0,
-      curd: dateno === +date,
+      now: dateno === now,
+      curd: dateno === curd,
     });
     dateno += 1;
   }
@@ -47,63 +77,60 @@ const datesList = (list, max, item, type = 0) => {
 const tabindex = computed(() => +props.tab - 1);
 const curlist = computed(() => {
   const list = [];
-  let date = panel.curd;
-  let curDate;
-  if (date) {
-    curDate = new Date(date);
-  } else {
-    curDate = new Date();
-  }
-  if (isNaN(+curDate)) {
-    console.error(`${date} is not a date.`);
+  const { year, month } = panel;
+  // console.log('computed curlist', year, month);
+  if (!year || !month) {
     return list;
   }
 
   //  7 日 6 周
   const itemMax = 7 * 6;
-  date = curDate.getDate();
 
   // 上一月份
-  const prev = monthDates(curDate.getFullYear(), curDate.getMonth());
+  const prev = dateInfos(year, month - 1);
   datesList(list, itemMax, prev, -1);
   // 当前月
-  const cur = monthDates(curDate.getFullYear(), curDate.getMonth() + 1);
-  cur.date = date;
+  const cur = dateInfos(year, month);
   datesList(list, itemMax, cur);
   // 下一月份
-  const next = monthDates(curDate.getFullYear(), curDate.getMonth() + 2);
+  const next = dateInfos(year, month + 1);
   datesList(list, itemMax, next, 1);
 
   return list;
 });
 
 const selectItem = (item) => {
-  console.log(item);
+  // console.log('selectItem', item);
   const value = new Date(item.year, item.month - 1, item.date);
-  panel.curd = value;
   emit('selected', value);
 };
 
-const turnTo = () => {};
 const prevYear = () => {
-  panel.curyear -= 1;
-  turnTo();
+  panel.year -= 1;
 };
 const prevMonth = () => {
-  panel.curmonth -= 1;
-  turnTo();
+  panel.month -= 1;
 };
 const nextMonth = () => {
-  panel.curmonth += 1;
-  turnTo();
+  panel.month += 1;
 };
 const nextYear = () => {
-  panel.curyear += 1;
-  turnTo();
+  panel.year += 1;
 };
 
 watch(() => props.modelValue, (val) => {
-  panel.curd = val;
+  // console.log('watch props.modelValue', val);
+  if (val) {
+    valuedate = dateInfos(val);
+    const { year, month } = valuedate;
+    // 判断年月
+    if (year !== panel.year || month !== panel.month) {
+      panel.year = year;
+      panel.month = month;
+    }
+  } else if (!panel.year) {
+    initPanel();
+  }
 }, { immediate: true });
 </script>
 
@@ -138,7 +165,7 @@ watch(() => props.modelValue, (val) => {
     <div class="list-item">
       <p>Sat</p>
     </div>
-    <div class="list-item date-item" v-for="(item, index) in curlist" :key="`panel-week-${index}`" :class="{'cur-date': item.curd, 'cur-list': item.cur}" @click="selectItem(item)" :tabindex="tabindex">
+    <div class="list-item date-item" v-for="(item, index) in curlist" :key="`panel-week-${index}`" :class="{'now-date': item.now,'cur-date': item.curd, 'cur-list': item.cur}" @click="selectItem(item)" :tabindex="tabindex">
       <p>{{item.date}}</p>
     </div>
   </div>
@@ -201,6 +228,13 @@ watch(() => props.modelValue, (val) => {
     }
   }
   .cur-date {
+    color: #fff;
+    &::before {
+      content: '';
+      background: @HoverColor;
+    }
+  }
+  .now-date {
     color: #fff;
     &::before {
       content: '';
