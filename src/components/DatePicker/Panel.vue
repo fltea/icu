@@ -67,7 +67,7 @@ const datesList = (list, max, item, type = 0) => {
       year,
       month,
       cur: type === 0,
-      now: dateno === now,
+      now: !curd && dateno === now,
       curd: dateno === curd,
     });
     dateno += 1;
@@ -120,13 +120,18 @@ const nextYear = () => {
 
 watch(() => props.modelValue, (val) => {
   // console.log('watch props.modelValue', val);
+  valuedate = dateInfos(val);
   if (val) {
-    valuedate = dateInfos(val);
     const { year, month } = valuedate;
     // 判断年月
     if (year !== panel.year || month !== panel.month) {
       panel.year = year;
       panel.month = month;
+    } else {
+      const items = curlist.value.filter((v) => v.cur);
+      items.forEach((v) => {
+        v.curd = v.date === valuedate.date;
+      });
     }
   } else if (!panel.year) {
     initPanel();
@@ -227,18 +232,18 @@ watch(() => props.modelValue, (val) => {
       }
     }
   }
-  .cur-date {
-    color: #fff;
-    &::before {
-      content: '';
-      background: @HoverColor;
-    }
-  }
   .now-date {
     color: #fff;
     &::before {
       content: '';
       background: @bgp;
+    }
+  }
+  .cur-date {
+    color: #fff;
+    &::before {
+      content: '';
+      background: @HoverColor;
     }
   }
 }
