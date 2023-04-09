@@ -1,4 +1,5 @@
 import models from '../db/models/index.js';
+import { rollBack } from '../db/seq.js';
 import { Op } from '../db/types.js';
 import { PAGE_SIZE } from '../conf/constant.js';
 
@@ -27,7 +28,7 @@ export async function todoInfo(id) {
   }
 }
 
-export async function todoList({ title, content, beginDate, deadline, completeDate, discarded, page = 1, limit = PAGE_SIZE }) {
+export async function todos({ title, content, beginDate, deadline, completeDate, discarded, page = 1, limit = PAGE_SIZE }) {
   try {
   // 查询条件
     const where = {};
@@ -82,16 +83,19 @@ export async function todoList({ title, content, beginDate, deadline, completeDa
     throw new Error(error);
   }
 }
-
-export async function todoAdd({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
-  try {
-    const result = await Todo.create({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded });
-    return result.dataValues;
-  } catch (error) {
-    throw new Error(error);
+async function addTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
+  let result = await Todo.create({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded });
+  if (result) {
+    result = result.dataValues;
   }
+  return result;
 }
-export async function todoUpdate({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
+export async function newTodo(item) {
+  const result = await rollBack(addTodo, item);
+  return result;
+}
+
+export async function changeTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
   try {
     const where = {
       id,
@@ -124,49 +128,16 @@ export async function todoUpdate({ id, content, beginDate, order, deadline, comp
     throw new Error(error);
   }
 }
-export async function todoDelete(id) {
-  try {
-    const where = {
+
+async function delTodo(id) {
+  const result = await Todo.destroy({
+    where: {
       id,
-    };
-
-    const result = await Todo.destroy({
-      where,
-    });
-
-    return result > 0;
-  } catch (error) {
-    throw new Error(error);
-  }
+    },
+  });
+  return result > 0;
 }
-export async function todoBulk(list) {
-  try {
-    const result = [];
-    const dataes = [];
-    const keys = ['title', 'content', 'order', 'beginDate', 'deadline', 'completeDate', 'disuseTime', 'discarded'];
-    list.forEach((v) => {
-      if (v.url) {
-        const item = {};
-        keys.forEach((key) => {
-          item[key] = v[key];
-        });
-        dataes.push(item);
-      }
-    });
-    let len = dataes.length;
-    if (len) {
-      while (len > 0) {
-        const datas = dataes.splice(0, 100);
-        let values = await Todo.bulkCreate(datas, { ignoreDuplicates: true });
-        values = values.map((row) => row.dataValues);
-        values = values.filter((v) => !!v.id);
-        result.push(...values);
-        len = dataes.length;
-      }
-    }
-
-    return result;
-  } catch (error) {
-    throw new Error(error);
-  }
+export async function deleteTodo(id) {
+  const result = await rollBack(delTodo, id);
+  return result;
 }

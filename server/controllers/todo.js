@@ -1,14 +1,13 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { addInfo, delInfo, updateInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
 import catchError from '../utils/tcatch.js';
 
 import {
   todoInfo,
-  todoList,
-  todoAdd,
-  todoUpdate,
-  todoDelete,
-  todoBulk,
+  todos,
+  newTodo,
+  changeTodo,
+  deleteTodo,
 } from '../services/todo.js';
 
 /**
@@ -31,7 +30,7 @@ export async function getTodo(id) {
  */
 export async function getTodos({ title, content, beginDate, deadline, completeDate, discarded, page, limit }) {
   try {
-    const result = await todoList({ title, content, beginDate, deadline, completeDate, discarded, page, limit });
+    const result = await todos({ title, content, beginDate, deadline, completeDate, discarded, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -41,16 +40,11 @@ export async function getTodos({ title, content, beginDate, deadline, completeDa
 /**
  * 創建數據
  */
-export async function createTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
+export async function setTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
   try {
     const todo = { title, content, order, beginDate, deadline, completeDate, disuseTime, discarded };
-    Object.keys(todo).forEach((key) => {
-      if (!todo[key]) {
-        // delete todo[key];
-        // todo[key] = null;
-      }
-    });
-    const result = await todoAdd(todo);
+
+    const result = await newTodo(todo);
     if (result) {
       return new SuccessModel(result);
     }
@@ -61,24 +55,9 @@ export async function createTodo({ title, content, order, beginDate, deadline, c
 }
 
 /**
- * 創建多個數據
- */
-export async function createTodos(list) {
-  try {
-    if (Array.isArray(list)) {
-      const result = await todoBulk(list);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(schemaFileInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-
-/**
  * 修改數據
  */
-export async function modifyTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime, type }) {
+export async function modTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime, type }) {
   try {
     let todo;
     if (type) {
@@ -94,7 +73,7 @@ export async function modifyTodo({ id, content, beginDate, order, deadline, comp
     } else {
       todo = { id, content, beginDate, order, deadline, completeDate, discarded, disuseTime };
     }
-    const result = await todoUpdate(todo);
+    const result = await changeTodo(todo);
     if (result) {
       return new SuccessModel(result);
     }
@@ -108,9 +87,9 @@ export async function modifyTodo({ id, content, beginDate, order, deadline, comp
 /**
  * 刪除數據
  */
-export async function deleteTodo(id) {
+export async function delTodo(id) {
   try {
-    const result = await todoDelete(id);
+    const result = await deleteTodo(id);
     if (result) {
       return new SuccessModel(result);
     }
