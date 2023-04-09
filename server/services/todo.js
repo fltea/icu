@@ -96,11 +96,10 @@ export async function todoUpdate({ id, content, beginDate, order, deadline, comp
     const where = {
       id,
     };
-    const todo = {
-      order,
-      deadline,
-      discarded,
-    };
+    const todo = {};
+    if (order) {
+      todo.order = order;
+    }
     if (content) {
       todo.content = content;
     }
@@ -113,8 +112,9 @@ export async function todoUpdate({ id, content, beginDate, order, deadline, comp
     if (completeDate) {
       todo.completeDate = completeDate;
     }
-    if (disuseTime) {
-      todo.disuseTime = disuseTime;
+    if (discarded) {
+      todo.discarded = discarded;
+      todo.disuseTime = disuseTime || new Date();
     }
     const result = await Todo.update(todo, {
       where,

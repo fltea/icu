@@ -42,5 +42,9 @@ router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
   const result = await deleteTodo(id);
   ctx.body = result;
 });
+router.post('/actions', genValidator('NeedId', validate), async (ctx) => {
+  const result = await modifyTodo(ctx.request.body);
+  ctx.body = result;
+});
 
 export default router;

@@ -78,9 +78,22 @@ export async function createTodos(list) {
 /**
  * 修改數據
  */
-export async function modifyTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
+export async function modifyTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime, type }) {
   try {
-    const todo = { id, content, beginDate, order, deadline, completeDate, discarded, disuseTime };
+    let todo;
+    if (type) {
+      todo = {
+        id,
+      };
+      if (type === 'complete') {
+        todo.completeDate = new Date();
+      }
+      if (type === 'discarded') {
+        todo.discarded = true;
+      }
+    } else {
+      todo = { id, content, beginDate, order, deadline, completeDate, discarded, disuseTime };
+    }
     const result = await todoUpdate(todo);
     if (result) {
       return new SuccessModel(result);
