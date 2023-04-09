@@ -38,7 +38,10 @@ export const timeoutInfo = {
   code: 10003,
   message: '请求超时',
 };
-
+export const forignInfo = {
+  code: 10004,
+  message: '数据被别处引用',
+};
 export const fetchInfo = {
   code: 10011,
   message: '返回數據错误',
