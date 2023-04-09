@@ -121,7 +121,7 @@ watch(dialog, (val) => {
 <template>
 <span ref="popoverSection" class="popover-section" @focusin="handleFocusin" @mouseenter="handleOver" @mouseleave="handleLeave">
   <span @click="handleClick"><slot></slot></span>
-  <section ref="popoverContainer" class="popover-container" :style="styles" :align="position?'top':'bottom'" v-show="dialog">
+  <section ref="popoverContainer" class="popover-container" :style="styles" :align="position?'top':'bottom'" v-show="dialog" tabindex="-1">
     <slot name="content">
       <p v-if="content">{{ content }}</p>
     </slot>
