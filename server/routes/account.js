@@ -5,12 +5,11 @@ import genValidator from '../middlewares/validator.js';
 import {
   getAccount,
   getAccounts,
-  createAccount,
-  // createAccounts,
-  modifyAccount,
-  deleteAccount,
+  setAccount,
+  modAccount,
+  delAccount,
   tieAccount,
-  modifyTieAccount,
+  modAccountTie,
 } from '../controllers/account.js';
 
 const router = new Router();
@@ -31,7 +30,7 @@ router.post('/detail', genValidator('NeedId', validate), async (ctx) => {
 
 router.post('/add', genValidator('Account', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await createAccount(ctx.request.body);
+  const result = await setAccount(ctx.request.body);
   ctx.body = result;
 });
 
@@ -41,18 +40,18 @@ router.post('/tied', genValidator('Atie', validate), async (ctx) => {
   ctx.body = result;
 });
 router.post('/tied/modify', async (ctx) => {
-  const result = await modifyTieAccount(ctx.request.body);
+  const result = await modAccountTie(ctx.request.body);
   ctx.body = result;
 });
 router.post('/modify', genValidator('Account', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await modifyAccount(ctx.request.body);
+  const result = await modAccount(ctx.request.body);
   ctx.body = result;
 });
 router.post('/delete', async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
-  const result = await deleteAccount(id);
+  const result = await delAccount(id);
   ctx.body = result;
 });
 

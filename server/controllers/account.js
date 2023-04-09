@@ -4,13 +4,12 @@ import catchError from '../utils/tcatch.js';
 
 import {
   accountInfo,
-  accountList,
-  accountAdd,
-  accountUpdate,
-  accountDelete,
-  accountBulk,
+  accounts,
+  newAccount,
+  changeAccount,
+  deleteAccount,
   accountTie,
-  accountTieUpdate,
+  changeAccountTie,
 } from '../services/account.js';
 
 /**
@@ -33,7 +32,7 @@ export async function getAccount(id) {
  */
 export async function getAccounts({ name, nickName, platform, phone, email, verify, beginDate, endDate, page, limit }) {
   try {
-    const result = await accountList({ name, nickName, platform, phone, email, verify, beginDate, endDate, page, limit });
+    const result = await accounts({ name, nickName, platform, phone, email, verify, beginDate, endDate, page, limit });
     return new SuccessModel(result);
   } catch (error) {
     return catchError(error);
@@ -43,9 +42,9 @@ export async function getAccounts({ name, nickName, platform, phone, email, veri
 /**
  * 創建數據
  */
-export async function createAccount({ name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark }) {
+export async function setAccount({ name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark }) {
   try {
-    const result = await accountAdd({ name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark });
+    const result = await newAccount({ name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark });
     if (result) {
       return new SuccessModel(result);
     }
@@ -56,29 +55,14 @@ export async function createAccount({ name, nickName, balance, pic, desc, platfo
 }
 
 /**
- * 創建多個數據
- */
-export async function createAccounts(list) {
-  try {
-    if (Array.isArray(list)) {
-      const result = await accountBulk(list);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(schemaFileInfo);
-  } catch (error) {
-    return catchError(error);
-  }
-}
-
-/**
  * 修改數據
  */
-export async function modifyAccount({ id, name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark }) {
+export async function modAccount({ id, name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark }) {
   try {
     if (!id) {
       return new ErrorModel(schemaFileInfo);
     }
-    const result = await accountUpdate({ id, name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark });
+    const result = await changeAccount({ id, name, nickName, balance, pic, desc, platform, platformURL, paswd, phone, email, verify, IDCard, beginDate, endDate, remark });
     if (result) {
       return new SuccessModel(result);
     }
@@ -92,9 +76,9 @@ export async function modifyAccount({ id, name, nickName, balance, pic, desc, pl
 /**
  * 刪除數據
  */
-export async function deleteAccount(id) {
+export async function delAccount(id) {
   try {
-    const result = await accountDelete(id);
+    const result = await deleteAccount(id);
     if (result) {
       return new SuccessModel(result);
     }
@@ -122,9 +106,9 @@ export async function tieAccount({ tied, tiedName, account, accountName, tieDate
 /**
  * 修改數據
  */
-export async function modifyTieAccount({ id, tiedName, accountName, tieDate, untieDate, remark }) {
+export async function modAccountTie({ id, tiedName, accountName, tieDate, untieDate, remark }) {
   try {
-    const result = await accountTieUpdate({ id, tiedName, accountName, tieDate, untieDate, remark });
+    const result = await changeAccountTie({ id, tiedName, accountName, tieDate, untieDate, remark });
     if (result) {
       return new SuccessModel(result);
     }
