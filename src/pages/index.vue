@@ -6,6 +6,8 @@ const loading = ref(false);
 const changValue = () => {
   loading.value = !loading.value;
 };
+
+const selectValue = ref('');
 </script>
 
 <template>
@@ -23,7 +25,8 @@ const changValue = () => {
   </div>
 
   <div class="com-items" style="margin-top: 80px;">
-    <!-- <input type="text"> -->
+    <p class="items-title">com-select</p>
+    <com-select v-model="selectValue"></com-select>
   </div>
 </section>
 </template>
