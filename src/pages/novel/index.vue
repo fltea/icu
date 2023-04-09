@@ -5,7 +5,6 @@ import { list, novelDel } from '@/api/novel';
 import { deepCopy } from '@/utils/tools';
 
 import newNovel from '@/components/novel/Novel.vue';
-import NovelDetail from '@/components/novel/NovelDetail.vue';
 
 const idialog = ref(false);
 const curData = reactive({
@@ -28,6 +27,7 @@ const listItems = () => {
   if (!params) {
     params = {
       page: 0,
+      limit: 50,
     };
   }
   params.page += 1;
@@ -38,6 +38,8 @@ const listItems = () => {
       const nlist = deepCopy(res.list.filter((rl) => !oids.includes(rl.id)));
       flist.push(...nlist);
       curData.finished = flist.length >= res.count;
+    } else {
+      curData.finished = true;
     }
   }).finally(() => {
     curData.laoding = false;
@@ -57,6 +59,7 @@ const searchList = () => {
     title,
     author,
     page: 0,
+    limit: 50,
   };
   listItems();
 };
@@ -90,11 +93,10 @@ onMounted(initList);
   </div>
   <section class="com-container">
     <com-list :finished="curData.finished" :laoding="curData.laoding" @load="listItems">
-      <novel-detail v-for="(item, index) in curData.list" :key="`curData.list-${index}`" :detail="item" list>
-        <template v-slot:controls>
-          <button @click="delItem(item)">刪除 Novel</button>
-        </template>
-      </novel-detail>
+      <div class="list-item" v-for="(item, index) in curData.list" :key="`curData.list-${index}`">
+        <p><a :href="`/novel/${item.id}`" target="_blank">{{ item.title }}</a></p>
+        <button @click="delItem(item)">刪除 Novel</button>
+      </div>
     </com-list>
   </section>
   <new-novel v-model:show="idialog" @success="initList"></new-novel>
@@ -103,5 +105,11 @@ onMounted(initList);
 <style lang='less' scoped>
 .novel-detail {
   padding-top: @small;
+}
+.list-item {
+  display: flex;
+  button {
+    margin-left: @small;
+  }
 }
 </style>
