@@ -99,3 +99,15 @@ export function getDomain(url) {
   }
   return domain;
 }
+
+export function getOffsetTop(dom) {
+  let cdom = dom;
+  let top = cdom.offsetTop;
+  let nnode = cdom.offsetParent;
+  while (nnode) {
+    cdom = nnode;
+    top += cdom.offsetTop;
+    nnode = cdom.offsetParent;
+  }
+  return top;
+}
