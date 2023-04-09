@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
+import { getOffsetTop } from '@/utils/tools';
 
 const props = defineProps({
   trigger: String,
@@ -10,7 +11,9 @@ const emit = defineEmits(['update:modelValue', 'save']);
 
 // 默认值
 const popoverSection = ref(null);
+const popoverContainer = ref(null);
 const dshow = ref(false);
+const position = ref(0);
 let setFO = false;
 // click/focus/hover/manual
 const tritype = computed(() => props.trigger || 'click');
@@ -83,8 +86,33 @@ const handleClick = () => {
     toggle();
   }
 };
+const styles = computed(() => {
+  if (position.value) {
+    return `top: -${position.value}px;`;
+  }
+  return '';
+});
+const show = async () => {
+  // console.log('show');
+  await nextTick();
+  const showDom = popoverContainer.value;
+  let spanDom = popoverSection.value;
+  const height = window.innerHeight;
+  const otop = getOffsetTop(spanDom);
+  spanDom = spanDom.firstChild;
+  // console.log(spanDom);
+  const bheight = height - otop - spanDom.offsetHeight;
+  if (bheight < showDom.clientHeight) {
+    position.value = showDom.clientHeight + spanDom.offsetHeight + 6;
+  } else {
+    position.value = 0;
+  }
+  // console.log('popoverContainer', height, showDom.clientHeight, bheight, spanDom.offsetHeight, position.value);
+};
 watch(dialog, (val) => {
-  if (!val && setFO) {
+  if (val) {
+    show();
+  } else if (setFO) {
     removeFoucsOut();
   }
 });
@@ -93,7 +121,7 @@ watch(dialog, (val) => {
 <template>
 <span ref="popoverSection" class="popover-section" @focusin="handleFocusin" @mouseenter="handleOver" @mouseleave="handleLeave">
   <span @click="handleClick"><slot></slot></span>
-  <section class="popover-container" v-show="dialog">
+  <section ref="popoverContainer" class="popover-container" :style="styles" :align="position?'top':'bottom'" v-show="dialog">
     <slot name="content">
       <p v-if="content">{{ content }}</p>
     </slot>
@@ -109,6 +137,7 @@ watch(dialog, (val) => {
 .popover-container {
   position: absolute;
   margin-top: 6px;
+  margin-bottom: 6px;
   min-width: 150px;
   padding: 12px;
   line-height: 1.4;
@@ -119,30 +148,47 @@ watch(dialog, (val) => {
   background: #fff;
   border-radius: 4px;
   z-index: 2000;
+  &[align='bottom'] {
+    .popover-arrow {
+      top: unset;
+      top: -11px;
+      border-bottom-color: #ebeef5;
+      &::after{
+        top: -5px;
+        border-bottom-color: #fff;
+      }
+    }
+  }
+  &[align='top'] {
+    .popover-arrow {
+      bottom: -11px;
+      border-top-color: #ebeef5;
+      &::after{
+        top: -7px;
+        border-top-color: #fff;
+      }
+    }
+  }
   .popover-arrow {
     position: absolute;
-    top: -11px;
     left: 20px;
     width: 0;
     height: 0;
     border-color: transparent;
     border-style: solid;
     border-width: 6px;
-    border-bottom-color: #ebeef5;
     z-index: 2;
     &::after{
       content:'';
       position: absolute;
       left: -6px;
-      top: -5px;
       display: block;
       width: 0;
       height: 0;
       border-width: 6px;
       border-color: transparent;
       border-style: solid;
-      border-bottom-color: #fff;
-      z-index: 2;
+      z-index: 3;
     }
   }
 }
