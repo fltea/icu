@@ -51,9 +51,6 @@ const save = () => {
     return;
   }
 
-  delete form.beginDate;
-  delete form.endDate;
-
   if (form.id) {
     modify(form).then((res) => {
       console.log(res);
@@ -71,111 +68,76 @@ const save = () => {
 </script>
 
 <template>
-<com-dialog v-model="dialog">
-  <section class="noveler-dialog">
-    <header>
-      <p>ACCOUNT</p>
-    </header>
-    <main>
-      <label>
-        <span class="label-title">name: </span>
-        <input type="text" v-model="form.name" />
-      </label>
-      <label>
-        <span class="label-title">nickName:  </span>
-        <input type="text" v-model="form.nickName" />
-      </label>
-      <label>
-        <span class="label-title">balance:  </span>
-        <input type="text" v-model="form.balance" />
-      </label>
-      <label>
-        <span class="label-title">pic:  </span>
-        <input type="text" v-model="form.pic" />
-      </label>
-      <label>
-        <span class="label-title">desc:  </span>
-        <input type="text" v-model="form.desc" />
-      </label>
-      <label>
-        <span class="label-title">platform:  </span>
-        <input type="text" v-model="form.platform" />
-      </label>
-      <label>
-        <span class="label-title">platformURL:  </span>
-        <input type="text" v-model="form.platformURL" />
-      </label>
-      <label>
-        <span class="label-title">paswd:  </span>
-        <input type="text" v-model="form.paswd" />
-      </label>
-      <label>
-        <span class="label-title">phone:  </span>
-        <input type="text" v-model="form.phone" />
-      </label>
-      <label>
-        <span class="label-title">email:  </span>
-        <input type="text" v-model="form.email" />
-      </label>
-      <label>
-        <span class="label-title">verify:  </span>
-        <input type="text" v-model="form.verify" />
-      </label>
-      <label>
-        <span class="label-title">IDCard:  </span>
-        <input type="text" v-model="form.IDCard" />
-      </label>
-      <label>
-        <span class="label-title">beginDate:  </span>
-        <input type="text" v-model="form.beginDate" />
-      </label>
-      <label>
-        <span class="label-title">endDate:  </span>
-        <input type="text" v-model="form.endDate" />
-      </label>
-      <label>
-        <span class="label-title">remark:  </span>
-        <textarea v-model="form.remark"></textarea>
-      </label>
-    </main>
-    <footer>
-      <button @click="hide">取消</button>
-      <button @click="save">保存</button>
-    </footer>
+<com-dialog v-model="dialog" title="ACCOUNT">
+  <section class="form-dialog">
+    <div class="form-item">
+      <p class="label-title">name</p>
+      <input type="text" v-model="form.name" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">nickName</p>
+      <input type="text" v-model="form.nickName" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">balance</p>
+      <input type="text" v-model="form.balance" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">pic</p>
+      <input type="text" v-model="form.pic" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">desc</p>
+      <input type="text" v-model="form.desc" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">platform</p>
+      <input type="text" v-model="form.platform" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">platformURL</p>
+      <input type="text" v-model="form.platformURL" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">paswd</p>
+      <input type="text" v-model="form.paswd" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">phone</p>
+      <input type="text" v-model="form.phone" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">email</p>
+      <input type="text" v-model="form.email" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">verify</p>
+      <input type="text" v-model="form.verify" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">IDCard</p>
+      <input type="text" v-model="form.IDCard" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">beginDate</p>
+      <date-picker v-model="form.beginDate"></date-picker>
+    </div>
+    <div class="form-item">
+      <p class="label-title">endDate</p>
+      <date-picker v-model="form.endDate"></date-picker>
+    </div>
+    <div class="form-item">
+      <p class="label-title">remark</p>
+      <textarea v-model="form.remark"></textarea>
+    </div>
   </section>
+  <template #footer>
+    <button @click="hide">取消</button>
+    <button @click="save">保存</button>
+  </template>
 </com-dialog>
 </template>
 
 <style lang='less' scoped>
-.noveler-dialog {
-  margin: 0 auto;
-  padding: 12px;
-  label {
-    margin-top: 12px;
-    display: block;
-    .label-title {
-      margin-right: 8px;
-      display: inline-block;
-      width: 125px;
-      text-align: right;
-    }
-    input,
-    textarea {
-      width: 400px;
-    }
-    textarea {
-      height: 50px;
-      resize: none;
-      vertical-align:middle;
-    }
-  }
-  header {
-    padding: 6px;
-  }
-  footer {
-    margin-top: 12px;
-    padding: 6px;
-    text-align: center;
-  }
-}
+
 </style>

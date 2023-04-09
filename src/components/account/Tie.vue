@@ -26,17 +26,23 @@ const form = reactive({
   remark: '',
 });
 const accounts = ref([]);
+const soption = {
+  nameFiled: 'name',
+  valueFiled: 'id',
 
-const getAccounts = () => {
-  console.log(form.accountName);
+};
+
+const getAccounts = (query) => {
+  console.log(query);
   list({
-    name: form.accountName,
+    name: query,
   }).then((res) => {
     console.log(res);
     accounts.value = res.list;
   });
 };
 const selectItem = (item) => {
+  console.log('item', item);
   form.account = item.id;
   form.accountName = item.name;
 };
@@ -77,87 +83,35 @@ const save = () => {
 </script>
 
 <template>
-<com-dialog v-model="dialog">
-  <section class="tie-dialog">
-    <header>
-      <p>ATIE</p>
-    </header>
-    <main>
-      <label>
-        <span class="label-title">tiedName: </span>
-        <input type="text" v-model="form.tiedName" />
-      </label>
-      <label>
-        <span class="label-title">accountName:  </span>
-        <input type="text" v-model="form.accountName" @input="getAccounts"/>
-        <div class="input-list">
-          <div class="inputs-item" v-for="(item, index) in accounts" :key="`accounts${index}`" @click="selectItem(item)">{{ item.name }}</div>
-        </div>
-      </label>
-      <label>
-        <span class="label-title">tieDate:  </span>
-        <input type="text" v-model="form.tieDate" />
-      </label>
-      <label>
-        <span class="label-title">untieDate:  </span>
-        <input type="text" v-model="form.untieDate" />
-      </label>
-      <label>
-        <span class="label-title">remark:  </span>
-        <textarea v-model="form.remark"></textarea>
-      </label>
-    </main>
-    <footer>
-      <button @click="hide">取消</button>
-      <button @click="save">保存</button>
-    </footer>
+<com-dialog v-model="dialog" title="ATIE">
+  <section class="form-dialog">
+    <div class="form-item">
+      <p class="label-title">tiedName</p>
+      <input type="text" v-model="form.tiedName" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">account</p>
+      <com-select :options="soption" :data="accounts" v-model="form.account" @query="getAccounts" @select="selectItem"></com-select>
+    </div>
+    <div class="form-item">
+      <p class="label-title">tieDate</p>
+      <date-picker v-model="form.tieDate"></date-picker>
+    </div>
+    <div class="form-item">
+      <p class="label-title">untieDate</p>
+      <date-picker v-model="form.untieDate"></date-picker>
+    </div>
+    <div class="form-item">
+      <p class="label-title">remark </p>
+      <textarea v-model="form.remark"></textarea>
+    </div>
   </section>
+  <template #footer>
+    <button @click="hide">取消</button>
+    <button @click="save">保存</button>
+  </template>
 </com-dialog>
 </template>
 
 <style lang='less' scoped>
-.tie-dialog {
-  margin: 0 auto;
-  padding: 12px;
-  label {
-    position: relative;
-    margin-top: 12px;
-    display: block;
-    .label-title {
-      margin-right: 8px;
-      display: inline-block;
-      width: 125px;
-      text-align: right;
-    }
-    input,
-    textarea {
-      width: 400px;
-    }
-    textarea {
-      height: 50px;
-      resize: none;
-      vertical-align:middle;
-    }
-    .input-list {
-      position: absolute;
-      left: 133px;
-      right: 0;
-      z-index: 2;
-      background: #f8f8f8;
-      .inputs-item {
-        &:hover {
-          background: red;
-        }
-      }
-    }
-  }
-  header {
-    padding: 6px;
-  }
-  footer {
-    margin-top: 12px;
-    padding: 6px;
-    text-align: center;
-  }
-}
 </style>

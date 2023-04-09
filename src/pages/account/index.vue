@@ -87,7 +87,7 @@ onMounted(listData);
 
 <template>
   <h1>ACCOUNT</h1>
-  <section class="list-controls">
+  <section class="com-controls">
     <input type="text" v-model="search.phone" placeholder="phone">
     <input type="text" v-model="search.email" placeholder="email">
     <button @click="searchList">查詢</button>
@@ -95,21 +95,21 @@ onMounted(listData);
     <button @click="editAccount()">新增</button>
   </section>
   <com-list :finished="accounts.finished" :loading="accounts.loading" @load="moreData">
-    <section class="mark-list">
-      <a class="mark-item" v-for="(item, index) in accounts.list" :key="`list-${index}`" :href="`/account/${item.id}`" target="__blank">
-        <div class="mark-icons" v-if="item.pic">
+    <section class="list-container">
+      <div class="list-item" v-for="(item, index) in accounts.list" :key="`account-list-${index}`">
+        <div class="item-icons" v-if="item.pic">
           <img :src="item.pic" :alt="item.title">
         </div>
         <div>
-          <p>{{item.name}}</p>
-          <div class="mark-desc">{{item.nickName || ''}}</div>
-          <div class="list-controls">
-            <button @click.stop.prevent="tieAccount(item)">绑定</button>
-            <button @click.stop.prevent="editAccount(item)">修改</button>
-            <button @click.stop.prevent="deleteAccount(item.id)">删除</button>
-          </div>
+          <p class="list-title"><a :href="`/account/${item.id}`" target="__blank">{{ item.name }}</a></p>
+          <p class="item-desc">{{ item.nickName || '' }}</p>
         </div>
-      </a>
+        <div class="item-controls">
+          <button @click="tieAccount(item)">绑定</button>
+          <button @click="editAccount(item)">修改</button>
+          <button @click="deleteAccount(item.id)">删除</button>
+        </div>
+      </div>
     </section>
   </com-list>
   <account :account="accountData" v-model:show="dialog" @success="listData"></account>
@@ -117,47 +117,23 @@ onMounted(listData);
 </template>
 
 <style scoped lang="less">
-.list-controls {
-  input,
-  button {
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-}
-.mark-list {
-  margin-left: -12px;
+.list-item {
   display: flex;
-  flex-wrap: wrap;
-}
-.mark-item {
-  margin-top: 12px;
-  margin-left: 12px;
-  padding: 6px;
-  width: 220px;
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  .mark-icons {
+  .item-icons {
     margin-right: 8px;
     width: 48px;
     height: 48px;
     text-align: center;
     background: #eee;
     border-radius: 3px;
-    overflow: hidden;
     flex-shrink: 0;
     img {
       width: 100%;
       height: 100%;
     }
   }
-  .mark-desc {
-    max-height: 30px;
-  }
-  .mark-control {
-    margin-top: 3px;
+  .item-controls {
+    margin-left: auto;
   }
 }
 </style>
