@@ -15,7 +15,6 @@ export async function accountInfo(id) {
   const search = {
     where,
     include: Atie,
-    raw: true,
   };
 
   const result = await Account.findOne(search);
