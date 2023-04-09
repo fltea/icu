@@ -9,79 +9,71 @@ const { Todo } = models;
  * @param {number} id ID
  */
 export async function todoInfo(id) {
-  try {
-    const where = {
-      id,
-    };
+  const where = {
+    id,
+  };
 
-    const result = await Todo.findOne({
-      where,
-    });
+  const result = await Todo.findOne({
+    where,
+  });
 
-    if (result) {
-      return result.dataValues;
-    }
-
-    return result;
-  } catch (error) {
-    throw new Error(error);
+  if (result) {
+    return result.dataValues;
   }
+
+  return result;
 }
 
 export async function todos({ title, content, beginDate, deadline, completeDate, discarded, page = 1, limit = PAGE_SIZE }) {
-  try {
   // 查询条件
-    const where = {};
+  const where = {};
 
-    if (title) {
-      where.title = {
-        [Op.like]: `%${title}%`,
-      };
-    }
-    if (content) {
-      where.content = {
-        [Op.like]: `%${content}%`,
-      };
-    }
-    if (beginDate) {
-      where.beginDate = beginDate;
-    }
-    if (deadline) {
-      where.deadline = deadline;
-    }
-    if (discarded) {
-      where.discarded = discarded;
-    }
-    if (completeDate) {
-      where.completeDate = {
-        [Op.lte]: completeDate,
-      };
-    }
-    const search = {
-      where,
+  if (title) {
+    where.title = {
+      [Op.like]: `%${title}%`,
     };
-    if (page) {
-      search.limit = limit;
-      if (page > 1) {
-        search.offset = limit * (page - 1);
-      }
-    }
-    // 查询
-    const result = await Todo.findAndCountAll(search);
-    const list = result.rows.map((row) => row.dataValues);
-
-    const data = {
-      count: result.count,
-      list,
-    };
-    if (page) {
-      data.page = page;
-      data.limit = limit;
-    }
-    return data;
-  } catch (error) {
-    throw new Error(error);
   }
+  if (content) {
+    where.content = {
+      [Op.like]: `%${content}%`,
+    };
+  }
+  if (beginDate) {
+    where.beginDate = beginDate;
+  }
+  if (deadline) {
+    where.deadline = deadline;
+  }
+  if (discarded) {
+    where.discarded = discarded;
+  }
+  if (completeDate) {
+    where.completeDate = {
+      [Op.lte]: completeDate,
+    };
+  }
+  const search = {
+    where,
+  };
+  if (page) {
+    search.limit = limit;
+    if (page > 1) {
+      search.offset = limit * (page - 1);
+    }
+  }
+  // 查询
+  const result = await Todo.findAndCountAll(search);
+  const list = result.rows.map((row) => row.dataValues);
+
+  const data = {
+    count: result.count,
+    list,
+  };
+  if (page) {
+    data.page = page;
+    data.limit = limit;
+  }
+  return data;
 }
 async function addTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
   let result = await Todo.create({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded });
@@ -96,37 +88,33 @@ export async function newTodo(item) {
 }
 
 export async function changeTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
-  try {
-    const where = {
-      id,
-    };
-    const todo = {};
-    if (order) {
-      todo.order = order;
-    }
-    if (content) {
-      todo.content = content;
-    }
-    if (beginDate) {
-      todo.beginDate = beginDate;
-    }
-    if (deadline) {
-      todo.deadline = deadline;
-    }
-    if (completeDate) {
-      todo.completeDate = completeDate;
-    }
-    if (discarded) {
-      todo.discarded = discarded;
-      todo.disuseTime = disuseTime || new Date();
-    }
-    const result = await Todo.update(todo, {
-      where,
-    });
-    return result[0] > 0;
-  } catch (error) {
-    throw new Error(error);
+  const where = {
+    id,
+  };
+  const todo = {};
+  if (order) {
+    todo.order = order;
   }
+  if (content) {
+    todo.content = content;
+  }
+  if (beginDate) {
+    todo.beginDate = beginDate;
+  }
+  if (deadline) {
+    todo.deadline = deadline;
+  }
+  if (completeDate) {
+    todo.completeDate = completeDate;
+  }
+  if (discarded) {
+    todo.discarded = discarded;
+    todo.disuseTime = disuseTime || new Date();
+  }
+  const result = await Todo.update(todo, {
+    where,
+  });
+  return result[0] > 0;
 }
 
 async function delTodo(id) {
