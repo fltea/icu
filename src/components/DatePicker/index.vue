@@ -37,7 +37,7 @@ watch(() => props.modelValue, (val) => {
 </script>
 
 <template>
-<section class="date-picker">
+<div class="date-picker">
   <!-- <popover content="date-picker" trigger="manual" v-model="popoverShow"> -->
   <div class="date-icon" v-if="dateValue" @click.prevent="clearValue">X</div>
   <popover content="date-picker" v-model="popoverShow" trigger="focus">
@@ -46,12 +46,14 @@ watch(() => props.modelValue, (val) => {
       <panel @selected="selectDate" v-model="dateValue"></panel>
     </template>
   </popover>
-</section>
+</div>
 </template>
 
 <style scoped lang='less'>
 .date-picker {
+  display: inline-block;
   position: relative;
+  vertical-align: middle;
   &:hover {
     .date-icon {
       display: block;

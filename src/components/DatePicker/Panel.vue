@@ -24,7 +24,7 @@ const dateInfos = (year, month) => {
   }
 
   if (isNaN(+ldate)) {
-    console.error(`${year} ${month} is not a date.`);
+    // console.error(`${year} ${month} is not a date.`);
     return {};
   }
   return {
@@ -51,8 +51,6 @@ const datesList = (list, max, item, type = 0) => {
   let now;
   let curd;
   if (!type) {
-    panel.curyear = year;
-    panel.curmonth = month;
     if (nowdate.year === year && nowdate.month === month) {
       now = nowdate.date;
     }
@@ -121,6 +119,7 @@ const nextYear = () => {
 const resetCurd = () => {
   const items = curlist.value.filter((v) => v.cur);
   items.forEach((v) => {
+    v.now = !valuedate.date && nowdate.year === v.year && nowdate.month === v.month && v.date === nowdate.date;
     v.curd = v.date === valuedate.date;
   });
 };
@@ -151,7 +150,7 @@ watch(() => props.modelValue, (val) => {
   <header class="panel-header">
     <button class="panel-button" :tabindex="tabindex" @click="prevYear">&lt;&lt;</button>
     <button class="panel-button" :tabindex="tabindex" @click="prevMonth">&lt;</button>
-    <button class="panel-button" :tabindex="tabindex">{{ panel.curyear }} - {{ panel.curmonth }}</button>
+    <button class="panel-button" :tabindex="tabindex">{{ panel.year }} - {{ panel.month }}</button>
     <button class="panel-button" :tabindex="tabindex" @click="nextMonth">&gt;</button>
     <button class="panel-button" :tabindex="tabindex" @click="nextYear">&gt;&gt;</button>
   </header>
