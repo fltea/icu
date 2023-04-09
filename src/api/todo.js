@@ -25,3 +25,9 @@ export const del = (data) => request({
   method: 'post',
   data,
 });
+
+export const actions = (data) => request({
+  url: `${url}/actions`,
+  method: 'post',
+  data,
+});

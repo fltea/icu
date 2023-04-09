@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { list, del } from '@/api/todo';
+import { list, del, actions } from '@/api/todo';
 import { deepCopy } from '@/utils/tools';
 import Todo from '@/components/todo/Todo.vue';
 
@@ -55,7 +55,19 @@ const listMData = () => {
   });
   listData();
 };
-const editData = (item) => {
+const actData = (item, type) => {
+  actions({
+    id: item.id,
+    type,
+  }).then(() => {
+    listData();
+  });
+};
+const editData = (item, type) => {
+  if (type) {
+    actData(item, type);
+    return;
+  }
   itemData.value = deepCopy(item) || {};
   dialog.value = true;
 };
@@ -89,7 +101,7 @@ onMounted(listData);
 
 <template>
   <h1>TODO</h1>
-  <div class="list-controls">
+  <div class="com-controls">
     <input type="text" v-model="search.title" placeholder="title">
     <input type="text" v-model="search.content" placeholder="content">
     <button @click="searchList">查詢</button>
@@ -98,27 +110,25 @@ onMounted(listData);
   </div>
   <com-list :finished="items.finished" :loading="items.loading" @load="listMData">
     <section class="mark-list">
-      <a class="mark-item" v-for="(item ,index) in items.list" :key="`list-${index}`" :href="item.url" target="__blank">
-        <div>
-          <p>{{item.title}}</p>
-          <div class="mark-desc">{{item.content || ''}}</div>
-          <div class="mark-control">
-            <button @click.stop.prevent="editData(item)">修改</button>
-            <button @click.stop.prevent="delData(item.id)">删除</button>
-          </div>
+      <div class="list-item" v-for="(item ,index) in items.list" :key="`list-${index}`">
+        <p class="list-title"><a :href="item.url" target="__blank">{{item.title}}</a></p>
+        <pre class="list-content">{{item.content || ''}}</pre>
+        <p><span>beginDate:</span> {{ item.beginDate }}</p>
+        <p><span>deadline:</span> {{ item.deadline }}</p>
+        <p><span>completeDate:</span> {{ item.completeDate }}</p>
+        <p><span>disuseTime:</span> {{ item.disuseTime }}</p>
+        <div class="com-controls">
+          <button @click="editData(item,'complete')">完成</button>
+          <button @click="editData(item,'discarded')">放弃</button>
+          <button @click="editData(item)">修改</button>
+          <button @click="delData(item.id)">删除</button>
         </div>
-      </a>
+      </div>
     </section>
   </com-list>
   <todo :todo="itemData" v-model:show="dialog" @success="listData"></todo>
 </template>
 
 <style scoped lang='less'>
-.list-controls {
-  input,
-  button{
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-}
+
 </style>

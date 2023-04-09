@@ -59,83 +59,47 @@ const save = () => {
 </script>
 
 <template>
-  <com-dialog v-model="dialog">
+  <com-dialog v-model="dialog" title="TODO">
     <section class="form-dialog">
-      <header>
-        <p>TODO</p>
-      </header>
-      <main>
-        <label>
-          <span class="label-title">title:  </span>
-          <input type="text" v-model="form.title" />
-        </label>
-        <label>
-          <span class="label-title">content:  </span>
-          <textarea v-model="form.content"></textarea>
-        </label>
-        <label>
-          <span class="label-title">order: </span>
-          <input type="text" v-model="form.order" />
-        </label>
-        <label>
-          <span class="label-title">beginDate: </span>
-          <input type="text" v-model="form.beginDate" />
-        </label>
-        <label>
-          <span class="label-title">deadline: </span>
-          <input type="text" v-model="form.deadline" />
-        </label>
-        <label>
-          <span class="label-title">completeDate: </span>
-          <input type="text" v-model="form.completeDate" />
-        </label>
-        <label>
-          <span class="label-title">discarded: </span>
-          <input type="text" v-model="form.discarded" />
-        </label>
-        <label>
-          <span class="label-title">disuseTime: </span>
-          <input type="text" v-model="form.disuseTime" />
-        </label>
-      </main>
-      <footer>
-        <button @click="hide">取消</button>
-        <button @click="save">保存</button>
-      </footer>
+      <div class="form-item">
+        <p class="label-title">title</p>
+        <input type="text" v-model="form.title" />
+      </div>
+      <div class="form-item">
+        <p class="label-title">content</p>
+        <textarea v-model="form.content"></textarea>
+      </div>
+      <div class="form-item">
+        <p class="label-title">order</p>
+        <input type="text" v-model="form.order" />
+      </div>
+      <div class="form-item">
+        <p class="label-title">beginDate</p>
+        <date-picker v-model="form.beginDate"></date-picker>
+      </div>
+      <div class="form-item">
+        <p class="label-title">deadline</p>
+        <date-picker v-model="form.deadline"></date-picker>
+      </div>
+      <div class="form-item">
+        <p class="label-title">completeDate</p>
+        <date-picker v-model="form.completeDate"></date-picker>
+      </div>
+      <div class="form-item">
+        <p class="label-title">discarded</p>
+        <input type="text" v-model="form.discarded" />
+      </div>
+      <div class="form-item">
+        <p class="label-title">disuseTime</p>
+        <date-picker v-model="form.disuseTime"></date-picker>
+      </div>
     </section>
+    <template #footer>
+      <button @click="hide">取消</button>
+      <button @click="save">保存</button>
+    </template>
   </com-dialog>
 </template>
 
 <style scoped lang='less'>
-.form-dialog {
-  margin: 0 auto;
-  padding: 12px;
-  label {
-    margin-top: 12px;
-    display: block;
-    .label-title {
-      margin-right: 8px;
-      display: inline-block;
-      width: 125px;
-      text-align: right;
-    }
-    input,
-    textarea {
-      width: 400px;
-    }
-    textarea {
-      height: 50px;
-      resize: none;
-      vertical-align:middle;
-    }
-  }
-  header {
-    padding: 6px;
-  }
-  footer {
-    margin-top: 12px;
-    padding: 6px;
-    text-align: center;
-  }
-}
 </style>
