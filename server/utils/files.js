@@ -139,3 +139,20 @@ export function toogleCookies(name, cookies) {
   }
   return result;
 }
+
+/**
+ * 上传文件☞ Media
+ * @param {Object} file
+ * @returns {Object} Media
+ */
+export function fileToMedia(file) {
+  const { mimetype = '', originalFilename, filepath = '', newFilename } = file;
+  const type = mimetype.split('/').shift();
+  const newPath = filepath.replace('files', 'files\\media');
+  renameFile(filepath, newPath);
+  const media = {};
+  media.url = `/files/media/${newFilename}`;
+  media.type = type;
+  media.title = originalFilename;
+  return media;
+}
