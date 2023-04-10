@@ -1,13 +1,27 @@
 <script setup>
+import { ref } from 'vue';
+
+const props = defineProps({
+  disabled: Boolean,
+  multiple: Boolean,
+  accept: String,
+});
+const file = ref(null);
 const emit = defineEmits(['change']);
 const changFile = (event) => {
   emit('change', event);
 };
+const clickhandle = () => {
+  file.value.click();
+};
 </script>
 
 <template>
-<div class="com-upload-button">
-  <button class="file-button"><slot></slot><input type="file" name="file" @change="changFile"></button>
+<div class="com-upload-button" :class="{'is-disabled':disabled}">
+  <button class="file-button" @click="clickhandle">
+    <slot></slot>
+    <input type="file" ref="file" @change="changFile" :disabled="disabled" :multiple="props.multiple" :accept="accept">
+  </button>
 </div>
 
 </template>
@@ -16,19 +30,20 @@ const changFile = (event) => {
 .com-upload-button {
   display: inline-block;
   line-height: 1;
+  &.is-disabled {
+    button {
+      background: @notAllowedBg;
+      border-color: @notAllowedInBg;
+      cursor: not-allowed;
+    }
+  }
 }
 .file-button {
   position: relative;
   overflow: hidden;
   input {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    opacity: 0;
-    cursor: pointer;
+    left: 100%;
   }
 }
 </style>
