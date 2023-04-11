@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import { FILE_DIR, LOG_DIR, BACKUP_DIR, TEMP_DIR, MEDIA_DIR } from './conf/constant.js';
 import { setEnv } from './config.js';
 import { statDir } from './utils/files.js';
+import catchError from './middlewares/tcatch.js';
 
 setEnv();
 const ROOT_DIR = process.cwd();
@@ -24,6 +25,8 @@ if (!isPro) {
   viteServer = await import('./utils/viteServer.js');
   viteServer = viteServer.default;
 }
+// 处理错误
+app.use(catchError);
 
 app.use(
   koaBody({
@@ -44,8 +47,10 @@ app.use(async (ctx, next) => {
   const { query } = ctx.request;
   if (query) {
     ['page', 'limit'].forEach((key) => {
-      const no = +query[key];
-      query[key] = isNaN(no) ? null : no;
+      const no = query[key];
+      if (no) {
+        query[key] = isNaN(+no) ? 0 : +no;
+      }
     });
   }
   await next();
