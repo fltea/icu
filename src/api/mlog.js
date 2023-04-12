@@ -13,15 +13,3 @@ export const add = (data) => request({
   method: 'post',
   data,
 });
-
-export const modify = (data) => request({
-  url: `${url}/modify`,
-  method: 'post',
-  data,
-});
-
-export const del = (data) => request({
-  url: `${url}/delete`,
-  method: 'post',
-  data,
-});
