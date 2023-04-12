@@ -3,12 +3,8 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  // getMlog,
   getMlogs,
-  createMlog,
-  // createMlogs,
-  modifyMlog,
-  deleteMlog,
+  setMlog,
 } from '../controllers/mlog.js';
 
 const router = new Router();
@@ -21,19 +17,7 @@ router.get('/', async (ctx) => {
 });
 
 router.post('/add', genValidator('Mlog', validate), async (ctx) => {
-  const result = await createMlog(ctx.request.body);
-  ctx.body = result;
-});
-
-router.post('/modify', genValidator('Mlog', validate), async (ctx) => {
-  const result = await modifyMlog(ctx.request.body);
-  ctx.body = result;
-});
-
-router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  const { id } = ctx.request.body;
-  const result = await deleteMlog(id);
+  const result = await setMlog(ctx.request.body, ctx.request.files);
   ctx.body = result;
 });
 

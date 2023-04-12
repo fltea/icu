@@ -1,99 +1,68 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo } from '../model/ErrorInfos.js';
+import { addInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
-import catchError from '../utils/tcatch.js';
 
 import {
   mlogInfo,
-  mlogList,
-  mlogAdd,
-  mlogUpdate,
-  mlogDelete,
-  mlogBulk,
+  mlogs,
+  newMlog,
 } from '../services/mlog.js';
+import { fileToMedia } from '../utils/files.js';
+import { newMedia } from '../services/media.js';
 
 /**
  * 獲取單個數據
  */
 export async function getMlog(id) {
-  try {
-    const result = await mlogInfo(id);
-    return new SuccessModel(result);
-  } catch (error) {
-    return catchError(error);
-  }
+  const result = await mlogInfo(id);
+  return new SuccessModel(result);
 }
 
 /**
  * 獲取列表
  */
-export async function getMlogs({ text, creator, page, limit }) {
-  try {
-    const result = await mlogList({ text, creator, page, limit });
-    return new SuccessModel(result);
-  } catch (error) {
-    return catchError(error);
-  }
+export async function getMlogs({ text, page, limit }) {
+  const result = await mlogs({ text, page, limit });
+  return new SuccessModel(result);
 }
 
 /**
  * 創建數據
  */
-export async function createMlog({ text, creator, link,
-  source, remark }) {
-  try {
-    const result = await mlogAdd({ text, creator, link, source, remark });
-    if (result) {
-      return new SuccessModel(result);
+export async function setMlog({ text }, { pics, video }) {
+  // console.log(text, pics);
+  let medias = [];
+  if (video) {
+    medias = [video].map((pic) => fileToMedia(pic));
+  } else if (pics) {
+    if (!Array.isArray(pics)) {
+      pics = [pics];
     }
-    return new ErrorModel(addInfo);
-  } catch (error) {
-    return catchError(error);
+    medias = pics.map((pic) => fileToMedia(pic));
   }
-}
-
-/**
- * 創建多個數據
- */
-export async function createMlogs(list) {
-  try {
-    if (Array.isArray(list)) {
-      const result = await mlogBulk(list);
-      return new SuccessModel(result);
+  if (medias.length) {
+    let index = 0;
+    while (index < medias.length) {
+      const { id, url } = await newMedia(medias[index]);
+      medias[index] = { id, url };
+      index += 1;
     }
-    return new ErrorModel(schemaFileInfo);
-  } catch (error) {
-    return catchError(error);
   }
-}
-
-/**
- * 修改數據
- */
-export async function modifyMlog({ id, text, creator, link,
-  source, remark }) {
-  try {
-    const result = await mlogUpdate({ id, text, creator, link, source, remark });
-    if (result) {
-      return new SuccessModel(result);
+  // console.log(medias);
+  const mlog = { text };
+  if (medias.length) {
+    if (video) {
+      mlog.infos = JSON.stringify({
+        video: medias.pop(),
+      });
+    } else if (pics) {
+      mlog.infos = JSON.stringify({
+        pics: medias,
+      });
     }
-
-    return new ErrorModel(updateInfo);
-  } catch (error) {
-    return catchError(error);
   }
-}
-
-/**
- * 刪除數據
- */
-export async function deleteMlog(id) {
-  try {
-    const result = await mlogDelete(id);
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(delInfo);
-  } catch (error) {
-    return catchError(error);
+  const result = await newMlog(mlog);
+  if (result) {
+    return new SuccessModel(result);
   }
+  return new ErrorModel(addInfo);
 }
