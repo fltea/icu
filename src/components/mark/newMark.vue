@@ -56,67 +56,31 @@ const save = () => {
 </script>
 
 <template>
-<com-dialog v-model="dialog">
-  <section class="noveler-dialog">
-    <header>
-      <p>书签</p>
-    </header>
-    <main>
-      <label>
-        <span class="label-title">url: </span>
-        <input type="text" v-model="form.url" />
-      </label>
-      <label>
-        <span class="label-title">title:  </span>
-        <input type="text" v-model="form.title" />
-      </label>
-      <label>
-        <span class="label-title">icons:  </span>
-        <textarea v-model="form.icons"></textarea>
-      </label>
-      <label>
-        <span class="label-title">description:  </span>
-        <textarea v-model="form.description"></textarea>
-      </label>
-    </main>
-    <footer>
-      <button @click="hide">取消</button>
-      <button @click="save">保存</button>
-    </footer>
+<com-dialog v-model="dialog" title="书签">
+  <section class="form-dialog">
+    <div class="form-item">
+      <p class="label-title">url: </p>
+      <input type="text" v-model="form.url" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">title:  </p>
+      <input type="text" v-model="form.title" />
+    </div>
+    <div class="form-item">
+      <p class="label-title">icons:  </p>
+      <textarea v-model="form.icons"></textarea>
+    </div>
+    <div class="form-item">
+      <p class="label-title">description:  </p>
+      <textarea v-model="form.description"></textarea>
+    </div>
   </section>
+  <template #footer>
+    <button @click="hide">取消</button>
+    <button @click="save">保存</button>
+  </template>
 </com-dialog>
 </template>
 
 <style scoped lang='less'>
-.noveler-dialog {
-  margin: 0 auto;
-  padding: 12px;
-  label {
-    margin-top: 12px;
-    display: block;
-    .label-title {
-      margin-right: 8px;
-      display: inline-block;
-      width: 125px;
-      text-align: right;
-    }
-    input,
-    textarea {
-      width: 400px;
-    }
-    textarea {
-      height: 50px;
-      resize: none;
-      vertical-align:middle;
-    }
-  }
-  header {
-    padding: 6px;
-  }
-  footer {
-    margin-top: 12px;
-    padding: 6px;
-    text-align: center;
-  }
-}
 </style>

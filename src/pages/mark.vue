@@ -19,30 +19,23 @@ let params = null;
 
 const listData = () => {
   marks.loading = true;
-  if (params && params.page) {
-    params.page += 1;
-  }
   list(params).then((res) => {
-    const page = +res.page;
-    if (page === 1) {
-      marks.list = [];
-    }
     marks.list.push(...deepCopy(res.list) || []);
-    if (!params) {
-      params = {};
-    }
-    params.page = page;
     marks.finished = marks.list.length >= res.count;
   }).finally(() => {
     marks.loading = false;
   });
 };
+const reloadList = () => {
+  params = null;
+  marks.list = [];
+  listData();
+};
 const uploadFile = (file) => {
   const form = new FormData();
   form.append('file', file);
-  upload(form).then((res) => {
-    console.log(res);
-    listData();
+  upload(form).then(() => {
+    reloadList();
   });
 };
 
@@ -53,9 +46,8 @@ const editMark = (item) => {
 const deleteMark = (id) => {
   del({
     id,
-  }).then((res) => {
-    console.log(res);
-    listData();
+  }).then(() => {
+    reloadList();
   });
 };
 const changFile = (event) => {
@@ -68,8 +60,7 @@ const changFile = (event) => {
 const resetSearch = () => {
   search.title = '';
   search.url = '';
-  params = null;
-  listData();
+  reloadList();
 };
 const searchList = () => {
   const { title, url } = search;
@@ -77,6 +68,15 @@ const searchList = () => {
     title,
     url,
   };
+  marks.list = [];
+  listData();
+};
+const listMData = () => {
+  const page = params?.page || 1;
+  if (!params) {
+    params = {};
+  }
+  params.page = page + 1;
   listData();
 };
 
@@ -85,7 +85,7 @@ onMounted(listData);
 
 <template>
   <h1>MARK</h1>
-  <section class="mark-controls">
+  <section class="com-controls">
     <input type="text" v-model="search.title" placeholder="title">
     <input type="text" v-model="search.url" placeholder="url">
     <button @click="searchList">查詢</button>
@@ -94,14 +94,14 @@ onMounted(listData);
     <com-upload-button @change="changFile">批量导入</com-upload-button>
     <com-down-button action="/api/mark/exports">批量导出</com-down-button>
   </section>
-  <com-list :finished="marks.finished" :loading="marks.loading" @load="listData">
+  <com-list :finished="marks.finished" :loading="marks.loading" @load="listMData">
     <section class="mark-list">
       <a class="mark-item" v-for="(item ,index) in marks.list" :key="`list-${index}`" :href="item.url" target="__blank">
         <div class="mark-icons" v-if="item.icons">
           <img :src="item.icons" :alt="item.title">
         </div>
         <div>
-          <p>{{item.title}}</p>
+          <p class="mark-title">{{item.title}}</p>
           <div class="mark-desc">{{item.description || ''}}</div>
           <div class="mark-control">
             <button @click.stop.prevent="editMark(item)">修改</button>
@@ -111,7 +111,7 @@ onMounted(listData);
       </a>
     </section>
   </com-list>
-  <new-mark :mark="markData" v-model:show="dialog" @success="listData"></new-mark>
+  <new-mark :mark="markData" v-model:show="dialog" @success="reloadList"></new-mark>
 </template>
 
 <style scoped lang="less">
@@ -151,6 +151,12 @@ onMounted(listData);
       width: 100%;
       height: 100%;
     }
+  }
+  .mark-title {
+    width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .mark-desc {
     max-height: 30px;
