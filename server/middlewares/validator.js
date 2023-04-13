@@ -8,9 +8,18 @@ import { schemaFileInfo } from '../model/ErrorInfos.js';
 function genValidator(model, validateFn) {
   async function validator(ctx, next) {
     // console.log('ctx.request.body ', ctx.request.body);
+    let error;
     // 校验
-    const data = ctx.request.body;
-    const error = await validateFn(model, data);
+    if (model === 'files') {
+      const { files } = ctx.request;
+      const list = Object.keys(files);
+      if (!list.length) {
+        error = '没有文件';
+      }
+    } else {
+      const data = ctx.request.body;
+      error = await validateFn(model, data);
+    }
     if (error) {
       // 失败 报错
       console.log('validator', error);
