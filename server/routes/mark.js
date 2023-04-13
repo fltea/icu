@@ -3,11 +3,11 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  getMarks,
-  createMark,
-  createMarks,
-  modifyMark,
-  deleteMark,
+  getMark,
+  setMark,
+  setMarks,
+  modMark,
+  delMark,
   exportMarks,
 } from '../controllers/mark.js';
 
@@ -17,30 +17,30 @@ router.prefix('/api/mark');
 
 router.get('/', async (ctx) => {
   // console.log('ctx.request.query ', ctx.request.query);
-  const result = await getMarks(ctx.request.query);
+  const result = await getMark(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });
 
-router.post('/upload', async (ctx) => {
+router.post('/upload', genValidator('files', validate), async (ctx) => {
   // console.log('ctx.request.files ',ctx.request.files);
-  const result = await createMarks(ctx.request.files);
+  const result = await setMarks(ctx.request.files);
   ctx.body = result;
 });
 router.post('/add', genValidator('Mark', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await createMark(ctx.request.body);
+  const result = await setMark(ctx.request.body);
   ctx.body = result;
 });
-router.post('/modify', genValidator('Mark', validate), async (ctx) => {
+router.post('/modify', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await modifyMark(ctx.request.body);
+  const result = await modMark(ctx.request.body);
   ctx.body = result;
 });
-router.post('/delete', async (ctx) => {
+router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
-  const result = await deleteMark(id);
+  const result = await delMark(id);
   ctx.body = result;
 });
 router.post('/exports', async (ctx) => {
