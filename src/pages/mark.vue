@@ -95,50 +95,39 @@ onMounted(listData);
     <com-down-button action="/api/mark/exports">批量导出</com-down-button>
   </section>
   <com-list :finished="marks.finished" :loading="marks.loading" @load="listMData">
-    <section class="mark-list">
-      <a class="mark-item" v-for="(item ,index) in marks.list" :key="`list-${index}`" :href="item.url" target="__blank">
-        <div class="mark-icons" v-if="item.icons">
+    <section>
+      <div class="list-item" v-for="(item ,index) in marks.list" :key="`list-${index}`">
+        <div class="item-icons">
           <img :src="item.icons" :alt="item.title">
         </div>
-        <div>
-          <p class="mark-title">{{item.title}}</p>
-          <div class="mark-desc">{{item.description || ''}}</div>
-          <div class="mark-control">
-            <button @click.stop.prevent="editMark(item)">修改</button>
-            <button @click.stop.prevent="deleteMark(item.id)">删除</button>
-          </div>
+        <div class="item-content">
+          <p class="item-title"><a :href="item.url" target="__blank">{{item.title}}</a></p>
+          <div class="item-desc">{{item.description || ''}}</div>
         </div>
-      </a>
+        <div class="item-control">
+          <button @click="editMark(item)">修改</button>
+          <button @click="deleteMark(item.id)">删除</button>
+        </div>
+      </div>
     </section>
   </com-list>
   <new-mark :mark="markData" v-model:show="dialog" @success="reloadList"></new-mark>
 </template>
 
 <style scoped lang="less">
-.mark-controls {
-  input,
-  button,
-  .com-upload-button {
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-}
-.mark-list {
-  margin-left: -12px;
-  display: flex;
-  flex-wrap: wrap;
-}
-.mark-item {
-  margin-top: 12px;
-  margin-left: 12px;
+.list-item {
   padding: 6px;
-  width: 220px;
   display: flex;
   align-items: center;
   font-size: 12px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  .mark-icons {
+  border-bottom: 1px solid #eee;
+  &:nth-child(n+2) {
+    margin-top: @small;
+  }
+  .item-content {
+    flex: 1;
+  }
+  .item-icons {
     margin-right: 8px;
     width: 48px;
     height: 48px;
@@ -152,17 +141,16 @@ onMounted(listData);
       height: 100%;
     }
   }
-  .mark-title {
-    width: 160px;
+  .item-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .mark-desc {
+  .item-desc {
     max-height: 30px;
   }
-  .mark-control {
-    margin-top: 3px;
+  .item-control {
+    margin-left: 8px;
   }
 }
 </style>
