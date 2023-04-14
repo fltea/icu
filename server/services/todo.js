@@ -15,11 +15,8 @@ export async function todoInfo(id) {
 
   const result = await Todo.findOne({
     where,
+    raw: true,
   });
-
-  if (result) {
-    return result.dataValues;
-  }
 
   return result;
 }
@@ -54,6 +51,7 @@ export async function todos({ title, content, beginDate, deadline, completeDate,
   }
   const search = {
     where,
+    raw: true,
   };
   if (page) {
     search.limit = limit;
@@ -63,11 +61,10 @@ export async function todos({ title, content, beginDate, deadline, completeDate,
   }
   // 查询
   const result = await Todo.findAndCountAll(search);
-  const list = result.rows.map((row) => row.dataValues);
 
   const data = {
     count: result.count,
-    list,
+    list: result.rows,
   };
   if (page) {
     data.page = page;
