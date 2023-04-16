@@ -2,9 +2,10 @@ import request from '../utils/axios';
 
 const url = '/api/article';
 
-export const list = () => request({
-  url: `${url}`,
+export const list = (data) => request({
+  url,
   method: 'get',
+  data,
 });
 
 export const add = (data) => request({
@@ -19,8 +20,13 @@ export const modify = (data) => request({
   data,
 });
 
-export const del = (data) => request({
-  url: `${url}/delete`,
+export const upload = (data) => request({
+  url: `${url}/upload`,
   method: 'post',
   data,
+});
+
+export const detail = (id) => request({
+  url: `${url}/${id}`,
+  method: 'get',
 });
