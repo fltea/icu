@@ -1,119 +1,81 @@
-import { addInfo, delInfo, updateInfo, schemaFileInfo, notExistInfo } from '../model/ErrorInfos.js';
+import { addInfo, updateInfo, notExistInfo } from '../model/ErrorInfos.js';
 import { ErrorModel, SuccessModel } from '../model/ResModel.js';
-import catchError from '../utils/tcatch.js';
+import { fileToMedia } from '../utils/files.js';
 
 import {
   articleInfo,
-  articleList,
-  articleAdd,
-  articleUpdate,
-  articleDelete,
-  articleBulk,
+  articles,
+  newArticle,
+  changeArticle,
 } from '../services/article.js';
+import { newMedia } from '../services/media.js';
 
 /**
  * 獲取單個數據
  */
 export async function getArticle(id) {
-  try {
-    if (id) {
-      const result = await articleInfo(id);
-      if (result) {
-        return new SuccessModel(result);
-      }
+  if (id) {
+    const result = await articleInfo(id);
+    if (result) {
+      return new SuccessModel(result);
     }
-    return new ErrorModel(notExistInfo);
-  } catch (error) {
-    return catchError(error);
   }
+  return new ErrorModel(notExistInfo);
 }
 
 /**
  * 獲取列表
  */
-export async function getArticles({ title, tag, author, content, translator, platform, clutter, publishDate, link, page, limit }) {
-  try {
-    const result = await articleList({ title, tag, author, content, translator, platform, clutter, publishDate, link, page, limit });
-    return new SuccessModel(result);
-  } catch (error) {
-    return catchError(error);
-  }
+export async function getArticles({ title, tag, content, publishDate, page, limit }) {
+  const result = await articles({ title, tag, content, publishDate, page, limit });
+  return new SuccessModel(result);
 }
 
 /**
  * 創建數據
  */
-export async function createArticle({ title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
-  try {
-    const article = { title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source };
-    const keys = ['todo', 'book', 'source'];
-    keys.forEach((v) => {
-      if (!article[v]) {
-        delete article[v];
-      }
-    });
-    const result = await articleAdd(article);
-    if (result) {
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(addInfo);
-  } catch (error) {
-    return catchError(error);
+export async function setArticle({ title, tag, content, publishDate, cover }) {
+  const article = { title, tag, content, publishDate, cover };
+  const result = await newArticle(article);
+  if (result) {
+    return new SuccessModel(result);
   }
-}
-
-/**
- * 創建多個數據
- */
-export async function createArticles(list) {
-  try {
-    if (Array.isArray(list)) {
-      const result = await articleBulk(list);
-      return new SuccessModel(result);
-    }
-    return new ErrorModel(schemaFileInfo);
-  } catch (error) {
-    return catchError(error);
-  }
+  return new ErrorModel(addInfo);
 }
 
 /**
  * 修改數據
  */
-export async function modifyArticle({ id, title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source }) {
-  try {
-    if (!id) {
-      return new ErrorModel(schemaFileInfo);
-    }
-    const article = { id, title, tag, content, author, translator, link, platform, links, publish, price, publishDate, todo, book, cover, remark, source };
-    const keys = ['todo', 'book', 'source'];
-    keys.forEach((v) => {
-      if (!article[v]) {
-        delete article[v];
-      }
-    });
-    const result = await articleUpdate(article);
-    if (result) {
-      return new SuccessModel(result);
-    }
-
-    return new ErrorModel(updateInfo);
-  } catch (error) {
-    return catchError(error);
+export async function modArticle({ id, title, tag, content, publishDate, cover }) {
+  const article = { id, title, tag, content, publishDate, cover };
+  const result = await changeArticle(article);
+  if (result) {
+    return new SuccessModel(result);
   }
+
+  return new ErrorModel(updateInfo);
 }
 
-/**
- * 刪除數據
- */
-export async function deleteArticle(id) {
-  try {
-    const result = await articleDelete(id);
-    if (result) {
-      return new SuccessModel(result);
+export async function setMedias({ file }) {
+  let medias = [];
+  if (file) {
+    if (!Array.isArray(file)) {
+      file = [file];
     }
-    return new ErrorModel(delInfo);
-  } catch (error) {
-    return catchError(error);
+    medias.push(...file);
   }
+  if (medias.length) {
+    medias = medias.map((media) => fileToMedia(media));
+
+    let index = 0;
+    while (index < medias.length) {
+      const { id, url } = await newMedia(medias[index]);
+      medias[index] = { id, url };
+      index += 1;
+    }
+  }
+
+  return new SuccessModel({
+    list: medias,
+  });
 }

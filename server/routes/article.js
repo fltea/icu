@@ -3,12 +3,11 @@ import validate from '../validator/index.js';
 import genValidator from '../middlewares/validator.js';
 
 import {
-  // getArticle,
   getArticles,
-  createArticle,
-  // createArticles,
-  modifyArticle,
-  deleteArticle,
+  setArticle,
+  modArticle,
+  setMedias,
+  getArticle,
 } from '../controllers/article.js';
 
 const router = new Router();
@@ -16,30 +15,28 @@ const router = new Router();
 router.prefix('/api/article');
 
 router.get('/', async (ctx) => {
-  const result = await getArticles({});
+  const result = await getArticles(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });
-// router.get('/:id', async (ctx) => {
-//   const result = await getPics({});
-//   // console.log(result)
-//   ctx.body = result;
-// });
+router.get('/:id', async (ctx) => {
+  const result = await getArticle(ctx.params.id);
+  // console.log(result)
+  ctx.body = result;
+});
 
 router.post('/add', genValidator('Article', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await createArticle(ctx.request.body);
+  const result = await setArticle(ctx.request.body);
   ctx.body = result;
 });
-router.post('/modify', genValidator('Article', validate), async (ctx) => {
+router.post('/modify', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await modifyArticle(ctx.request.body);
+  const result = await modArticle(ctx.request.body);
   ctx.body = result;
 });
-router.post('/delete', async (ctx) => {
-  // console.log('ctx.request.body ', ctx.request.body);
-  const { id } = ctx.request.body;
-  const result = await deleteArticle(id);
+router.post('/upload', genValidator('files', validate), async (ctx) => {
+  const result = await setMedias(ctx.request.files);
   ctx.body = result;
 });
 
