@@ -91,7 +91,7 @@ const loadItem = () => {
 watch(() => router, ({ currentRoute }) => {
   const { value } = currentRoute;
   console.log(value.params);
-  const id = value.params.editid;
+  const { id } = value.params;
   if (id !== 'new') {
     article.id = id;
   } else {
