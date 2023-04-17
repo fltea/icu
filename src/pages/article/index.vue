@@ -68,7 +68,7 @@ onMounted(loadList);
   <com-list :finished="curData.finished" :loading="curData.loading" @load="listMData">
   <section>
     <div class="list-item" v-for="(item, index) in curData.list" :key="`curData.list-${index}`">
-    <p><a :href="`/article/${item.id}`" target="_blank">{{ item.title }}</a></p>
+    <p class="list-title"><a :href="`/article/${item.id}`" target="_blank">{{ item.title }}</a></p>
     <p>{{ item.content }}</p>
     <button @click="newArticle(item.id)">编辑</button>
     </div>
