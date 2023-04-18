@@ -17,10 +17,6 @@ const Property = {
       type: STRING,
       comment: '编号',
     },
-    channel: {
-      type: STRING,
-      comment: '渠道',
-    },
     beginDate: {
       type: DATE,
       comment: '开始日期',
@@ -31,7 +27,11 @@ const Property = {
     },
     price: {
       type: FLOAT,
-      comment: '买入价格',
+      comment: '单价',
+    },
+    count: {
+      type: FLOAT,
+      comment: '数量',
     },
     inDate: {
       type: DATE,
@@ -41,13 +41,17 @@ const Property = {
       type: DATE,
       comment: '出手日期',
     },
-    rate: {
+    scale: {
       type: FLOAT,
-      comment: '利率(%)',
+      comment: '收益率',
     },
     amount: {
       type: FLOAT,
       comment: '卖出价格',
+    },
+    media: {
+      type: STRING,
+      comment: '图片或影片',
     },
     content: {
       type: STRING,
