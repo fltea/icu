@@ -1,12 +1,14 @@
 <script setup>
 import { reactive, onMounted } from 'vue';
-import { meansList, meansDel } from '@/api/means';
-import NewMeans from '@/components/means/Means.vue';
+import { list } from '@/api/property';
+import NewMeans from '@/components/property/Property.vue';
 
 const curData = reactive({
   list: [],
   adialog: false,
   item: null,
+  finished: false,
+  loading: false,
 });
 let params = null;
 const search = reactive({
@@ -14,23 +16,38 @@ const search = reactive({
 });
 
 const listData = () => {
-  meansList(params).then((res) => {
+  curData.loading = true;
+  list(params).then((res) => {
     console.log(res);
     if (res.list) {
-      curData.list = res.list;
+      curData.list.push(...res.list || []);
     }
+    curData.finished = curData.list.length >= res.count;
+  }).finally(() => {
+    curData.loading = false;
   });
+};
+
+const listMData = () => {
+  const page = params?.page || 1;
+  if (!params) {
+    params = {};
+  }
+  params.page = page + 1;
+  listData();
 };
 const searchList = () => {
   const { name } = search;
   params = {
     name,
   };
+  curData.list = [];
   listData();
 };
 const resetSearch = () => {
   search.name = '';
   params = null;
+  curData.list = [];
   listData();
 };
 
@@ -40,13 +57,6 @@ const modMeans = (item) => {
   curData.item = value;
 };
 
-const delMeans = ({ id }) => {
-  meansDel({
-    id,
-  }).then(() => {
-    listData();
-  });
-};
 onMounted(listData);
 </script>
 
@@ -58,13 +68,14 @@ onMounted(listData);
     <button @click="resetSearch">重設</button>
     <button @click="modMeans">新增</button>
   </section>
-  <section>
-    <div v-for="(item, index) in curData.list" :key="`curData.list-${index}`">
-      <p>{{ item }}</p>
-      <button @click="modMeans(item)">修改</button>
-      <button @click="delMeans(item)">删除</button>
-    </div>
-  </section>
+  <com-list :finished="curData.finished" :loading="curData.loading" @load="listMData">
+    <section>
+      <div class="list-item" v-for="(item, index) in curData.list" :key="`curData.list-${index}`">
+        <p>{{ item.name }}</p>
+        <button @click="modMeans(item)">修改</button>
+      </div>
+    </section>
+  </com-list>
   <new-means :means="curData.item" v-model:show="curData.adialog" @success="listData"></new-means>
 </template>
 
