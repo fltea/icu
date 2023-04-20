@@ -5,10 +5,9 @@ import genValidator from '../middlewares/validator.js';
 import {
   // getFlow,
   getFlows,
-  createFlow,
-  // createFlows,
-  modifyFlow,
-  deleteFlow,
+  setFlow,
+  modFlow,
+  delFlow,
 } from '../controllers/flow.js';
 
 const router = new Router();
@@ -16,7 +15,7 @@ const router = new Router();
 router.prefix('/api/flow');
 
 router.get('/', async (ctx) => {
-  const result = await getFlows({});
+  const result = await getFlows(ctx.request.query);
   // console.log(result)
   ctx.body = result;
 });
@@ -28,18 +27,18 @@ router.get('/', async (ctx) => {
 
 router.post('/add', genValidator('Flow', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await createFlow(ctx.request.body);
+  const result = await setFlow(ctx.request.body);
   ctx.body = result;
 });
 router.post('/modify', genValidator('Flow', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
-  const result = await modifyFlow(ctx.request.body);
+  const result = await modFlow(ctx.request.body);
   ctx.body = result;
 });
 router.post('/delete', async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
-  const result = await deleteFlow(id);
+  const result = await delFlow(id);
   ctx.body = result;
 });
 
