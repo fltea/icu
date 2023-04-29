@@ -32,8 +32,8 @@ const menus = [
     path: '/property',
   },
   {
-    name: 'Stats',
-    path: '/stats',
+    name: 'Statistic',
+    path: '/statistic',
   },
   {
     name: 'douban',
