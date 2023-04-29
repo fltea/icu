@@ -39,7 +39,7 @@ router.post('/tied', genValidator('Atie', validate), async (ctx) => {
   const result = await tieAccount(ctx.request.body);
   ctx.body = result;
 });
-router.post('/tied/modify', async (ctx) => {
+router.post('/tied/modify', genValidator('Atie', validate), async (ctx) => {
   const result = await modAccountTie(ctx.request.body);
   ctx.body = result;
 });
@@ -48,7 +48,7 @@ router.post('/modify', genValidator('Account', validate), async (ctx) => {
   const result = await modAccount(ctx.request.body);
   ctx.body = result;
 });
-router.post('/delete', async (ctx) => {
+router.post('/delete', genValidator('NeedId', validate), async (ctx) => {
   // console.log('ctx.request.body ', ctx.request.body);
   const { id } = ctx.request.body;
   const result = await delAccount(id);
