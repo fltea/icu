@@ -13,7 +13,7 @@ import {
 
 const router = new Router();
 
-router.prefix('/api/stats');
+router.prefix('/api/statistic');
 
 router.get('/', async (ctx) => {
   const result = await getStatss({});
