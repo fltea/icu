@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, onMounted } from 'vue';
 import { list } from '@/api/statistic';
+import newStats from '@/components/statistic/Statistic.vue';
 
 const curData = reactive({
   list: [],
@@ -70,11 +71,12 @@ onMounted(listData);
   <com-list :finished="curData.finished" :loading="curData.loading" @load="listMData">
     <section>
       <div class="list-item" v-for="(item, index) in curData.list" :key="`curData.list-${index}`">
-        <p>{{ item.name }}</p>
+        <p>{{ item.date }} - {{ item.type }}</p>
         <button @click="modMeans(item)">修改</button>
       </div>
     </section>
   </com-list>
+  <new-stats :means="curData.item" v-model:show="curData.adialog" @success="listData"></new-stats>
 </template>
 
 <style scoped lang='less'>
