@@ -25,8 +25,8 @@ export async function getFlow(id) {
 /**
  * 獲取列表
  */
-export async function getFlows({ type, tag, means, inAccount, outAccount, createTime, page, limit }) {
-  const result = await flows({ type, tag, means, inAccount, outAccount, createTime, page, limit });
+export async function getFlows({ type, tag, property, inAccount, outAccount, createTime, page, limit }) {
+  const result = await flows({ type, tag, property, inAccount, outAccount, createTime, page, limit });
   return new SuccessModel(result);
 }
 
@@ -45,8 +45,8 @@ export async function setFlow({ type, createTime, fee, commission, amount, price
 /**
  * 修改數據
  */
-export async function modFlow({ id, type, fee, commission, amount, price, name, tag, property, remark }) {
-  const flow = { id, type, fee, commission, amount, price, name, tag, property, remark };
+export async function modFlow({ id, type, createTime, fee, commission, amount, price, name, tag, property, inAccount, outAccount, tieRelation, remark }) {
+  const flow = { id, type, createTime, fee, commission, amount, price, name, tag, property, inAccount, outAccount, tieRelation, remark };
   const result = await changeFlow(flow);
   if (result) {
     return new SuccessModel(result);

@@ -29,7 +29,7 @@ export async function flows({ type, tag, property, inAccount, outAccount, create
     where.tag = tag;
   }
   if (property) {
-    where.means = property;
+    where.property = property;
   }
   if (inAccount) {
     where.inAccount = inAccount;
