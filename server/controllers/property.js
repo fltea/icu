@@ -31,8 +31,8 @@ export async function getPropertys({ name, page, limit }) {
  * 創建數據
  */
 export async function setProperty({ name, type, code, beginDate, endDate, scale, price, inDate, outDate, count, amount, content, remark, media }) {
-  const means = { name, type, code, beginDate, endDate, scale, price, inDate, outDate, count, amount, content, remark, media };
-  const result = await newProperty(means);
+  const property = { name, type, code, beginDate, endDate, scale, price, inDate, outDate, count, amount, content, remark, media };
+  const result = await newProperty(property);
   if (result) {
     return new SuccessModel(result);
   }
@@ -43,8 +43,8 @@ export async function setProperty({ name, type, code, beginDate, endDate, scale,
  * 修改數據
  */
 export async function modProperty({ id, name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark, media }) {
-  const means = { id, name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark, media };
-  const result = await changeProperty(means);
+  const property = { id, name, code, organization, book, found, stock, beginDate, endDate, scale, price, inDate, outDate, rate, amount, content, remark, media };
+  const result = await changeProperty(property);
   if (result) {
     return new SuccessModel(result);
   }
