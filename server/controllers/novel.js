@@ -200,9 +200,9 @@ export async function getChapter({ id }) {
   }
 }
 // 新增
-export async function setChapter({ url, title, author, content, media, serial, clutter, platform, tag }) {
+export async function setChapter({ url, title, author, content, media, serial, clutter, platform }) {
   try {
-    const chapter = { url, title, author, content, media, serial, clutter, platform, tag };
+    const chapter = { url, title, author, content, media, serial, clutter, platform };
     const result = await newChapter(chapter);
     if (result) {
       return new SuccessModel(result);
@@ -214,9 +214,9 @@ export async function setChapter({ url, title, author, content, media, serial, c
   }
 }
 
-export async function modChapter({ id, title, author, content, platform, tag }) {
+export async function modChapter({ id, title, author, content, platform }) {
   try {
-    const result = await changeChapter({ id, title, author, content, platform, tag });
+    const result = await changeChapter({ id, title, author, content, platform });
     if (result) {
       return new SuccessModel(result);
     }

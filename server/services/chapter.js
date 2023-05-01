@@ -49,8 +49,8 @@ export async function chapterInfo(id) {
   return result;
 }
 
-async function addChapter({ url, title, content, clutter, media, serial, author, platform, tag }) {
-  const item = { url, title, content, clutter, media, serial, author, platform, tag };
+async function addChapter({ url, title, content, clutter, media, serial, author, platform }) {
+  const item = { url, title, content, clutter, media, serial, author, platform };
   const result = await Chapter.create(item);
   return result;
 }
@@ -60,10 +60,10 @@ export async function newChapter(item) {
   return result;
 }
 
-export async function changeChapter({ id, url, title, content, clutter, media, serial, author, platform, tag }) {
+export async function changeChapter({ id, url, title, content, clutter, media, serial, author, platform }) {
   const item = await Chapter.findByPk(id);
   if (item) {
-    const newItem = { url, title, content, clutter, media, serial, author, platform, tag };
+    const newItem = { url, title, content, clutter, media, serial, author, platform };
     Object.keys(newItem).forEach((key) => {
       if (newItem[key] === undefined) {
         delete newItem[key];
