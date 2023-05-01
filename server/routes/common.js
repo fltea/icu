@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { uploadFile, backupDatas, restoreDatas, backups } from '../controllers/common.js';
+import { uploadFile, backupDatas, restoreDatas, backups, getOptions } from '../controllers/common.js';
 
 const router = new Router();
 router.prefix('/api/common');
@@ -24,6 +24,11 @@ router.post('/backup', async (ctx) => {
 router.post('/restore', async (ctx) => {
   // console.log("ctx.request.body ", ctx.request.body);
   const result = await restoreDatas(ctx.request.body);
+  ctx.body = result;
+});
+
+router.get('/getOptions', async (ctx) => {
+  const result = await getOptions();
   ctx.body = result;
 });
 

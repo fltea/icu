@@ -1,7 +1,6 @@
 import { notExistInfo } from '../model/ErrorInfos.js';
 import { SuccessModel, ErrorModel } from '../model/ResModel.js';
-import { FILE_DIR, BACKUP_DIR } from '../conf/constant.js';
-import catchError from '../utils/tcatch.js';
+import { FILE_DIR, BACKUP_DIR, FLTYPE, FLTAG, METYPE, MECHANNEL, STTYPE } from '../conf/constant.js';
 
 import models from '../db/models/index.js';
 import { formatDate, deepCopy } from '../utils/tools.js';
@@ -20,29 +19,25 @@ function filepath2url(fpath) {
  * @returns
  */
 export function uploadFile(files) {
-  try {
-    const list = Object.keys(files);
-    let result;
-    list.forEach((key) => {
-      const file = files[key];
-      const url = filepath2url(file.filepath);
-      const fileObj = {
-        url,
-        size: file.size,
-        mimetype: file.mimetype,
-        name: file.originalFilename,
-      };
-      if (!result) {
-        result = fileObj;
-      } else {
-        result = [result, fileObj];
-      }
-    });
-    // console.log(result);
-    return new SuccessModel({ data: result });
-  } catch (error) {
-    return catchError(error);
-  }
+  const list = Object.keys(files);
+  let result;
+  list.forEach((key) => {
+    const file = files[key];
+    const url = filepath2url(file.filepath);
+    const fileObj = {
+      url,
+      size: file.size,
+      mimetype: file.mimetype,
+      name: file.originalFilename,
+    };
+    if (!result) {
+      result = fileObj;
+    } else {
+      result = [result, fileObj];
+    }
+  });
+  // console.log(result);
+  return new SuccessModel({ data: result });
 }
 
 /**
@@ -128,27 +123,23 @@ async function getDatas(type) {
   return null;
 }
 export async function backupDatas() {
-  try {
-    const date = formatDate({ format: 'YYYY-mm-dd' });
-    const lpath = `${BACKUP_DIR}/${date}`;
-    statDir(lpath);
-    const keys = Object.keys(models);
-    let i = 0;
-    const len = keys.length;
-    for (; i < len; i++) {
-      const key = keys[i];
-      const result = await getDatas(key);
-      if (result) {
-        appendFile(`${lpath}/${key}.json`, JSON.stringify(result), { flag: 'w' });
-      }
+  const date = formatDate({ format: 'YYYY-mm-dd' });
+  const lpath = `${BACKUP_DIR}/${date}`;
+  statDir(lpath);
+  const keys = Object.keys(models);
+  let i = 0;
+  const len = keys.length;
+  for (; i < len; i++) {
+    const key = keys[i];
+    const result = await getDatas(key);
+    if (result) {
+      appendFile(`${lpath}/${key}.json`, JSON.stringify(result), { flag: 'w' });
     }
-
-    return new SuccessModel({
-      message: '備份數據成功',
-    });
-  } catch (error) {
-    return catchError(error);
   }
+
+  return new SuccessModel({
+    message: '備份數據成功',
+  });
 }
 
 /**
@@ -243,39 +234,56 @@ async function setDatas(type, date) {
   return result;
 }
 export async function restoreDatas({ date }) {
-  try {
-    const keys = Object.keys(models);
-    let i = 0;
-    const len = keys.length;
-    const result = [];
-    for (; i < len; i++) {
-      const key = keys[i];
-      const iresult = await setDatas(key, date);
-      result.push(iresult);
-    }
-
-    const hasData = result.some((v) => !!v);
-    if (hasData) {
-      return new SuccessModel({
-        message: `数据已还原到${date}`,
-      });
-    }
-
-    return new ErrorModel(notExistInfo);
-  } catch (error) {
-    return catchError(error);
+  const keys = Object.keys(models);
+  let i = 0;
+  const len = keys.length;
+  const result = [];
+  for (; i < len; i++) {
+    const key = keys[i];
+    const iresult = await setDatas(key, date);
+    result.push(iresult);
   }
+
+  const hasData = result.some((v) => !!v);
+  if (hasData) {
+    return new SuccessModel({
+      message: `数据已还原到${date}`,
+    });
+  }
+
+  return new ErrorModel(notExistInfo);
 }
 
 /**
  * 备份数据列表
  */
 export async function backups() {
-  try {
-    const list = getFiles(BACKUP_DIR);
+  const list = getFiles(BACKUP_DIR);
 
-    return new SuccessModel(list);
-  } catch (error) {
-    return catchError(error);
-  }
+  return new SuccessModel(list);
+}
+
+/**
+ * 默认设置
+ */
+export async function getOptions() {
+  const flow = {
+    type: FLTYPE.split(','),
+    tag: FLTAG.split(','),
+  };
+
+  const media = {
+    type: METYPE.split(','),
+    channel: MECHANNEL.split(','),
+  };
+
+  const statistic = {
+    type: STTYPE.split(','),
+  };
+
+  return new SuccessModel({
+    flow,
+    media,
+    statistic,
+  });
 }
