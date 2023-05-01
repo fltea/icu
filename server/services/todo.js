@@ -72,8 +72,8 @@ export async function todos({ title, content, beginDate, deadline, completeDate,
   }
   return data;
 }
-async function addTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
-  let result = await Todo.create({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded });
+async function addTodo({ title, content, state, time, beginDate, deadline, completeDate, disuseTime, discarded }) {
+  let result = await Todo.create({ title, content, state, time, beginDate, deadline, completeDate, disuseTime, discarded });
   if (result) {
     result = result.dataValues;
   }
@@ -84,13 +84,16 @@ export async function newTodo(item) {
   return result;
 }
 
-export async function changeTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime }) {
+export async function changeTodo({ id, content, state, beginDate, time, deadline, completeDate, discarded, disuseTime }) {
   const where = {
     id,
   };
   const todo = {};
-  if (order) {
-    todo.order = order;
+  if (state) {
+    todo.state = state;
+  }
+  if (time) {
+    todo.time = time;
   }
   if (content) {
     todo.content = content;

@@ -12,14 +12,18 @@ const Todo = {
       allowNull: false,
       comment: '内容',
     },
-    order: {
+    time: {
+      type: INTEGER,
+      comment: '要求次数',
+    },
+    state: {
       type: INTEGER,
       defaultValue: 0,
-      comment: '优先级数字',
+      comment: '状态',
     },
     beginDate: {
       type: DATEONLY,
-      comment: '开始时间',
+      comment: '开始日期',
     },
     deadline: {
       type: DATEONLY,

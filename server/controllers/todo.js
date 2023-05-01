@@ -31,8 +31,8 @@ export async function getTodos({ title, content, beginDate, deadline, completeDa
 /**
  * 創建數據
  */
-export async function setTodo({ title, content, order, beginDate, deadline, completeDate, disuseTime, discarded }) {
-  const todo = { title, content, order, beginDate, deadline, completeDate, disuseTime, discarded };
+export async function setTodo({ title, content, time, state, beginDate, deadline, completeDate, disuseTime, discarded }) {
+  const todo = { title, content, time, state, beginDate, deadline, completeDate, disuseTime, discarded };
 
   const result = await newTodo(todo);
   if (result) {
@@ -44,7 +44,7 @@ export async function setTodo({ title, content, order, beginDate, deadline, comp
 /**
  * 修改數據
  */
-export async function modTodo({ id, content, beginDate, order, deadline, completeDate, discarded, disuseTime, type }) {
+export async function modTodo({ id, content, beginDate, time, state, deadline, completeDate, discarded, disuseTime, type }) {
   let todo;
   if (type) {
     todo = {
@@ -57,7 +57,7 @@ export async function modTodo({ id, content, beginDate, order, deadline, complet
       todo.discarded = true;
     }
   } else {
-    todo = { id, content, beginDate, order, deadline, completeDate, discarded, disuseTime };
+    todo = { id, content, beginDate, state, time, deadline, completeDate, discarded, disuseTime };
   }
   const result = await changeTodo(todo);
   if (result) {
