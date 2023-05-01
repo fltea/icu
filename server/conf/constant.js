@@ -49,6 +49,9 @@ export const MECHANNEL = '豆瓣,微博,推特,她乡';
 // Statistic type  类型: 月 年
 export const STTYPE = '月,年';
 
+// Todo state  状态 待机 进行时 超时 完成
+export const TOSTATE = '待机,进行时,完成,超时';
+
 // 請求設置
 export const UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36';
 

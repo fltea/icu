@@ -1,6 +1,6 @@
 import { notExistInfo } from '../model/ErrorInfos.js';
 import { SuccessModel, ErrorModel } from '../model/ResModel.js';
-import { FILE_DIR, BACKUP_DIR, FLTYPE, FLTAG, METYPE, MECHANNEL, STTYPE } from '../conf/constant.js';
+import { FILE_DIR, BACKUP_DIR, FLTYPE, FLTAG, METYPE, MECHANNEL, STTYPE, TOSTATE } from '../conf/constant.js';
 
 import models from '../db/models/index.js';
 import { formatDate, deepCopy } from '../utils/tools.js';
@@ -281,9 +281,14 @@ export async function getOptions() {
     type: STTYPE.split(','),
   };
 
+  const todo = {
+    state: TOSTATE.split(','),
+  };
+
   return new SuccessModel({
     flow,
     media,
     statistic,
+    todo,
   });
 }
