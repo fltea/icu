@@ -22,7 +22,7 @@ const Chapter = {
     },
     clutter: {
       type: INTEGER,
-      comment: 'clutter Id',
+      comment: 'clutter ID',
     },
     media: {
       type: INTEGER,
@@ -39,10 +39,6 @@ const Chapter = {
     platform: {
       type: STRING,
       comment: '平台',
-    },
-    tag: {
-      type: STRING,
-      comment: '标签',
     },
   },
   belongsTo: {

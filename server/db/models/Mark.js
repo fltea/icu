@@ -18,7 +18,7 @@ const Mark = {
       comment: '标题',
     },
     description: {
-      type: TEXT,
+      type: STRING,
       comment: '描述',
     },
     icons: {
