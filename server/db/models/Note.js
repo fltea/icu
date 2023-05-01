@@ -9,7 +9,7 @@ const Note = {
     },
     position: {
       type: INTEGER,
-      comment: '指针开始位置',
+      comment: '指针开始',
     },
     source: {
       type: STRING,

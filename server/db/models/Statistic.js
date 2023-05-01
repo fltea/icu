@@ -6,7 +6,7 @@ const Statistic = {
       type: INTEGER,
       allowNull: false,
       defaultValue: 0,
-      comment: '统计类型: 年 月',
+      comment: '统计类型: 月 年',
     },
     date: {
       type: DATE,

@@ -11,11 +11,11 @@ const Account = {
     platform: {
       type: STRING,
       allowNull: false,
-      comment: '平台',
+      comment: '主站URL',
     },
     link: {
       type: STRING,
-      comment: '账号主页',
+      comment: '主页',
     },
     nickName: {
       type: STRING,

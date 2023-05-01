@@ -15,7 +15,7 @@ const Todo = {
     order: {
       type: INTEGER,
       defaultValue: 0,
-      comment: '优先级: 0, 1',
+      comment: '优先级数字',
     },
     beginDate: {
       type: DATEONLY,
@@ -36,7 +36,7 @@ const Todo = {
     },
     disuseTime: {
       type: DATE,
-      comment: '放弃时间',
+      comment: '废弃时间',
     },
   },
 };
