@@ -2,7 +2,6 @@
 import { ref, reactive, onMounted } from 'vue';
 import { whome, block, saveBlock } from '@/api/weibo';
 import { deepCopy } from '@/utils/tools';
-import { loadUsers } from '@/utils/localData';
 
 import ListItem from '@/components/weibo/ListItem.vue';
 
@@ -114,7 +113,6 @@ const getText = (str) => {
 
 onMounted(() => {
   getBlock();
-  loadUsers();
 });
 </script>
 
