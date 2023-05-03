@@ -446,8 +446,12 @@ export async function durl(url, cookie) {
   if (dom) {
     let text = dom.text.replace(/\r?\n?\s+?/g, '');
     text = text.split('(');
-    result.author = text.shift();
-    result.authorIp = text.shift().replace(')', '');
+    if (text.length) {
+      result.author = text.shift();
+    }
+    if (text.length) {
+      result.authorIp = text.shift().replace(')', '');
+    }
     result.authorLink = dom.getAttribute('href');
   }
   // 数量总计
