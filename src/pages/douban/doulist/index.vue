@@ -2,12 +2,13 @@
 import { reactive, onMounted } from 'vue';
 import { doulist, doubanDel } from '@/api/douban';
 import NewDoulist from '@/components/douban/Doulist.vue';
-import DoulistDetail from '@/components/douban/DoulistDetail.vue';
 
 const curData = reactive({
   list: [],
   adialog: false,
   item: null,
+  finished: false,
+  loading: false,
 });
 let params = null;
 const search = reactive({
@@ -16,12 +17,19 @@ const search = reactive({
 });
 
 const listData = () => {
+  curData.loading = true;
   doulist(params).then((res) => {
-    console.log(res);
-    if (res.list) {
-      curData.list = res.list;
-    }
+    // console.log(res);
+    curData.list.push(...(res.list || []));
+    curData.finished = curData.list.length >= res.count;
+  }).finally(() => {
+    curData.loading = false;
   });
+};
+const reloadList = () => {
+  params = null;
+  curData.list = [];
+  listData();
 };
 const searchList = () => {
   const { title, author } = search;
@@ -29,12 +37,20 @@ const searchList = () => {
     title,
     author,
   };
+  curData.list = [];
   listData();
 };
 const resetSearch = () => {
   search.title = '';
   search.author = '';
-  params = null;
+  reloadList();
+};
+const listMData = () => {
+  const page = params?.page || 1;
+  if (!params) {
+    params = {};
+  }
+  params.page = page + 1;
   listData();
 };
 
@@ -65,17 +81,17 @@ onMounted(listData);
     <button @click="resetSearch">重設</button>
     <button @click="modDoulist">新增</button>
   </section>
+  <com-list :finished="curData.finished" :loading="curData.loading" @load="listMData">
   <section>
     <div v-for="(item, index) in curData.list" :key="`curData.list${index}`" class="list-item">
-      <!-- {{ item }}<button @click="modDoulist(item)">修改</button><button @click="delDoulist(item)">删除</button> -->
-      <doulist-detail :detail="item" >
-        <template v-slot:controls>
-          <button @click="modDoulist(item)">修改</button>
-          <button @click="delDoulist(item)">删除</button>
-        </template>
-      </doulist-detail>
+      <p><a :href="`/douban/doulist/${item.clutter}`" target="_blank">{{ item.title }}</a></p>
+      <p>{{ item.author }}</p>
+      <p>{{ item.createTime }} / {{ item.updateTime }}</p>
+      <button @click="modDoulist(item)">修改</button>
+      <button @click="delDoulist(item)">删除</button>
     </div>
   </section>
+  </com-list>
   <new-doulist :doulist="curData.item" v-model:show="curData.adialog" @success="listData"></new-doulist>
 </template>
 
