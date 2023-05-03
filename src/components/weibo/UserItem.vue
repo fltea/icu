@@ -1,10 +1,11 @@
 <script setup>
 import { computed, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { userSave } from '@/api/weibo';
 
-import useWuerStore from '@/store/wuser';
+import useWuserStore from '@/store/wuser';
 
-const wuserStore = useWuerStore();
+const wuserStore = useWuserStore();
 
 const props = defineProps({
   user: Object,
@@ -12,7 +13,7 @@ const props = defineProps({
   detail: Boolean,
   noactions: Boolean,
 });
-const usersList = computed(() => wuserStore.users);
+const { users: usersList } = storeToRefs(wuserStore);
 // const user = computed(() => props.user);
 // const emits = defineEmits(['saveUser']);
 const saveBtn = computed(() => {

@@ -4,31 +4,27 @@ import { user } from '@/api/weibo';
 
 export default defineStore('wuser', {
   state: () => ({
-    USER: 'fltea-users',
     users: [],
+    loading: false,
   }),
   actions: {
     setUser(Id) {
       const list = this.users.filter((v) => v !== Id);
       list.push(Id);
       this.users = list;
-      localStorage.getItem(this.USER, JSON.stringify(list));
     },
     async getUsers() {
-      let users = localStorage.getItem(this.USER);
-      if (users) {
-        users = JSON.parse(users);
-        if (!Array.isArray(users)) {
-          users = users.list || [];
-        }
-      } else {
-        users = await user({
-          ids: true,
-        });
-        users = users.data || [];
+      if (this.loading) {
+        return;
       }
-      // console.log('getUsers', users);
+      this.loading = true;
+      let users = await user({
+        ids: true,
+      });
+      users = users.data || [];
       this.users = users;
+      // console.log('users', users, this.users);
+      this.loading = false;
     },
   },
 });
