@@ -8,6 +8,8 @@ const curData = reactive({
   list: [],
   gdialog: false,
   gitem: null,
+  finished: false,
+  loading: false,
 });
 const search = reactive({
   name: '',
@@ -15,23 +17,39 @@ const search = reactive({
 let params = null;
 
 const listData = () => {
+  curData.loading = true;
   group(params).then((res) => {
-    console.log(res);
-    if (res.list) {
-      curData.list = res.list;
-    }
+    // console.log(res);
+    curData.list.push(...(res.list || []));
+    curData.finished = curData.list.length >= res.count;
+  }).finally(() => {
+    curData.loading = false;
   });
+};
+const reloadList = () => {
+  params = null;
+  curData.list = [];
+  listData();
 };
 const searchList = () => {
   const { name } = search;
   params = {
     name,
   };
+  curData.list = [];
   listData();
 };
 const resetSearch = () => {
   search.name = '';
   params = null;
+  reloadList();
+};
+const listMData = () => {
+  const page = params?.page || 1;
+  if (!params) {
+    params = {};
+  }
+  params.page = page + 1;
   listData();
 };
 
@@ -47,7 +65,7 @@ const delGroup = ({ clutter }) => {
     doubanDel({
       clutter,
     }).then(() => {
-      listData();
+      reloadList();
     });
   }
 };
@@ -63,6 +81,7 @@ onMounted(listData);
     <button @click="resetSearch">重設</button>
     <button @click="modGroup">新增小组</button>
   </section>
+  <com-list :finished="curData.finished" :loading="curData.loading" @load="listMData">
   <section>
     <div v-for="(item, index) in curData.list" :key="`curData.list${index}`" class="list-item">
       <group-detail :detail="item" >
@@ -73,6 +92,7 @@ onMounted(listData);
       </group-detail>
     </div>
   </section>
+  </com-list>
   <new-group :group="curData.gitem" v-model:show="curData.gdialog" @success="listData"></new-group>
 </template>
 
