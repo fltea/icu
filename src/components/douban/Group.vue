@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, computed, watch } from 'vue';
-import { groupAdd, groupMod } from '@/api/douban';
+import { durl, groupAdd, groupMod } from '@/api/douban';
 
 const props = defineProps({
   show: Boolean,
@@ -25,12 +25,29 @@ const form = reactive({
   tags: '',
 });
 
+const setForm = (data) => {
+  const val = data || {};
+  const keys = Object.keys(form);
+  keys.forEach((key) => {
+    form[key] = val[key] || '';
+  });
+};
+
+const getContent = () => {
+  durl({
+    url: `https://www.douban.com/group/${form.id}/`,
+    nolist: true,
+  }).then((res) => {
+    console.log(res);
+    if (res.data) {
+      setForm(res.data);
+    }
+  });
+};
+
 watch(dialog, (val) => {
   if (val) {
-    const item = props.group || {};
-    Object.keys(form).forEach((v) => {
-      form[v] = item[v] || '';
-    });
+    setForm(props.group);
   }
 }, { immediate: true });
 
@@ -53,38 +70,34 @@ const save = () => {
 </script>
 
 <template>
-<com-dialog v-model="dialog">
-  <section class="common-dialog">
-    <header>
-      <p>Group</p>
-    </header>
-    <main>
-      <label>
-        <span class="label-title">id: </span>
-        <input type="text" :disabled="!!form.clutter" v-model="form.id" />
-      </label>
-      <label>
-        <span class="label-title">name:  </span>
-        <input type="text" v-model="form.name" />
-      </label>
-      <label>
-        <span class="label-title">info:  </span>
-        <textarea v-model="form.info"></textarea>
-      </label>
-      <label>
-        <span class="label-title">content:  </span>
-        <textarea v-model="form.content"></textarea>
-      </label>
-      <label>
-        <span class="label-title">tags:  </span>
-        <input type="text" v-model="form.tags" />
-      </label>
-    </main>
-    <footer>
-      <button @click="hide">取消</button>
-      <button @click="save">保存</button>
-    </footer>
+<com-dialog v-model="dialog" title="Group">
+  <section class="form-dialog">
+    <div class="form-item">
+      <span class="label-title">id</span>
+      <input type="text" :disabled="!!form.clutter" v-model="form.id" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">name </span>
+      <input type="text" v-model="form.name" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">info </span>
+      <textarea v-model="form.info"></textarea>
+    </div>
+    <div class="form-item">
+      <span class="label-title">content </span>
+      <textarea v-model="form.content"></textarea>
+    </div>
+    <div class="form-item">
+      <span class="label-title">tags </span>
+      <input type="text" v-model="form.tags" />
+    </div>
   </section>
+  <template #footer>
+    <button @click="hide">取消</button>
+    <button v-if="form.id" @click="getContent">获取数据</button>
+    <button @click="save">保存</button>
+  </template>
 </com-dialog>
 </template>
 
