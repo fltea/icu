@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive, watch } from 'vue';
-import { durlDetail, doulistAdd, doulistMod } from '@/api/douban';
+import { durl, doulistAdd, doulistMod } from '@/api/douban';
 
 const props = defineProps({
   show: Boolean,
@@ -39,8 +39,8 @@ const setForm = (data) => {
 };
 
 const getContent = () => {
-  durlDetail({
-    id: form.id,
+  durl({
+    url: `https://www.douban.com/doulist/${form.id}/`,
     nolist: true,
   }).then((res) => {
     console.log(res);
@@ -66,61 +66,58 @@ const saveDoulist = () => {
   });
 };
 
-watch(() => props.doulist, (val) => {
-  setForm(val);
+watch(dialog, (val) => {
+  if (val) {
+    setForm(props.doulist);
+  }
 }, { immediate: true });
 </script>
 
 <template>
-<com-dialog v-model="dialog">
-  <section class="doulist-dialog">
-    <header>
-      <p>DOULIST</p>
-    </header>
-    <main>
-      <label>
-        <span class="label-title">id: </span>
-        <input type="text" v-model="form.id" />
-      </label>
-      <label>
-        <span class="label-title">title: </span>
-        <input type="text" v-model="form.title" />
-      </label>
-      <label>
-        <span class="label-title">author: </span>
-        <input type="text" v-model="form.author" />
-      </label>
-      <label>
-        <span class="label-title">authorLink: </span>
-        <input type="text" v-model="form.authorLink" />
-      </label>
-      <label>
-        <span class="label-title">authorIp: </span>
-        <input type="text" v-model="form.authorIp" />
-      </label>
-      <label>
-        <span class="label-title">count: </span>
-        <input type="text" v-model="form.count" />
-      </label>
-      <label>
-        <span class="label-title">createTime: </span>
-        <input type="text" v-model="form.createTime" />
-      </label>
-      <label>
-        <span class="label-title">updateTime: </span>
-        <input type="text" v-model="form.updateTime" />
-      </label>
-      <label>
-        <span class="label-title">content: </span>
-        <textarea v-model="form.content"></textarea>
-      </label>
-    </main>
-    <footer>
-      <button @click="hide">取消</button>
-      <button v-if="form.id" @click="getContent">从doulist获取数据</button>
-      <button @click="saveDoulist">保存</button>
-    </footer>
+<com-dialog v-model="dialog" title="DOULIST">
+  <section class="form-dialog">
+    <div class="form-item">
+      <span class="label-title">id</span>
+      <input type="text" v-model="form.id" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">title</span>
+      <input type="text" v-model="form.title" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">author</span>
+      <input type="text" v-model="form.author" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">authorLink</span>
+      <input type="text" v-model="form.authorLink" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">authorIp</span>
+      <input type="text" v-model="form.authorIp" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">count</span>
+      <input type="text" v-model="form.count" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">createTime</span>
+      <date-picker v-model="form.createTime" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">updateTime</span>
+      <date-picker v-model="form.updateTime" />
+    </div>
+    <div class="form-item">
+      <span class="label-title">content</span>
+      <textarea v-model="form.content"></textarea>
+    </div>
   </section>
+  <template #footer>
+    <button @click="hide">取消</button>
+    <button v-if="form.id" @click="getContent">从doulist获取数据</button>
+    <button @click="saveDoulist">保存</button>
+  </template>
 </com-dialog>
 </template>
 
