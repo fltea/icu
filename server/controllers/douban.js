@@ -29,22 +29,28 @@ async function durlList(url, cookie) {
 /**
  * 豆列详情
  */
-async function durlDetail(url, cookie) {
+async function durlDetail(url, cookie, nolist) {
   const result = await durl(url, cookie);
-  let { nextPage } = result;
-  while (nextPage) {
-    await sleep(3000);
-    const nresult = await durl(nextPage);
-    nextPage = nresult.nextPage;
-    if (nresult.list) {
-      result.list.push(...nresult.list);
-    }
-    if (nextPage === url) {
-      nextPage = '';
+
+  if (!nolist) {
+    let { nextPage } = result;
+    while (nextPage) {
+      await sleep(3000);
+      const nresult = await durl(nextPage);
+      nextPage = nresult.nextPage;
+      if (nresult.topics) {
+        result.topics.push(...nresult.topics);
+      }
+      if (nextPage === url) {
+        nextPage = '';
+      }
     }
   }
-  if (result.list) {
-    setHashList(url, result.list);
+  if (result.topics) {
+    setHashList(url, result.topics);
+  }
+  if (nolist) {
+    delete result.topics;
   }
   return result;
 }
@@ -52,7 +58,7 @@ async function durlDetail(url, cookie) {
 /**
  * 根据 url 获取 豆列、小组
  */
-export async function getDurl({ cookie, url }) {
+export async function getDurl({ cookie, url, nolist }) {
   try {
     let result = null;
     // 豆列
@@ -60,7 +66,7 @@ export async function getDurl({ cookie, url }) {
       if (url.includes('doulists')) {
         result = await durlList(url, cookie);
       } else {
-        result = await durlDetail(url, cookie);
+        result = await durlDetail(url, cookie, nolist);
       }
       return new SuccessModel(result);
     }
@@ -75,9 +81,9 @@ export async function getDurl({ cookie, url }) {
         if (urls[index] === 'people' && urls.includes('joins')) {
           // 豆瓣小组列表页面
           result = await gurlist(url, cookie);
-        } else if (typeof +urls[index] === 'number') {
+        } else {
           // 小组首页
-          result = await gurl(url, cookie);
+          result = await gurl(url, cookie, nolist);
         }
       }
       return new SuccessModel(result);

@@ -79,11 +79,11 @@ function getComments(text) {
   const start = text.indexOf("'comments':");
   const end = text.indexOf("'total':");
   const value = text.substring(start + 12, end - 1);
-  if (value) {
+  try {
     return JSON.parse(value);
+  } catch (error) {
+    return null;
   }
-
-  return null;
 }
 
 // 小组讨论 评论
@@ -167,7 +167,7 @@ function getGroupTopic(root) {
       result.imgs = imgs.map((img) => img.getAttribute('src'));
     }
     // 最赞回应
-    let pcomments = root.querySelector('#popular-comments .reply-doc');
+    let pcomments = root.querySelectorAll('#popular-comments .reply-doc');
     if (pcomments) {
       pcomments = pcomments.map(getGComments);
       result.pcomments = pcomments;
@@ -555,7 +555,7 @@ export async function gurlist(url, cookie) {
 /**
  * 获取小组详情
  */
-export async function gurl(url, cookie) {
+export async function gurl(url, cookie, nolist) {
   const html = await request({
     url,
     header: getHeader(cookie),
@@ -602,29 +602,31 @@ export async function gurl(url, cookie) {
     result.tabs = getList(dom, '', true);
   }
 
-  dom = root.querySelectorAll('#group-topics tr');
-  if (dom) {
-    result.topics = dom.map((tr) => {
-      const item = {};
-      const tds = tr.querySelectorAll('td');
-      let idom = tds.shift();
-      item.title = getText(idom);
-      idom = idom.querySelector('a');
-      if (idom) {
-        item.url = idom.getAttribute('href');
-      }
-      idom = tds.shift();
-      idom = idom.querySelector('a');
-      item.author = getText(idom);
-      if (idom) {
-        item.authorLink = idom.getAttribute('href');
-      }
-      idom = tds.shift();
-      item.count = +getText(idom);
-      idom = tds.shift();
-      item.updateTime = getText(idom);
-      return item;
-    });
+  if (!nolist) {
+    dom = root.querySelectorAll('#group-topics tr');
+    if (dom) {
+      result.topics = dom.map((tr) => {
+        const item = {};
+        const tds = tr.querySelectorAll('td');
+        let idom = tds.shift();
+        item.title = getText(idom);
+        idom = idom.querySelector('a');
+        if (idom) {
+          item.url = idom.getAttribute('href');
+        }
+        idom = tds.shift();
+        idom = idom.querySelector('a');
+        item.author = getText(idom);
+        if (idom) {
+          item.authorLink = idom.getAttribute('href');
+        }
+        idom = tds.shift();
+        item.count = +getText(idom);
+        idom = tds.shift();
+        item.updateTime = getText(idom);
+        return item;
+      });
+    }
   }
 
   result.type = 'group-detail';
