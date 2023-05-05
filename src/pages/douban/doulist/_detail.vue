@@ -70,7 +70,18 @@ const getRecord = ({ url }) => {
     url,
   }).then((res) => {
     // console.log(res);
-    detail.value = res.data || null;
+    const ditem = res.data || null;
+    if (ditem) {
+      const list = ditem.comments || [];
+      const plist = ditem.pcomments || [];
+      const results = [];
+      results.push(...plist, ...list);
+      results.forEach((v) => {
+        v.selected = false;
+      });
+      ditem.comments = results;
+    }
+    detail.value = ditem;
   });
 };
 
@@ -106,12 +117,19 @@ onMounted(loadItem);
       </div>
     </div>
     <div v-if="detail" class="topic-cont">
+      <p>{{ detail.title }}</p>
       <p>{{ detail.author }}  {{ detail.createTime }}  {{ detail.authorIp }}</p>
       <pre v-html="detail.content"></pre>
-      <div class="list-item" v-for="(item, index) in detail.comments" :key="`topic-comments${index}`">
-        <p>{{ item.userName }}</p>
-        <pre v-html="item.content"></pre>
-      </div>
+      <template v-if="detail.repost">
+        <pre v-html="detail.repost.content"></pre>
+        <!-- <a :href="detail.repost.url"></a> -->
+      </template>
+      <template v-if="detail.comments">
+        <div class="list-item" v-for="(item, index) in detail.comments" :key="`topic-comments${index}`">
+          <p><label><input type="checkbox" v-model="item.selected">{{ item.userName }}</label></p>
+          <pre v-html="item.content"></pre>
+        </div>
+      </template>
     </div>
   </div>
 </section>
@@ -147,6 +165,7 @@ onMounted(loadItem);
   .topic-cont {
     margin-left: @small;
     flex: 1;
+    min-width: 65%;
   }
   .list-item {
     padding-top: @mini;
