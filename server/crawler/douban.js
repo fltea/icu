@@ -96,8 +96,8 @@ function getGComments(root) {
   item.userName = getText(info);
   item.userLink = info.getAttribute('href');
   info = root.querySelector('.pubtime');
-  info = getText(info);
-  info = info.split(' ');
+  info = info.text;
+  info = info.split(/\s/);
   item.userIp = info.pop();
   item.time = info.join(' ');
   // 图片
@@ -259,8 +259,12 @@ function getStatus(root) {
       const item = {};
       getAttrs(repost, sArg, item);
       item.url = repost.getAttribute('data-status-url');
-      const dom = repost.querySelector('.quote-clamp');
+      let dom = repost.querySelector('.quote-clamp');
       item.content = getText(dom, 'innerHTML');
+      dom = repost.querySelector('.url-block');
+      if (dom) {
+        item.content += getText(dom, 'innerHTML');
+      }
       // 图片
       const imgs = repost.querySelectorAll('.pics-wrapper img');
       if (imgs) {
