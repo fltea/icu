@@ -36,7 +36,11 @@ export function getText(dom, key = 'text') {
     // return dom.rawText;
     let text = dom[key];
     text = text.replace(/\r?\n?/g, '');
-    text = text.replace(/\s+?/g, '');
+    if (!['innerHTML'].includes(key)) {
+      text = text.replace(/\s+?/g, '');
+    } else {
+      text = text.replace(/\s{2,}}?/g, '');
+    }
     return text;
   } catch (error) {
     return '';
