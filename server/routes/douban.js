@@ -12,6 +12,7 @@ import {
   setGroup,
   modGroup,
   delDouban,
+  setRecord,
 } from '../controllers/douban.js';
 
 const router = new Router();
@@ -74,6 +75,21 @@ router.post('/group/modify', async (ctx) => {
   ctx.body = result;
 });
 
+// 获取详情
+// router.get('/record', async (ctx) => {
+//   const result = await getRecord(ctx.request.query);
+//   ctx.body = result;
+// });
+// 保存详情
+router.post('/record/save', async (ctx) => {
+  const result = await setRecord(ctx.request.body);
+  ctx.body = result;
+});
+// 详情
+// router.get('/record/:id', async (ctx) => {
+//   const result = await Record(ctx.request.params);
+//   ctx.body = result;
+// });
 // 删除
 router.post('/del', async (ctx) => {
   const result = await delDouban(ctx.request.body);

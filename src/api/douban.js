@@ -57,3 +57,19 @@ export const doubanDel = (data) => request({
   method: 'post',
   data,
 });
+
+export const record = (data) => request({
+  url: `${url}/record`,
+  method: 'get',
+  data,
+});
+
+export const recordSave = (data) => request({
+  url: `${url}/record/save`,
+  method: 'post',
+  data,
+});
+export const recordDetail = (id) => request({
+  url: `${url}/record/${id}`,
+  method: 'get',
+});
