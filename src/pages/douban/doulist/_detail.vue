@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, watch, onMounted, computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { durl, durlDetail, doulistId, doubanDel } from '@/api/douban';
+import { durl, durlDetail, doulistId, doubanDel, recordSave } from '@/api/douban';
 
 import NewDoulist from '@/components/douban/Doulist.vue';
 import DoulistDetail from '@/components/douban/DoulistDetail.vue';
@@ -85,6 +85,14 @@ const getRecord = ({ url }) => {
   });
 };
 
+const saveRecord = () => {
+  recordSave({
+    detail: JSON.stringify(detail.value),
+  }).then((res) => {
+    console.log(res);
+  });
+};
+
 watch(() => router, ({ currentRoute }) => {
   const { value } = currentRoute;
   curItem.clutter = value.params.detail;
@@ -117,6 +125,7 @@ onMounted(loadItem);
       </div>
     </div>
     <div v-if="detail" class="topic-cont">
+      <button @click="saveRecord">保存详情</button>
       <p>{{ detail.title }}</p>
       <p>{{ detail.author }}  {{ detail.createTime }}  {{ detail.authorIp }}</p>
       <pre v-html="detail.content"></pre>
