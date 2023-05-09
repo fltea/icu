@@ -35,6 +35,9 @@ app.use(
       uploadDir: path.join(ROOT_DIR, FILE_DIR), // 设置文件上传目录
       keepExtensions: true, // 保持文件的后缀
       maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
+      formLimit: 2 * 1024 * 1024,
+      textLimit: 2 * 1024 * 1024,
+      jsonLimit: 2 * 1024 * 1024,
       // onFileBegin:(name, file) => {
       //   console.log('onFileBegin',name, file)
       // }
